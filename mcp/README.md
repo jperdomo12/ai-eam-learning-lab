@@ -8,17 +8,20 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Cierre del laboratorio MCP y enlace al recorrido práctico paso a paso. |
-| 2026-09-10 | Creación del área MCP y definición de la primera etapa de estudio. |
+| 2026-09-10 | Se establece `docs/history/MCP_HISTORICAL_LAB.md` como registro canónico completo del laboratorio MCP histórico. |
+| 2026-09-10 | Cierre del laboratorio MCP y enlace al recorrido práctico. |
+| 2026-09-10 | Creación del área MCP. |
 
 ## 📚 Por dónde empezar
 
-Para entender rápidamente qué se hizo en este laboratorio, leer en este orden:
+Para entender qué se hizo, leer en este orden:
 
-1. [`docs/MCP_PRACTICAL_WALKTHROUGH.md`](docs/MCP_PRACTICAL_WALKTHROUGH.md) — documento principal: objetivo, instalaciones, configuraciones, pruebas, evolución, 14 tools, resultados, limitaciones y aprendizajes.
-2. [`docs/history/MCP_HISTORICAL_LAB.md`](docs/history/MCP_HISTORICAL_LAB.md) — reconstrucción y auditoría histórica detallada.
-3. [`docs/MCP_LAB_HANDOFF.md`](docs/MCP_LAB_HANDOFF.md) — cierre y continuidad.
-4. Código histórico real: `jperdomo12/Maximo-IA-Project/maximo_mcp.py`.
+1. [`docs/history/MCP_HISTORICAL_LAB.md`](docs/history/MCP_HISTORICAL_LAB.md) — **documento canónico y autosuficiente**: objetivo, evolución, instalaciones, configuración, código, pruebas, 14 tools verificadas, incidencias, evidencia, reproducción, limitaciones, aprendizajes y razones del traslado al Learning Lab.
+2. [`docs/MCP_PRACTICAL_WALKTHROUGH.md`](docs/MCP_PRACTICAL_WALKTHROUGH.md) — recorrido práctico más corto para repasar rápidamente la ejecución.
+3. [`docs/MCP_LAB_HANDOFF.md`](docs/MCP_LAB_HANDOFF.md) — estado de cierre y continuidad hacia el siguiente laboratorio.
+4. Código histórico real: `jperdomo12/Maximo-IA-Project/maximo_mcp.py` — evidencia principal de la implementación.
+
+> **Regla:** si existe discrepancia entre una descripción histórica y el código conservado, prevalece la evidencia del código para describir qué se implementó realmente.
 
 ## ✅ Qué se logró
 
@@ -29,7 +32,7 @@ Existe evidencia suficiente de una PoC MCP real con:
 - modo simulación para trabajar sin Maximo real;
 - evolución a VS Code + Cline;
 - configuración histórica de Maximo MCP + Filesystem MCP + GitHub MCP;
-- catálogo de **14 tools** verificado en el código real;
+- catálogo de **14 tools verificado en el código real**;
 - experimentación con lectura, escritura, workflow y preview/confirmación de cambios.
 
 ## ❌ Qué no se validó
@@ -38,7 +41,7 @@ No se considera probado:
 
 - conexión con una instancia viva de IBM Maximo;
 - lectura o escritura real contra Maximo;
-- validez actual de las configuraciones históricas de Claude/Cline;
+- validez actual de todas las configuraciones históricas de Claude/Cline;
 - seguridad productiva de la PoC;
 - incorporación automática de estos patrones a AI-EAM-MAXIMO.
 
@@ -64,4 +67,4 @@ Nada de este laboratorio se convierte automáticamente en decisión o implementa
 
 ## 🚀 Siguiente paso
 
-➡️ Abrir el laboratorio de **RAG (Retrieval-Augmented Generation)** manteniendo la misma filosofía: aprender haciendo, avanzar rápido y documentar lo suficiente para poder reutilizar el aprendizaje en el futuro.
+➡️ Abrir el laboratorio de **RAG (Retrieval-Augmented Generation)** manteniendo la misma filosofía: aprender haciendo, avanzar rápido y documentar de forma que el trabajo pueda retomarse meses después sin depender del chat.
