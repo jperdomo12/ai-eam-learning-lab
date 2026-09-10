@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "maximo": {
+      "command": "C:/Users/<USUARIO>/AppData/Local/Python/bin/python.exe",
+      "args": [
+        "-u",
+        "C:/Users/<USUARIO>/<RUTA-LAB>/maximo_mcp.py"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:/Users/<USUARIO>/<DIRECTORIO-AUTORIZADO-1>",
+        "C:/Users/<USUARIO>/<DIRECTORIO-AUTORIZADO-2>"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "<SECRET>"
+      }
+    }
+  }
+}
