@@ -1,104 +1,94 @@
 # 🧭 MCP_LAB_HANDOFF
 
-> 📍 **Estado:** ✅ CERRADO — laboratorio MCP completado y documentado para el alcance actual
+> 📍 **Estado:** ✅ CERRADO — laboratorio MCP completado para el alcance actual y consolidado en el Learning Lab
 > 🗓️ **Actualizado:** 2026-09-10
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Cierre documental reforzado: `docs/history/MCP_HISTORICAL_LAB.md` pasa a ser el registro canónico y autosuficiente del laboratorio. |
-| 2026-09-10 | Cierre del laboratorio MCP tras recuperar y auditar la PoC histórica de Maximo. |
+| 2026-09-10 | Se adopta `MCP_LAB_DOCUMENTATION.md` como documento principal; el código `maximo_mcp.py` y la configuración sanitizada de Claude quedan preservados dentro del propio Learning Lab. |
+| 2026-09-10 | Consolidación del trabajo previo realizado con Gemini / Claude Desktop / VS Code + Cline. |
 | 2026-09-10 | Creación del HandOff inicial. |
 
 ## Dónde estamos
 
-El laboratorio MCP está **cerrado para el alcance actual**.
+El laboratorio MCP está **cerrado para el alcance actual de aprendizaje**.
 
-No se repetirá una PoC mínima adicional porque la evidencia histórica ya demuestra una ejecución MCP real en modo simulación y se ha recuperado el artefacto técnico principal.
+El traslado a `ai-eam-learning-lab` no inicia un proyecto nuevo: consolida y continúa el trabajo realizado previamente con Gemini, Claude Desktop y Cline bajo un modelo ChatGPT ↔ GitHub más organizado y persistente.
 
-## Documento canónico
+## Documento principal
 
-La fuente principal para reconstruir este laboratorio dentro de semanas o meses es:
-
-```text
-mcp/docs/history/MCP_HISTORICAL_LAB.md
-```
-
-Ese documento contiene:
-
-- objetivo original;
-- evolución Gemini → Claude Desktop → VS Code/Cline;
-- instalaciones y dependencias;
-- configuración de Claude Desktop;
-- configuración de Cline;
-- creación de `maximo_mcp.py`;
-- modo simulación / modo real previsto;
-- pruebas realizadas;
-- expansión a 14 tools;
-- Working Set;
-- Filesystem MCP y GitHub MCP;
-- Tridente MCP;
-- incidencias y soluciones;
-- clasificación de evidencia;
-- limitaciones técnicas;
-- cómo reproducir conceptualmente el laboratorio;
-- ventajas obtenidas al trasladar la memoria del trabajo al Learning Lab.
-
-## Evidencia principal
-
-El artefacto real conservado es:
+La fuente documental vigente del laboratorio es:
 
 ```text
-jperdomo12/Maximo-IA-Project/maximo_mcp.py
+mcp/docs/MCP_LAB_DOCUMENTATION.md
 ```
 
-La auditoría del código confirma:
+Debe contener la versión consolidada y actualizada de todo el trabajo MCP realizado, independientemente del chat o herramienta donde se originó.
 
-- servidor FastMCP;
+Los documentos previos de Gemini / Claude / Cline conservados bajo `history/` son **material de referencia y transición**, no la documentación vigente. Pueden eliminarse en el futuro cuando todo su conocimiento útil esté absorbido y verificado en la documentación principal.
+
+## Artefactos preservados
+
+### Código
+
+```text
+mcp/src/maximo_mcp.py
+```
+
+Es la copia recuperada de la PoC MCP orientada a IBM Maximo. Confirma:
+
+- servidor Python/FastMCP;
 - `MODO_SIMULACION = True`;
-- datasets mock;
-- lógica OSLC/REST preparada;
-- exactamente 14 tools;
-- lectura, escritura, workflow y patrón de confirmación mediante Working Set.
+- datos mock de OT, inventario, activos, workflow y Object Structures;
+- rama OSLC/REST preparada;
+- 14 Tools MCP;
+- Working Set temporal para preview → confirmar/cancelar.
 
-También permitió corregir inconsistencias presentes en documentación histórica sobre cuáles eran realmente esas 14 tools.
+### Configuración Claude Desktop
 
-## Qué quedó comprendido
+```text
+mcp/config/claude_desktop_config.example.json
+```
 
-- MCP no convierte por sí mismo a un LLM en agente autónomo.
-- El Host es la aplicación de IA, no el PC físico.
-- Un MCP Server puede exponer Tools, Resources y Prompts.
-- MCP puede situarse por encima de APIs existentes.
-- En Maximo, OSLC/REST puede seguir siendo el mecanismo real bajo una tool MCP.
-- Varios MCP Servers pueden coexistir en un mismo entorno de IA.
+Es una versión sanitizada de la configuración real obtenida desde:
+
+```text
+Claude Desktop → Configuración → Desarrollador → Editar configuración
+```
+
+La copia real aportada por el usuario confirmó la configuración simultánea de:
+
+- Maximo MCP;
+- Filesystem MCP;
+- GitHub MCP.
+
+No se conserva en GitHub la copia cruda porque el repositorio es público y contiene rutas/personales y campos sensibles de entorno.
 
 ## Qué quedó probado / recuperado
 
-- servidor MCP local en Python/FastMCP;
-- ejecución histórica desde Claude Desktop;
-- modo simulación;
-- evolución posterior a VS Code + Cline;
-- Maximo MCP + Filesystem MCP + GitHub MCP;
-- 14 tools verificadas en código;
+- ejecución de un MCP Server local con Python/FastMCP;
+- invocación histórica de Tools desde Claude Desktop;
+- modo simulación para capacidades EAM;
+- evolución a VS Code + Cline;
+- entorno multi-MCP Maximo + Filesystem + GitHub;
+- catálogo de 14 Tools recuperado en código;
 - pruebas EAM simuladas;
-- investigación vía GitHub MCP;
-- patrón experimental preview → confirmar/cancelar.
+- experimentación con Working Set / confirmación humana.
 
 ## Qué NO quedó validado
 
 - conexión con una instancia viva de IBM Maximo;
 - lectura/escritura real contra Maximo;
-- workflow real;
+- workflow real contra Maximo;
 - seguridad productiva;
-- compatibilidad actual exacta de las configuraciones históricas de Claude/Cline.
+- compatibilidad exacta actual de toda la configuración histórica.
 
 ## Relación con AI-EAM-MAXIMO
 
-Los resultados son aprendizaje y evidencia. Cualquier elemento que se quiera trasladar al producto `jperdomo12/ai-driven-eam-copilot` debe tratarse allí como **🟨 CANDIDATO A INCORPORAR** y seguir su gobernanza formal.
+El Learning Lab conserva aprendizaje y evidencia. Cualquier patrón que deba trasladarse al producto `jperdomo12/ai-driven-eam-copilot` se tratará allí como **🟨 CANDIDATO A INCORPORAR** y seguirá su gobernanza formal.
 
 ## Próximo laboratorio
 
-➡️ **RAG (Retrieval-Augmented Generation)**.
-
-Se iniciará como una nueva línea dentro de `ai-eam-learning-lab`, manteniendo la filosofía de aprender haciendo, trabajar con agilidad y dejar una memoria técnica suficientemente buena para retomar el trabajo meses después.
+➡️ **RAG (Retrieval-Augmented Generation)**, una vez finalizada la depuración documental de MCP.
