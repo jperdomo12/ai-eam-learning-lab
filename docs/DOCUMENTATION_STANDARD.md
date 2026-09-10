@@ -6,51 +6,160 @@
 | Campo | Valor |
 |---|---|
 | **Ruta** | `docs/DOCUMENTATION_STANDARD.md` |
-| **Versión** | 0.3 |
+| **Versión** | 0.4 |
 | **Estado** | Activo de laboratorio |
 | **Fecha** | 10/09/2026 |
-| **Ámbito** | Notas de estudio, experimentos, guías prácticas, handoffs e histórico del Learning Lab |
+| **Ámbito** | Toda la documentación del Learning Lab |
 
 ## 🕘 Historial
 
 | Versión | Fecha | Cambio |
 |---|---:|---|
-| 0.3 | 10/09/2026 | Se adopta `main` como rama de trabajo por defecto para cambios habituales del Learning Lab; branches y PR quedan reservados para cambios donde aporten valor real. |
-| 0.2 | 10/09/2026 | Se incorpora un bloque `Historial` obligatorio y ligero en cada documento del Learning Lab. |
-| 0.1 | 10/09/2026 | Primera versión del estándar, adaptada a un repositorio ágil de estudio y experimentación. |
+| 0.4 | 10/09/2026 | Se adopta formalmente el modelo de **documentación viva**: los materiales históricos o importados son fuentes de referencia; la documentación vigente debe ser reconstruida, verificada y mantenida dentro del Learning Lab. |
+| 0.3 | 10/09/2026 | Se adopta `main` como rama de trabajo por defecto para cambios habituales del Learning Lab. |
+| 0.2 | 10/09/2026 | Se incorpora un bloque `Historial` obligatorio y ligero en cada documento. |
+| 0.1 | 10/09/2026 | Primera versión del estándar. |
 
 ---
 
 ## 🎯 1. Propósito
 
-Este estándar define una forma **ligera, visual y orientada al estudio** de documentar el repositorio `ai-eam-learning-lab`.
+Este estándar define cómo mantener `ai-eam-learning-lab` como una **memoria técnica viva, autosuficiente y reutilizable**.
 
-El objetivo no es reproducir el nivel formal de documentación de un producto. El objetivo es que, después de semanas o meses, sea posible volver a un tema y responder rápidamente:
+El objetivo no es archivar documentos antiguos ni depender de chats previos. El objetivo es que, dentro de semanas o meses, el repositorio permita responder por sí mismo:
 
-- ¿qué quería aprender?;
-- ¿qué entendí?;
-- ¿qué probé realmente?;
-- ¿qué funcionó y qué no?;
-- ¿qué evidencia tengo?;
-- ¿qué relación tiene con EAM / IBM Maximo?;
-- ¿qué debería estudiar o probar después?
+- qué queríamos aprender;
+- qué hicimos realmente;
+- cómo lo instalamos y configuramos;
+- qué pruebas ejecutamos;
+- qué funcionó y qué no;
+- qué evidencias sustentan cada afirmación;
+- qué aprendimos;
+- qué relación tiene con EAM / IBM Maximo;
+- qué queda pendiente.
 
 ---
 
-## ⚡ 2. Filosofía del Learning Lab
+## 🟢 2. Documentación viva: regla principal
 
-### 2.1 Aprender haciendo
+La documentación oficial del Learning Lab es la documentación **creada y mantenida dentro de este repositorio bajo el enfoque actual**.
+
+Los materiales anteriores —bitácoras, chats, Gemini, Claude, documentos locales, repositorios temporales, capturas, configuraciones, ZIPs, notas o PoCs— son **fuentes de entrada y evidencia**, no documentación vigente por sí mismos.
+
+El flujo correcto es:
+
+```text
+FUENTES / EVIDENCIA
+(docs antiguos, código, configs, capturas, chats, ZIPs...)
+            ↓
+      revisar / contrastar
+            ↓
+   resolver inconsistencias
+            ↓
+DOCUMENTACIÓN VIVA DEL LAB
+            ↓
+ mantener actualizada en GitHub
+```
+
+### Consecuencia práctica
+
+Un documento antiguo puede ser útil para reconstruir qué ocurrió, pero **no se copia ni se adopta automáticamente**. El Learning Lab debe producir su propia explicación consolidada, clara y actualizada.
+
+### Fuente de verdad del Learning Lab
+
+Para lo estudiado y experimentado en este repositorio, prevalece:
+
+1. evidencia primaria conservada o auditada;
+2. documentación viva vigente del Learning Lab;
+3. material histórico o narrativo de referencia.
+
+Si dos fuentes históricas discrepan, la documentación viva debe registrar la discrepancia y resolverla cuando exista evidencia suficiente.
+
+---
+
+## ⚡ 3. Filosofía de trabajo
+
+### 3.1 Aprender haciendo
 Siempre que sea razonable, un concepto debe terminar en una prueba, ejemplo, ejercicio o experimento reproducible.
 
-### 2.2 Claridad antes que formalismo
-No se añade una sección porque una plantilla diga que debe existir. Si no aporta valor al aprendizaje, se omite.
+### 3.2 Claridad antes que formalismo
+No se añade ceremonia que no aporte valor. La documentación puede ser ligera, pero nunca debe ser ambigua sobre lo que se hizo.
 
-### 2.3 Historial mínimo, siempre
-Todo documento Markdown mantenido por el laboratorio debe incluir un bloque breve `## 🕘 Historial`.
+### 3.3 Escribir para el “yo de dentro de seis meses”
+Una buena nota debe poder entenderse sin reconstruir un chat anterior.
 
-La intención no es duplicar Git ni mantener control de versiones pesado. El bloque sirve para que, al abrir un documento, se entienda inmediatamente **cuándo nació y qué cambios relevantes tuvo**.
+### 3.4 `main` por defecto
+El Learning Lab trabaja directamente sobre `main` cuando el cambio sea seguro, claro y reversible. Branches y PR se utilizan solo cuando aportan valor real.
 
-Formato recomendado:
+---
+
+## 🧭 4. Niveles de evidencia
+
+Usar estas etiquetas cuando ayuden a evitar confusión:
+
+- 📘 **ENTENDIDO** — concepto estudiado y explicado.
+- 🧪 **PROBADO** — ejecutado realmente en el laboratorio.
+- ✅ **VERIFICADO** — comprobado mediante evidencia primaria suficiente.
+- 📎 **REFERENCIA** — material previo utilizado como fuente de reconstrucción.
+- 💡 **INFERIDO** — conclusión razonable todavía no demostrada.
+- 🟨 **CANDIDATO AI-EAM-MAXIMO** — aprendizaje potencialmente reutilizable en el producto.
+- 🟩 **INCORPORADO AI-EAM-MAXIMO** — aprobado e incorporado en el repositorio de producto.
+
+Nada pasa del Learning Lab al producto automáticamente.
+
+---
+
+## 🗂️ 5. Tipos de documentos
+
+| Tipo | Uso |
+|---|---|
+| `README.md` | Entrada del tema y mapa de navegación. |
+| `*_LIVING_DOCUMENTATION.md` | Documento vivo canónico de un tema cuando se necesita una memoria completa y evolutiva. |
+| `STUDY-*.md` | Nota conceptual específica. |
+| `LAB-*.md` | Experimento o PoC reproducible. |
+| `GUIDE-*.md` | Procedimiento reutilizable. |
+| `*_HANDOFF.md` | Estado y continuidad entre etapas/chats. |
+| `history/` | Material histórico de referencia; nunca fuente vigente por sí solo. |
+
+> **Regla:** actualizar antes que crear. Evitar duplicar la misma verdad en varios documentos.
+
+---
+
+## 🧪 6. Qué debe registrar una prueba práctica
+
+Cuando se realice una instalación, configuración o prueba, registrar según aplique:
+
+```text
+Objetivo
+↓
+Precondiciones / entorno
+↓
+Instalaciones
+↓
+Configuración
+↓
+Pasos ejecutados
+↓
+Prueba
+↓
+Resultado observado
+↓
+Problema / solución
+↓
+Evidencia
+↓
+Aprendizaje
+↓
+Estado final / siguiente paso
+```
+
+No esperar al final de varios meses para reconstruirlo todo retrospectivamente.
+
+---
+
+## 🕘 7. Historial mínimo, siempre
+
+Todo documento Markdown mantenido por el laboratorio debe incluir:
 
 ```markdown
 ## 🕘 Historial
@@ -61,220 +170,68 @@ Formato recomendado:
 | AAAA-MM-DD | Cambio relevante posterior. |
 ```
 
-Si el documento usa versión explícita, puede añadirse la columna `Versión`.
-
-No registrar correcciones ortográficas, ajustes cosméticos o cambios sin valor para el aprendizaje.
-
-### 2.4 Escribir para el “yo de dentro de seis meses”
-Una buena nota debe poder entenderse sin reconstruir el chat original.
-
-### 2.5 Separar conocimiento de evidencia
-No confundir:
-
-- 📘 **ENTENDIDO** — concepto estudiado y explicado;
-- 🧪 **PROBADO** — ejecutado realmente en el laboratorio;
-- ✅ **VERIFICADO** — resultado comprobado con evidencia suficiente;
-- 💡 **INFERIDO** — conclusión razonable todavía no demostrada;
-- 🟨 **CANDIDATO AI-EAM-MAXIMO** — aprendizaje potencialmente reutilizable en el producto;
-- 🟩 **INCORPORADO AI-EAM-MAXIMO** — solo cuando haya sido aprobado e incorporado allí.
-
-Nada pasa del Learning Lab al producto automáticamente.
-
-### 2.6 `main` por defecto: agilidad antes que ceremonia
-
-El Learning Lab trabaja **directamente sobre `main` como regla general**.
-
-Esto aplica especialmente a:
-
-- notas de estudio;
-- README y handoffs;
-- material histórico;
-- documentación y ajustes de estructura pequeños;
-- pequeños scripts de laboratorio;
-- experimentos acotados y fácilmente reversibles.
-
-Crear una branch es **opcional** y se utiliza cuando el cambio tiene suficiente entidad como para que aislarlo aporte valor: refactorizaciones relevantes, automatizaciones, CI/CD, cambios estructurales amplios, código que pueda afectar varios experimentos o pruebas que convenga mantener separadas temporalmente.
-
-Los Pull Requests tampoco son obligatorios en el laboratorio. Se usan cuando ayudan a revisar, comparar o cerrar un cambio importante; no como trámite.
-
-> **Regla práctica:** si trabajar directamente en `main` es seguro, claro y reversible, trabajar en `main`.
-
-Esta regla es propia del Learning Lab y **no modifica** el flujo formal del repositorio de producto `ai-driven-eam-copilot`.
+Registrar solo creación y cambios con valor real para comprender la evolución.
 
 ---
 
-## 🗂️ 3. Tipos de documentos
+## 🧭 8. README de cada tema
 
-El laboratorio utiliza pocos tipos documentales y solo se crean cuando son necesarios.
+Cada tema activo debe tener un `README.md` corto que permita conocer:
 
-| Tipo | Uso |
-|---|---|
-| `README.md` | Punto de entrada de un tema y mapa de navegación. |
-| `STUDY-*.md` | Nota de estudio conceptual cuando el contenido merece una fuente propia. |
-| `LAB-*.md` | Experimento, prueba práctica o PoC reproducible. |
-| `GUIDE-*.md` | Procedimiento práctico que merece reutilizarse. |
-| `*_HANDOFF.md` | Estado actual y próximo paso cuando se necesita continuidad entre chats o etapas. |
-| `history/` | Material histórico conservado como referencia, no como verdad técnica vigente. |
+- objetivo;
+- estado;
+- documento vivo principal;
+- pruebas realizadas;
+- referencias históricas disponibles;
+- siguiente paso.
 
-> **Regla:** actualizar antes que crear. Si el conocimiento cabe naturalmente en un README o documento existente, no crear otro archivo.
+El README orienta; no debe competir con el documento vivo principal.
 
 ---
 
-## 🧠 4. Formato fresco para una nota de estudio
+## 🔄 9. HandOff ligero
 
-```markdown
-# 🧠 Tema
+El HandOff sirve para continuidad, no para duplicar toda la documentación.
 
-> 🎯 **Quiero entender:** ...
-> 📍 **Estado:** estudiando / entendido / pendiente de práctica
-> 🗓️ **Actualizado:** AAAA-MM-DD
+Debe apuntar al documento vivo correspondiente y resumir:
 
-## 🕘 Historial
-| Fecha | Cambio |
-|---|---|
-| AAAA-MM-DD | Creación inicial. |
-
-## 💡 En mis palabras
-Explicación breve del concepto como lo entiendo ahora.
-
-## 🗺️ Modelo mental
-Diagrama, analogía o estructura que ayude a recordarlo.
-
-## 🔑 Ideas que quiero recordar
-- ...
-
-## 🧪 Lo llevamos a la práctica
-Qué ejercicio o experimento hicimos y dónde está.
-
-## 👀 Qué observé
-Resultados reales, sorpresas, errores o diferencias con lo esperado.
-
-## 🔧 Relación con EAM / IBM Maximo
-Por qué podría importar en mi contexto profesional.
-
-## ❓ Dudas abiertas
-Lo que todavía no comprendo o quiero investigar.
-
-## 🚀 Siguiente paso
-Una acción concreta para continuar.
-
-## 🔗 Referencias
-Fuentes realmente utilizadas.
-```
-
-No es obligatorio usar todas las secciones, salvo el bloque `Historial`.
+- dónde estamos;
+- qué está cerrado;
+- qué está pendiente;
+- qué archivos leer primero;
+- cuál es el siguiente paso.
 
 ---
 
-## 🧪 5. Formato para experimentos
+## 📎 10. Material histórico y fuentes de referencia
 
-```markdown
-# 🧪 LAB — Nombre del experimento
+Todo material importado de estudios o experimentos anteriores debe tratarse como **referencia**.
 
-> 🎯 **Objetivo:** ...
-> 📍 **Resultado:** pendiente / funciona / funciona parcialmente / no funciona
-> 🗓️ **Fecha:** AAAA-MM-DD
+Cuando se conserve bajo `history/`, debe indicarse claramente:
 
-## 🕘 Historial
-| Fecha | Cambio |
-|---|---|
-| AAAA-MM-DD | Creación inicial. |
+> ⚠️ **REFERENCIA HISTÓRICA — no constituye documentación técnica vigente. La verdad consolidada debe consultarse en el documento vivo del tema.**
 
-## Hipótesis
-¿Qué esperamos que ocurra?
-
-## Setup
-Entorno, herramientas y dependencias relevantes.
-
-## Pasos
-Solo los necesarios para reproducir la prueba.
-
-## Resultado observado
-Qué ocurrió realmente.
-
-## Evidencia
-Logs, capturas, salida, archivos o comportamiento verificable.
-
-## Qué aprendí
-Conclusiones útiles, incluyendo errores y falsas suposiciones.
-
-## Relación con EAM / Maximo
-Aplicabilidad potencial, si existe.
-
-## Siguiente experimento
-Una continuación concreta.
-```
-
-Un experimento fallido sigue siendo un resultado válido si deja aprendizaje útil.
+Puede conservar discrepancias, errores o formulaciones antiguas porque su objetivo es preservar contexto histórico, no sustituir la documentación vigente.
 
 ---
 
-## 🧭 6. README de cada tema
+## 🔐 11. Seguridad en un repositorio público
 
-Cada área activa —por ejemplo `mcp/`— debe tener un `README.md` corto que funcione como **panel de estudio**.
+Nunca almacenar:
 
-Debe permitir ver rápidamente qué estamos estudiando, qué nivel hemos alcanzado, qué probamos, qué está pendiente y cuál es el siguiente paso.
+- contraseñas;
+- API keys;
+- PATs/tokens;
+- credenciales Maximo;
+- endpoints privados sensibles;
+- datos reales de clientes;
+- información personal/confidencial innecesaria.
 
-El README no debe convertirse en un tratado. Su función principal es orientar.
-
----
-
-## 🔄 7. HandOff ligero
-
-Un HandOff se crea o actualiza cuando sea útil cambiar de chat, cerrar una etapa o dejar una pausa prolongada.
-
-Estructura mínima:
-
-```markdown
-# 🧭 <TEMA>_HANDOFF
-
-## 🕘 Historial
-...
-
-## Dónde estamos
-...
-
-## Qué ya entendimos
-...
-
-## Qué ya probamos
-...
-
-## Qué NO está demostrado todavía
-...
-
-## Archivos clave
-...
-
-## Próximo paso
-...
-```
-
-No debe reconstruir toda la conversación.
+Las configuraciones deben publicarse sanitizadas mediante placeholders, variables de entorno o archivos `*.example.*`.
 
 ---
 
-## 🕰️ 8. Material histórico
-
-El material importado de estudios, chats, Gemini, Claude, PoCs anteriores u otros proyectos puede conservarse bajo `history/`.
-
-Debe quedar claramente marcado:
-
-> ⚠️ **HISTÓRICO — material de referencia. No constituye documentación técnica vigente del Learning Lab ni del producto AI-EAM-MAXIMO.**
-
-El histórico se conserva para aprender de lo realizado, no para asumir que sigue siendo técnicamente correcto.
-
----
-
-## 🔐 9. Seguridad en un repositorio público
-
-Este repositorio es público. Nunca almacenar contraseñas, API keys, tokens o PATs, secretos MCP, credenciales Maximo, URLs internas sensibles, datos reales de clientes o información personal/confidencial.
-
-Las configuraciones reutilizables deben usar ejemplos seguros, variables de entorno o archivos `*.example.*`.
-
----
-
-## 🔗 10. Relación con AI-EAM-MAXIMO
+## 🔗 12. Relación con AI-EAM-MAXIMO
 
 ```text
 AI-EAM Learning Lab
@@ -289,23 +246,24 @@ AI-EAM-MAXIMO
 🟩 documentación + implementación oficial
 ```
 
-El repositorio oficial `ai-driven-eam-copilot` sigue siendo la fuente de verdad del producto AI-EAM-MAXIMO.
+El repositorio `jperdomo12/ai-driven-eam-copilot` continúa siendo la fuente de verdad del producto AI-EAM-MAXIMO.
 
 ---
 
-## ✅ 11. Quality Check de 30 segundos
+## ✅ 13. Quality Check
 
-Antes de dar por útil una nota o experimento, comprobar:
+Antes de cerrar una etapa comprobar:
 
-- ¿entiendo qué aprendimos?;
-- ¿queda claro qué fue probado y qué es explicación o inferencia?;
-- ¿podría retomarlo dentro de seis meses?;
-- ¿el bloque `Historial` refleja los cambios relevantes?;
-- ¿hay información sensible?;
-- ¿existe un siguiente paso si el tema continúa?
+- ¿la documentación viva explica qué se hizo sin depender del chat?;
+- ¿incluye instalaciones, configuración, pruebas y resultados cuando aplican?;
+- ¿se distingue evidencia primaria de referencia histórica?;
+- ¿las contradicciones conocidas están resueltas o explícitamente marcadas?;
+- ¿los ejemplos sensibles están sanitizados?;
+- ¿el README apunta a la documentación viva correcta?;
+- ¿el HandOff refleja el estado real?;
 
 ---
 
-## 🌱 12. Regla final
+## 🌱 14. Regla final
 
-> **La documentación del Learning Lab debe ser tan pequeña como sea posible y tan completa como sea necesario para seguir aprendiendo sin perder conocimiento.**
+> **Las fuentes históricas ayudan a recordar. La documentación viva del Learning Lab explica la verdad consolidada de lo que aprendimos, hicimos y comprobamos.**
