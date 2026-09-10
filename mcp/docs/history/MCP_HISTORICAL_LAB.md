@@ -1,297 +1,192 @@
 # 🕰️ Laboratorio histórico — MCP + IBM Maximo
 
-> ⚠️ **HISTÓRICO — material de referencia.** Este documento reconstruye el laboratorio realizado previamente con Gemini, Claude Desktop y Cline. No constituye por sí solo arquitectura vigente de AI-EAM-MAXIMO ni afirma que todo el código histórico siga funcionando actualmente.
+> ⚠️ **HISTÓRICO — material de referencia.** Reconstruye el laboratorio previo con Gemini, Claude Desktop y Cline. No constituye arquitectura vigente de AI-EAM-MAXIMO.
 
-> 🎯 **Objetivo:** dejar una fotografía comprensible de qué se construyó, qué productos se usaron/configuraron y qué quedó realmente validado antes de reiniciar el aprendizaje de MCP.
-> 📍 **Estado:** reconstruido desde la documentación histórica; pendiente auditoría del código/configuración local original.
+> 🎯 **Objetivo:** conservar qué se construyó, configuró y aprendió antes de continuar el estudio actual de MCP.
+> 📍 **Estado:** documentación histórica revisada y `maximo_mcp.py` histórico localizado/auditado en `jperdomo12/Maximo-IA-Project`. Pendiente únicamente reproducir el laboratorio con el stack actual.
 > 🗓️ **Actualizado:** 2026-09-10
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Creación inicial a partir del HandOff, bitácora y guía histórica del laboratorio Gemini/Claude/Cline. |
+| 2026-09-10 | Verificado el artefacto real `maximo_mcp.py`: lógica dual y catálogo de 14 tools. |
+| 2026-09-10 | Creación inicial desde HandOff, bitácora y guía histórica Gemini/Claude/Cline. |
 
 ---
 
-## 🎯 1. Qué queríamos aprender y probar
+## 🎯 1. Qué se quería probar
 
-El laboratorio nació para explorar, de forma práctica, cómo una IA generativa podía interactuar con **IBM Maximo** mediante lenguaje natural y, posteriormente, para comprender **MCP (Model Context Protocol)** construyendo una PoC local.
-
-Al no disponer de un entorno vivo de Maximo para estas pruebas, se adoptó un enfoque desacoplado con **datos simulados**. La meta inmediata dejó de ser construir un producto y pasó a ser comprobar el mecanismo completo:
+Explorar de forma práctica cómo una IA generativa podía interactuar con **IBM Maximo** mediante lenguaje natural usando MCP, primero sin depender de un Maximo real.
 
 ```text
-Usuario
-  ↓ lenguaje natural
-Aplicación de IA
-  ↓ MCP
-Servidor MCP local
-  ↓ tool
-Código Python
-  ↓
-Dato simulado / futura API Maximo
+Usuario → Claude/Cline → MCP → maximo_mcp.py → simulación / OSLC REST → IBM Maximo
 ```
 
-La primera prueba relevante fue deliberadamente sencilla: conseguir que Claude pudiera descubrir e invocar una tool local llamada `verificar_conexion`.
+La PoC comenzó con Claude Desktop y evolucionó a VS Code + Cline.
 
 ---
 
-## 🧭 2. Evolución del laboratorio
+## 🧭 2. Evolución
 
-### Etapa A — exploración inicial con Gemini / Google Cloud
+**Gemini / Google Cloud.** Se exploró inicialmente una arquitectura cloud, descartada para la PoC por complejidad innecesaria.
 
-El trabajo comenzó explorando una solución basada en Gemini y servicios Google Cloud / Vertex AI. La documentación histórica registra que este camino se percibió como innecesariamente complejo para una PoC personal por la infraestructura, endpoints y conectividad requeridos.
+**Claude Desktop.** Se configuró un servidor MCP Python local y se documentó la ejecución de `verificar_conexion` desde la conversación.
 
-### Etapa B — Claude Desktop + servidor MCP local
+**VS Code + Cline.** Se trasladó el laboratorio al IDE para editar código, ejecutar comandos y refrescar servidores MCP con mayor agilidad.
 
-Se cambió a una arquitectura local utilizando **Claude Desktop** como aplicación de IA con soporte MCP y un servidor propio escrito en Python.
-
-El hito que sí quedó documentado como ejecutado fue:
+**“Tridente MCP”.** Se configuraron tres servidores en paralelo:
 
 ```text
-Claude Desktop
-      ↓ MCP
-maximo_mcp.py
-      ↓
-verificar_conexion()
-      ↓
-respuesta devuelta a Claude
+Cline
+ ├─ Maximo MCP ─── maximo_mcp.py
+ ├─ Filesystem MCP
+ └─ GitHub MCP
 ```
 
-Esta prueba demostró que una conversación podía terminar ejecutando una función Python expuesta como tool MCP.
+“Tridente MCP” fue terminología informal del laboratorio, no del estándar MCP.
 
-### Etapa C — VS Code + Cline
+---
 
-Posteriormente el entorno de desarrollo se trasladó hacia **Visual Studio Code + Cline**. La motivación documentada fue acelerar el ciclo de aprendizaje: Cline podía inspeccionar archivos, proponer/realizar cambios, mostrar diffs y ejecutar comandos desde el entorno de desarrollo.
+## 🧰 3. Productos y configuración
 
-### Etapa D — “Tridente MCP”
+| Componente | Uso histórico |
+|---|---|
+| Gemini | Exploración inicial y apoyo al desarrollo |
+| Claude Desktop | Primer host/aplicación usada para la PoC MCP |
+| VS Code + Cline | Entorno posterior de desarrollo y experimentación |
+| Python + FastMCP | Implementación del servidor MCP propio |
+| `requests` + `urllib3` | Acceso HTTP previsto a OSLC/REST Maximo |
+| Node.js / `npx` | Ejecución de servidores MCP adicionales |
+| Filesystem MCP | Acceso controlado a archivos locales |
+| GitHub MCP | Investigación y trabajo con repositorios |
+| IBM Maximo | Sistema EAM objetivo; conexión viva no validada |
 
-La configuración se amplió a tres servidores MCP en paralelo:
+Configuraciones históricas relevantes:
+
+- Claude Desktop: `claude_desktop_config.json` lanzaba `python -u <ruta>/maximo_mcp.py`.
+- Cline: `cline_mcp_settings.json` registraba Maximo, Filesystem y GitHub MCP.
+- El antiguo GitHub MCP utilizaba PAT en configuración; **ese patrón no se adopta como recomendación actual**.
+- El repositorio público actual nunca debe contener secretos, endpoints privados ni datos corporativos.
+
+---
+
+## 🧠 4. Artefacto real localizado: `maximo_mcp.py`
+
+El código histórico existe en `jperdomo12/Maximo-IA-Project` y confirma:
+
+- `FastMCP("Maximo Enterprise")`;
+- `MODO_SIMULACION = True`;
+- mocks de OT, inventario, activos, workflow y Object Structures;
+- rama de lógica real mediante HTTP/OSLC;
+- `MAXIMO_URL` y `API_KEY` como placeholders, no credenciales reales;
+- catálogo real de **14 tools**.
+
+Por tanto, la anterior duda documental sobre si realmente se había llegado a 14 tools queda **resuelta por el código**.
+
+### Las 14 tools verificadas
+
+| # | Tool | Qué hace |
+|---:|---|---|
+| 1 | `consultar_ot` | Consulta una OT y sus datos principales. |
+| 2 | `consultar_inventario` | Consulta stock/ubicación de un artículo. |
+| 3 | `listar_transiciones_ot` | Muestra cambios de estado permitidos. |
+| 4 | `cambiar_estado_ot` | Cambia estado de una OT, validando transición. |
+| 5 | `query_maximo` | Consulta genérica de Object Structures vía OSLC. |
+| 6 | `consultar_activo` | Consulta datos de un activo. |
+| 7 | `listar_object_structures` | Descubre Object Structures disponibles. |
+| 8 | `crear_ot` | Crea una OT. |
+| 9 | `ws_editar_ot` | Prepara cambios de OT mediante Working Set/preview. |
+| 10 | `ws_confirmar_cambios` | Confirma un Working Set. |
+| 11 | `ws_cancelar_cambios` | Descarta un Working Set. |
+| 12 | `obtener_workflow_assignments` | Consulta asignaciones de workflow. |
+| 13 | `enviar_workflow_response` | Responde a una asignación de workflow. |
+| 14 | `verificar_conexion` | Verifica el servidor/conexión y presenta las tools. |
+
+### Patrón técnico más interesante
+
+El script no era solo una demo de lectura. Ya exploraba tres tipos de interacción:
 
 ```text
-                  ┌─ Maximo MCP ───── maximo_mcp.py
-Cline / Claude ───┼─ Filesystem MCP ─ archivos locales
-                  └─ GitHub MCP ───── repositorios GitHub
+READ
+consultar_ot / activo / inventario / query_maximo
+
+WRITE
+crear_ot / cambiar_estado_ot
+
+HUMAN-IN-THE-LOOP EXPERIMENTAL
+ws_editar_ot → preview → confirmar o cancelar
 ```
 
-El término **“Tridente MCP”** fue un nombre informal utilizado durante el laboratorio; no es terminología oficial del estándar MCP.
+Este último patrón es especialmente relevante como aprendizaje EAM, aunque no debe asumirse automáticamente como diseño vigente del producto AI-EAM-MAXIMO.
 
 ---
 
-## 🧰 3. Productos y tecnologías utilizadas
+## 🧪 5. Estado de evidencia
 
-| Producto / tecnología | Papel en el laboratorio | Evidencia histórica |
-|---|---|---|
-| **Gemini** | Apoyo inicial de razonamiento/desarrollo y primera exploración cloud | Documentado |
-| **Google Cloud / Vertex AI** | Arquitectura inicialmente considerada y luego abandonada para la PoC local | Documentado |
-| **Claude Desktop** | Aplicación de IA utilizada para la primera ejecución MCP validada | ✅ Prueba documentada |
-| **Visual Studio Code** | IDE principal en la etapa posterior | Documentado |
-| **Cline** | Extensión/agente dentro de VS Code para trabajar con código y servidores MCP | Documentado |
-| **Python** | Runtime del servidor MCP propio | ✅ Utilizado |
-| **FastMCP / SDK MCP Python** | Framework para exponer las tools del servidor | ✅ Utilizado |
-| **requests** | Cliente HTTP previsto para OSLC/REST de Maximo | Implementado en la estructura histórica |
-| **urllib3** | Gestión de advertencias SSL en el código histórico | Implementado en la estructura histórica |
-| **Node.js / npx** | Runtime usado para servidores MCP de comunidad | Documentado |
-| **Filesystem MCP** | Acceso delimitado a archivos locales | Configurado según documentación histórica |
-| **GitHub MCP** | Acceso a repositorios GitHub | Configurado según documentación histórica |
-| **IBM Maximo** | Sistema EAM objetivo de la integración | ⚠️ No hubo conexión viva validada |
+### ✅ VERIFICADO
 
----
+- Existe el servidor histórico `maximo_mcp.py`.
+- Usa FastMCP y `@mcp.tool()`.
+- Contiene exactamente 14 tools.
+- Implementa modo simulación con datos mock.
+- Contiene lógica prevista para OSLC/REST real.
+- La documentación registra ejecución MCP desde Claude Desktop.
+- La documentación registra la evolución a Cline y configuración Maximo + Filesystem + GitHub MCP.
 
-## ⚙️ 4. Configuraciones realizadas
+### ⚠️ DOCUMENTADO, NO REPRODUCIDO HOY
 
-### 4.1 Windows + Python
+- Que la configuración histórica de Cline siga funcionando con las versiones actuales.
+- Que los antiguos servidores Filesystem/GitHub MCP se configuren hoy de la misma forma.
+- El comportamiento exacto de hot reload/refresh con la versión actual de Cline.
 
-Se instaló Python y fue necesario corregir el `PATH` de Windows porque inicialmente `python`/`pip` no eran reconocidos desde terminal.
+### ❌ NO VALIDADO HISTÓRICAMENTE
 
-### 4.2 Claude Desktop
-
-El cliente fue configurado mediante `claude_desktop_config.json` para arrancar el servidor Python local. La instalación utilizada provenía de Windows Store, por lo que la ruta real de configuración resultó distinta de la inicialmente esperada.
-
-Configuración conceptual utilizada:
-
-```json
-{
-  "mcpServers": {
-    "maximo": {
-      "command": "python",
-      "args": ["-u", "<RUTA_LOCAL>/maximo_mcp.py"]
-    }
-  }
-}
-```
-
-> 🔐 Las rutas personales y cualquier credencial real se omiten deliberadamente en este repositorio público.
-
-### 4.3 Cline
-
-La documentación histórica identifica como archivo de configuración de Cline:
-
-```text
-%APPDATA%\Code\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json
-```
-
-Su configuración fue ampliada para registrar varios servidores MCP.
-
-### 4.4 Configuración multi-servidor
-
-La estructura conceptual del “Tridente” fue:
-
-```json
-{
-  "mcpServers": {
-    "maximo": {
-      "command": "<PYTHON>",
-      "args": ["-u", "<RUTA>/maximo_mcp.py"]
-    },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "<DIRECTORIO_AUTORIZADO>"]
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "<SECRET>"
-      }
-    }
-  }
-}
-```
-
-Este ejemplo solo preserva el patrón histórico. **No debe utilizarse como recomendación actual de seguridad o configuración** sin revisarlo contra la versión vigente de MCP y de los productos implicados.
-
----
-
-## 🧠 5. Producto técnico principal: `maximo_mcp.py`
-
-El artefacto central fue un servidor MCP local escrito en Python.
-
-Su idea principal era una **lógica dual**:
-
-```text
-MODO_SIMULACION = True
-        ↓
-retorna datos simulados
-
-MODO_SIMULACION = False
-        ↓
-llamada HTTP / OSLC / REST
-        ↓
-IBM Maximo
-```
-
-Esto permitía estudiar MCP y diseñar tools sin depender de una VPN o instancia Maximo disponible.
-
-La estructura documentada utilizaba `FastMCP`, decoradores `@mcp.tool()` y `mcp.run()` para arrancar el servidor.
-
----
-
-## 🛠️ 6. Tools Maximo documentadas
-
-El laboratorio comenzó con pocas tools y la documentación posterior afirma una expansión hasta **14**. Sin embargo, las fuentes históricas presentan pequeñas inconsistencias en nombres/orden del catálogo. Por eso, hasta auditar el archivo real `maximo_mcp.py`, el número y catálogo final deben considerarse **documentados históricamente, no todavía verificados contra código**.
-
-Entre las capacidades descritas aparecen:
-
-- consultar órdenes de trabajo;
-- consultar inventario;
-- consultar activos;
-- consulta genérica de Object Structures con filtros OSLC;
-- listar Object Structures;
-- crear OT;
-- preparar, confirmar y cancelar cambios mediante un concepto de Working Set;
-- consultar y responder asignaciones de Workflow;
-- verificar la conexión/catálogo de tools.
-
-La documentación también describe una investigación con GitHub MCP sobre otros servidores Maximo MCP y una posterior ampliación del script local. Esa evolución debe auditarse antes de tratarla como código reproducible.
-
----
-
-## 🧪 7. Qué quedó realmente probado
-
-### ✅ COMPROBADO por la documentación histórica
-
-- Python quedó operativo después de corregir el `PATH`.
-- Se creó y ejecutó un servidor MCP local en Python.
-- Claude Desktop descubrió/invocó al menos la tool `verificar_conexion`.
-- Se utilizó el patrón de modo simulación para responder sin Maximo real.
-
-### 🟦 DOCUMENTADO / CONFIGURADO, pendiente de reproducir
-
-- VS Code + Cline como entorno operativo posterior.
-- Configuración conjunta Maximo MCP + Filesystem MCP + GitHub MCP.
-- Expansión del servidor hasta un catálogo histórico de 14 tools.
-- Uso de GitHub MCP para investigar implementaciones externas y evolucionar el script.
-
-### ❌ NO VALIDADO
-
-- Conexión real con una instancia viva de IBM Maximo.
+- Conexión con una instancia viva de IBM Maximo.
 - Escrituras reales en Maximo.
-- Funcionamiento actual del código con las versiones actuales de MCP/Cline/Claude.
-- RAG sobre manuales técnicos.
+- RAG sobre documentación técnica.
 
 ---
 
-## 🧯 8. Problemas encontrados y aprendizajes
+## 💡 6. Qué aprendimos y qué conservamos
 
-**PATH de Python.** La instalación no quedó inicialmente disponible desde terminal; se corrigieron las variables de entorno.
+📘 **MCP separa la conversación de las capacidades externas.** El modelo no necesita contener la lógica Maximo: descubre tools expuestas por un servidor MCP.
 
-**Ruta de configuración de Claude Desktop.** Se editó inicialmente una ubicación incorrecta. La ruta correcta se identificó desde la propia opción de edición de configuración de Claude Desktop.
+📘 **La simulación desacopla el aprendizaje de la infraestructura.** Fue posible estudiar MCP sin VPN ni Maximo disponible.
 
-**Simulación antes que integración real.** El modo simulado permitió separar el aprendizaje del protocolo de la disponibilidad de Maximo.
+📘 **Una tool puede encapsular semántica EAM.** No se expuso únicamente HTTP genérico; aparecieron operaciones como consultar OT, transición de estado, inventario y workflow.
 
-**IDE + agente para iterar.** Cline permitió un ciclo de modificación/prueba más cómodo que trabajar exclusivamente desde una interfaz de chat.
+📘 **La confirmación antes de escribir ya apareció en el laboratorio.** El Working Set fue un primer experimento de preview → confirmar/cancelar.
 
----
-
-## 🔐 9. Nota de seguridad actual
-
-Los documentos históricos contenían ejemplos de PAT, API keys y rutas locales. En este Learning Lab público:
-
-- nunca se versionarán secretos reales;
-- las configuraciones se sanitizarán antes de incorporarlas;
-- los tokens se representarán mediante variables de entorno o placeholders;
-- no se publicarán endpoints internos ni datos corporativos.
+📘 **Múltiples servidores MCP pueden aportar capacidades distintas al mismo entorno.** Maximo, filesystem y GitHub fueron combinados en Cline.
 
 ---
 
-## 🔗 10. Relación con AI-EAM-MAXIMO
-
-Este laboratorio histórico es **antecedente y material de aprendizaje**, no la arquitectura oficial del producto actual.
+## 🔗 7. Relación con AI-EAM-MAXIMO
 
 ```text
-Laboratorio histórico MCP
-          ↓
-comprender + reproducir + auditar
-          ↓
-aprendizajes válidos
-          ↓
+Learning Lab
+   ↓ aprender / reproducir / comparar
 🟨 CANDIDATO A INCORPORAR
-          ↓ aprobación explícita
-AI-EAM-MAXIMO
+   ↓ decisión explícita
+ai-driven-eam-copilot
 ```
 
-No debe copiarse mecánicamente el antiguo `maximo_mcp.py` al producto.
+El código histórico es evidencia y material didáctico. **No se copia automáticamente al producto.**
 
 ---
 
-## 🚀 11. Próximo paso del Learning Lab
+## 🚀 8. Siguiente paso
 
-Antes de iniciar nuevos conceptos MCP, cerrar correctamente esta experiencia previa:
+La reconstrucción histórica queda suficientemente cerrada. No necesitamos seguir documentándola antes de aprender.
 
-1. localizar los artefactos originales disponibles (`maximo_mcp.py` y configuraciones);
-2. sanitizarlos antes de incorporarlos al repositorio público;
-3. auditar qué contiene realmente el código;
-4. reproducir la PoC mínima;
-5. registrar qué sigue funcionando y qué quedó obsoleto;
-6. cerrar el laboratorio histórico y comenzar el estudio MCP actual desde una base limpia.
+**Siguiente experimento:** reproducir una PoC MCP mínima con el stack actual, empezando por una sola tool sencilla. A partir de esa ejecución iremos refrescando conceptos MCP modernos y comparándolos con lo que se hizo históricamente.
 
 ---
 
-## 🔗 12. Fuentes históricas utilizadas
+## 🔗 9. Fuentes
 
-- `MCP_HANDOFF_GEMINI_A_CHATGPT.md` — HandOff generado para transferir el trabajo previo.
-- `Bitácora de Proyecto: IA Generativa + MCP para IBM Maximo` — evolución histórica del laboratorio.
-- `Guía de Configuración Avanzada: Cline + MCP (Maximo, Filesystem y GitHub)` — configuración y operación del entorno posterior.
-
-Estas fuentes se conservan fuera de este documento como evidencia histórica y deberán importarse sanitizadas únicamente si aportan valor al aprendizaje futuro.
+- Código histórico: `jperdomo12/Maximo-IA-Project/maximo_mcp.py`.
+- `Bitácora de Proyecto: IA Generativa + MCP para IBM Maximo`.
+- `Guía de Configuración Avanzada: Cline + MCP (Maximo, Filesystem y GitHub)`.
+- HandOff histórico Gemini → ChatGPT.
