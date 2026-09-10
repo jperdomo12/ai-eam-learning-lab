@@ -8,7 +8,8 @@ Hands-on learning and experimentation lab for AI applied to EAM: MCP, RAG, agent
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Se inicializa el Learning Lab y se define MCP como primer tema activo. |
+| 2026-09-10 | Se cierra y aprueba la baseline v1.0 del laboratorio MCP; RAG queda identificado como siguiente tema a iniciar. |
+| 2026-09-10 | Se inicializa el Learning Lab y se define MCP como primer tema. |
 
 ## 🎯 Para qué existe este repositorio
 
@@ -18,7 +19,7 @@ Aquí podemos:
 
 - estudiar conceptos de IA;
 - construir pruebas pequeñas;
-- reproducir PoCs anteriores;
+- recuperar y consolidar experimentos previos;
 - cometer errores sin convertirlos en decisiones de producto;
 - registrar qué funcionó y qué no;
 - relacionar los aprendizajes con EAM e IBM Maximo;
@@ -32,14 +33,16 @@ El Learning Lab prioriza:
 
 No busca reproducir el proceso formal de un producto. La documentación y el Git workflow deben ser suficientemente rigurosos para no perder conocimiento, pero suficientemente ligeros para no frenar el aprendizaje.
 
-El estándar documental del laboratorio está en [`docs/DOCUMENTATION_STANDARD.md`](docs/DOCUMENTATION_STANDARD.md).
+La documentación se mantiene **viva en GitHub**. Materiales provenientes de chats, Gemini, Claude, Cline u otras etapas son fuentes de reconstrucción; el conocimiento consolidado debe terminar en la documentación vigente del laboratorio.
+
+El estándar documental está en [`docs/DOCUMENTATION_STANDARD.md`](docs/DOCUMENTATION_STANDARD.md).
 
 ## 🧭 Temas
 
 | Tema | Estado | Entrada |
 |---|---|---|
-| MCP — Model Context Protocol | 🧪 Activo | [`mcp/README.md`](mcp/README.md) |
-| RAG | ⏳ Futuro | Se creará cuando comience el estudio real. |
+| MCP — Model Context Protocol | ✅ Cerrado · baseline v1.0 | [`mcp/README.md`](mcp/README.md) |
+| RAG — Retrieval-Augmented Generation | ⏭️ Siguiente | Se creará al iniciar el estudio práctico. |
 | Agentes | ⏳ Futuro | Se creará cuando comience el estudio real. |
 
 > No se crean carpetas ni documentación de un tema hasta que realmente se empiece a trabajar en él.
@@ -70,10 +73,12 @@ Nada aprendido o probado aquí se convierte automáticamente en arquitectura, re
 
 No almacenar secretos, tokens, PATs, credenciales, endpoints privados, datos de clientes ni información confidencial.
 
-Los ejemplos que requieran configuración sensible deben utilizar variables de entorno o archivos de ejemplo sanitizados.
+Los ejemplos que requieran configuración sensible deben utilizar variables de entorno o archivos sanitizados.
 
-## 🚀 Ahora mismo
+## 🚀 Estado actual
 
-El primer frente activo es **MCP**.
+El primer laboratorio, **MCP**, está consolidado y cerrado para el alcance actual. Su documentación principal está en:
 
-La primera etapa consiste en reconstruir y auditar el PoC histórico realizado previamente con Gemini / Claude / Cline, separar lo realmente probado de lo diseñado o asumido y después reiniciar el aprendizaje de MCP de forma limpia y reproducible.
+[`mcp/docs/MCP_LAB_DOCUMENTATION.md`](mcp/docs/MCP_LAB_DOCUMENTATION.md)
+
+El siguiente frente de aprendizaje será **RAG**, cuando se abra explícitamente ese laboratorio.
