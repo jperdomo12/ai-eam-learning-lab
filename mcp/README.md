@@ -1,50 +1,42 @@
 # 🔌 MCP — Model Context Protocol
 
 > 🎯 **Objetivo:** aprender MCP de forma práctica con foco EAM / IBM Maximo y conservar una memoria técnica completa, actualizada y reutilizable.
-> 📍 **Estado:** ✅ CERRADO para el alcance actual de aprendizaje
+>
+> 📍 **Estado:** ✅ **CERRADO para el alcance actual de aprendizaje**
+>
 > 🗓️ **Actualizado:** 2026-09-10
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Se adopta `docs/MCP_LAB_DOCUMENTATION.md` como documentación principal y vigente del laboratorio; se incorporan al Learning Lab el código `src/maximo_mcp.py` y la configuración sanitizada en `config/`. |
-| 2026-09-10 | Consolidación inicial del laboratorio MCP trasladado desde Gemini / Claude / Cline. |
-| 2026-09-10 | Creación del área MCP. |
+| 2026-09-10 | Se aprueba `docs/MCP_LAB_DOCUMENTATION.md` v1.0 como fuente canónica y autosuficiente del laboratorio MCP y se simplifica la navegación eliminando documentación transitoria duplicada. |
+| 2026-09-10 | Se incorporan al Learning Lab el código final, dos artefactos tempranos recuperados y la configuración sanitizada de Claude Desktop. |
+| 2026-09-10 | Consolidación inicial del trabajo previo realizado con Gemini / Claude / Cline. |
 
 ## 📚 Por dónde empezar
 
-Para entender el laboratorio MCP, leer en este orden:
+Para recuperar el tema después de semanas o meses:
 
-1. [`docs/MCP_LAB_DOCUMENTATION.md`](docs/MCP_LAB_DOCUMENTATION.md) — **documentación principal y vigente**. Integra todo el recorrido desde Gemini / Claude / Cline hasta la consolidación actual en ChatGPT ↔ GitHub.
+1. [`docs/MCP_LAB_DOCUMENTATION.md`](docs/MCP_LAB_DOCUMENTATION.md) — **fuente canónica**: concepto, historia completa, instalación, configuración, código, 14 Tools, pruebas, evidencias, problemas, aprendizajes, límites y estado tecnológico actual.
 2. [`docs/MCP_LAB_HANDOFF.md`](docs/MCP_LAB_HANDOFF.md) — estado de cierre y continuidad.
-3. [`src/maximo_mcp.py`](src/maximo_mcp.py) — código de la PoC MCP orientada a IBM Maximo recuperado como artefacto del propio Learning Lab.
-4. [`config/claude_desktop_config.example.json`](config/claude_desktop_config.example.json) — versión sanitizada de la configuración real de Claude Desktop.
+3. [`src/maximo_mcp.py`](src/maximo_mcp.py) — artefacto final de la PoC.
+4. [`src/history/`](src/history/) — dos versiones tempranas preservadas para entender la evolución del experimento.
+5. [`config/claude_desktop_config.example.json`](config/claude_desktop_config.example.json) — copia sanitizada de la configuración histórica real de Claude Desktop.
 
-La carpeta `docs/history/` contiene únicamente material de referencia usado para reconstruir el trabajo anterior. **No es la documentación vigente del laboratorio** y podrá reducirse o eliminarse cuando dejemos de necesitarla como respaldo de transición.
+> **Regla:** los documentos crudos provenientes de Gemini / Claude / Cline fueron fuentes de reconstrucción. El conocimiento vigente que aportaban está consolidado en `MCP_LAB_DOCUMENTATION.md`.
 
-## ✅ Qué se logró
+## ✅ Resultado en una frase
 
-Existe evidencia de una PoC MCP con:
+Se validó una **PoC MCP local** en Python/FastMCP que Claude Desktop pudo descubrir e invocar, se probaron capacidades EAM con datos simulados y el servidor evolucionó hasta **14 Tools**; **no se validó una conexión viva ni operaciones reales contra IBM Maximo**.
 
-- servidor local Python/FastMCP;
-- ejecución de Tools desde Claude Desktop;
-- modo simulación para trabajar sin Maximo real;
-- evolución a VS Code + Cline;
-- configuración de Maximo MCP + Filesystem MCP + GitHub MCP;
-- catálogo de **14 Tools** recuperado en el código;
-- experimentación con lectura, escritura simulada, workflow y preview/confirmación de cambios.
+## 🧠 Cinco ideas para recordar
 
-## ❌ Qué no se validó
-
-No se considera probado:
-
-- conexión con una instancia viva de IBM Maximo;
-- lectura o escritura real contra Maximo;
-- workflow real contra Maximo;
-- seguridad productiva de la PoC;
-- compatibilidad actual exacta de todas las configuraciones históricas;
-- incorporación automática de estos patrones a AI-EAM-MAXIMO.
+- MCP conecta una aplicación de IA con capacidades externas mediante un protocolo estándar.
+- Host, Client y Server son roles distintos; el Host no es simplemente el PC.
+- MCP no convierte por sí solo un LLM en agente autónomo.
+- MCP puede situarse por encima de APIs/OSLC de Maximo; no las reemplaza necesariamente.
+- El patrón `proponer → revisar → confirmar` explorado con Working Set es especialmente relevante para acciones EAM con impacto.
 
 ## 🔗 Relación con AI-EAM-MAXIMO
 
@@ -58,8 +50,8 @@ aprendizaje / evidencia
 AI-EAM-MAXIMO
 ```
 
-Nada del laboratorio se convierte automáticamente en decisión o implementación del producto.
+Nada del laboratorio se convierte automáticamente en requisito, arquitectura o implementación del producto.
 
-## 🚀 Siguiente paso
+## 🚀 Siguiente tema
 
-➡️ Tras cerrar la consolidación documental de MCP, abrir el laboratorio de **RAG (Retrieval-Augmented Generation)** con el mismo modelo: aprender haciendo y mantener la documentación actualizada directamente en GitHub.
+➡️ **RAG (Retrieval-Augmented Generation)** será el siguiente laboratorio independiente cuando se inicie su estudio práctico.
