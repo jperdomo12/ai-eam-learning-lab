@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** ser la fuente canónica, autosuficiente y vigente del Learning Lab para todo lo aprendido, construido, configurado y probado sobre **Model Context Protocol (MCP)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado del documento:** ✅ **APROBADO — baseline consolidada v1.0**
+> 📍 **Estado del documento:** ✅ **APROBADO — baseline consolidada v1.1**
 >
 > 🧪 **Estado del laboratorio:** ✅ **CERRADO para el alcance actual de aprendizaje MCP**
 >
@@ -14,7 +14,28 @@
 
 | Versión | Fecha | Cambio |
 |---|---:|---|
+| **1.1** | 2026-09-10 | Mejora de recuperación rápida: índice descriptivo, aclaración JSON/JSON-RPC vs archivos `.json`, motivación Claude Desktop → Cline, explicación del “Tridente”, simplificación de fuentes, cronología consolidada, ubicación local histórica y referencia explícita al futuro laboratorio RAG. |
 | **1.0** | 2026-09-10 | Consolidación integral y aprobada del laboratorio: se absorbe el conocimiento útil de Gemini / Claude / Cline, bitácoras, HandOffs, guía avanzada, notas locales, `MCP-Claude.zip`, código final e histórico, configuración real de Claude Desktop y revisión posterior en ChatGPT ↔ GitHub. Se corrigen contradicciones y conceptos con evidencia primaria y referencias MCP vigentes. |
+
+---
+
+## 🗺️ Índice de lectura
+
+| Capítulo | Contenido en una frase |
+|---|---|
+| **0. Recuperación rápida** | Qué buscábamos, qué construimos, qué probamos y dónde está cada artefacto. |
+| **1. Contexto, motivación y visión** | Problema EAM que originó la PoC y cómo MCP se complementa con RAG. |
+| **2. Evidencia y fuentes** | Cómo distinguimos lo verificado, probado, documentado, inferido y no validado. |
+| **3. Conceptos MCP** | Host, Client, Server, Tools, Resources, Prompts, transporte y flujo de mensajes. |
+| **4. Evolución del laboratorio** | Recorrido Gemini → Claude Desktop → Cline → Tridente → ChatGPT ↔ GitHub. |
+| **5. Cronología consolidada** | Hitos y fechas que sirven para recordar la secuencia del trabajo. |
+| **6–8. Entorno, instalación y configuración** | Software, dependencias, rutas y configuración de Claude/Cline. |
+| **9–16. PoC Maximo MCP** | Código, simulación, pruebas, 14 Tools y Working Set / confirmación. |
+| **17–23. Aprendizajes y límites** | Multi-MCP, problemas encontrados, seguridad y aspectos no productivos. |
+| **24–26. Continuidad técnica** | Ideas no implementadas, reproducción futura y relación con RAG. |
+| **27–31. Cierre y mantenimiento** | Relación con AI-EAM-MAXIMO, ideas clave, fuentes y reglas futuras. |
+
+> **Lectura sugerida:** para refrescar MCP en pocos minutos, leer primero el capítulo 0 y después [`MCP_LAB_FAST_READING.md`](MCP_LAB_FAST_READING.md).
 
 ---
 
@@ -140,7 +161,7 @@ Ejemplo conceptual:
 
 > Una OT reporta alta temperatura en una bomba. El asistente consulta en Maximo si el problema ocurrió antes, recupera del manual los pasos de calibración y, si una regla lo justifica, **propone** una acción sobre la OT para confirmación humana.
 
-En este laboratorio solo se trabajó la parte **MCP**. RAG quedó como línea posterior e independiente de aprendizaje.
+En este laboratorio solo se trabajó la parte **MCP**. RAG quedó como línea posterior e independiente de aprendizaje. Cuando se inicie ese frente, su documentación viva y sus artefactos se mantendrán bajo la carpeta raíz `rag/` de este mismo repositorio. Hasta entonces no se crea esa carpeta, para evitar documentación prematura.
 
 ## 1.3 Contexto profesional
 
@@ -176,31 +197,20 @@ Cuando existen discrepancias se aplica este orden:
 | ❌ **NO VALIDADO** | No existe prueba suficiente. |
 | 🟨 **CANDIDATO AI-EAM-MAXIMO** | Aprendizaje potencialmente reutilizable en el producto; requiere decisión formal allí. |
 
-## 2.4 Fuentes utilizadas para consolidar
+## 2.4 Fuentes y ubicación de la evidencia
 
-### Artefactos primarios recuperados
+La consolidación utilizó **artefactos primarios** y **documentación histórica de transición**. Para la lectura normal no es útil mantener aquí el inventario completo de documentos antiguos; lo importante es saber dónde está la evidencia vigente:
 
-- `MCP-Claude.zip`.
-- `maximo_mcp.py` final, además aportado nuevamente de forma independiente.
-- `OLD/prueba-maximo_mcp - probar conexion.py`.
-- `OLD/maximo_mcp-VERSION GEMINI.py`.
-- `notas_sesion.md`.
-- `IA-Claude_Notas Varias.txt`.
-- copia real de `claude_desktop_config.json`.
+| Evidencia | Ubicación vigente |
+|---|---|
+| Código final de la PoC | [`../src/maximo_mcp.py`](../src/maximo_mcp.py) |
+| Código temprano recuperado | [`../src/history/`](../src/history/) |
+| Configuración Claude sanitizada | [`../config/claude_desktop_config.example.json`](../config/claude_desktop_config.example.json) |
+| Documentación completa | `MCP_LAB_DOCUMENTATION.md` — este documento |
+| Resumen rápido | [`MCP_LAB_FAST_READING.md`](MCP_LAB_FAST_READING.md) |
+| Estado / continuidad | [`MCP_LAB_HANDOFF.md`](MCP_LAB_HANDOFF.md) |
 
-### Documentación histórica
-
-- `MCP_HANDOFF_GEMINI_A_CHATGPT.md`.
-- “Bitácora de Proyecto: IA Generativa + MCP para IBM Maximo”.
-- “Guía de Configuración Avanzada: Cline + MCP (Maximo, Filesystem y GitHub)”.
-- documento de consolidación/memoria técnica generado previamente en Gemini.
-- presentación conceptual “Gestión de Mantenimiento con Inteligencia Artificial Generativa”.
-
-### Consolidación actual
-
-- revisión de los artefactos y fuentes en ChatGPT;
-- incorporación de código y configuración sanitizada a `ai-eam-learning-lab`;
-- contraste con documentación oficial vigente de MCP para corregir el modelo conceptual.
+Las bitácoras, HandOffs, guías, notas y materiales provenientes de Gemini / Claude / Cline se usaron para reconstruir y contrastar el trabajo. Son **fuentes de referencia de transición**, no documentación vigente. Su conocimiento útil ya está absorbido aquí; solo es necesario volver a ellas ante una duda histórica o auditoría puntual.
 
 ---
 
@@ -282,14 +292,37 @@ Para un servicio remoto, MCP contempla transporte HTTP. La PoC no necesitó desp
 ```text
 1. Usuario escribe una petición en lenguaje natural.
 2. La aplicación de IA interpreta la intención.
-3. El Host/Client descubre las Tools disponibles.
+3. El Host/Client conoce o descubre las Tools disponibles.
 4. La IA decide que necesita una Tool.
-5. El Client invoca la Tool del MCP Server.
+5. El Client envía una invocación MCP al Server.
 6. maximo_mcp.py ejecuta la función Python.
 7. La función consulta mocks o intenta una llamada HTTP/OSLC.
-8. El resultado vuelve al Client.
-9. La IA presenta la respuesta al usuario.
+8. El Server devuelve el resultado al Client.
+9. La IA integra ese resultado y presenta la respuesta al usuario.
 ```
+
+### ¿El intercambio entre componentes se realiza con archivos `.json`?
+
+**No.** `claude_desktop_config.json` es un **archivo de configuración**: Claude Desktop lo lee para saber qué MCP Servers debe arrancar y con qué comandos. No se crea un archivo `.json` por cada solicitud o respuesta.
+
+En nuestra PoC local se utilizó transporte **stdio**. Durante la ejecución, Client y Server intercambian **mensajes del protocolo serializados como JSON/JSON-RPC a través de `stdin` y `stdout`** del proceso:
+
+```text
+claude_desktop_config.json
+        ↓ configura el arranque
+Claude / MCP Client
+        ↓ mensajes JSON-RPC por stdin
+maximo_mcp.py
+        ↓ ejecuta Tool
+        ↑ respuesta JSON-RPC por stdout
+Claude / MCP Client
+```
+
+Conviene recordar la diferencia:
+
+- **archivo `.json`** → configuración persistida en disco;
+- **mensaje JSON/JSON-RPC** → información que viaja durante la sesión MCP;
+- **stdio** → canal local de transporte utilizado en esta PoC.
 
 ## 3.6 MCP no convierte por sí solo al LLM en agente
 
@@ -417,9 +450,11 @@ Por ello, **“4 Tools” se conserva como hito narrativo documentado**, no como
 
 ## 4.6 Fase 5 — VS Code + Cline
 
-Se instaló Cline en VS Code para acortar el ciclo de desarrollo.
+Se instaló Cline en VS Code principalmente para **reducir la fricción del ciclo de desarrollo y prueba**.
 
-La ventaja práctica observada fue:
+Con Claude Desktop, cuando se modificaba la configuración MCP o era necesario recargar el servidor, el procedimiento documentado era más pesado: cerrar Claude Desktop completamente —incluyendo salir desde la bandeja del sistema—, volver a abrirlo, entrar en `Settings → Developer`, comprobar/activar el servidor y ejecutar otra prueba. Ese ciclo resultaba incómodo mientras se iteraba repetidamente sobre código y configuración.
+
+Cline permitió concentrar edición, revisión y prueba dentro de VS Code:
 
 ```text
 pedir cambio
@@ -428,14 +463,14 @@ Cline abre/modifica código
    ↓
 muestra diff
    ↓
-usuario aprueba
+usuario revisa/aprueba
    ↓
-ejecución / prueba
+refresco/reinicio del MCP Server
    ↓
-refresco del servidor
+prueba desde el mismo entorno
 ```
 
-Esto reducía el copiar/pegar manual de código desde un chat.
+La mejora no fue solo evitar copiar/pegar código: **redujo el coste de iterar sobre el servidor MCP durante el aprendizaje**.
 
 ## 4.7 Fase 6 — “Tridente MCP”
 
@@ -445,7 +480,9 @@ Se configuraron tres servidores:
 Maximo MCP + Filesystem MCP + GitHub MCP
 ```
 
-El nombre **“Tridente MCP”** es propio del laboratorio, no del estándar MCP.
+El nombre informal **“Tridente MCP”** se utilizó precisamente porque un **tridente tiene tres puntas** y nuestro entorno combinaba tres MCP Servers especializados.
+
+> El nombre **“Tridente MCP”** es propio del laboratorio; no pertenece al estándar MCP ni identifica un patrón oficial.
 
 ## 4.8 Fase 7 — investigación con GitHub MCP y expansión
 
@@ -478,48 +515,19 @@ La documentación cruda de Gemini pasó a ser **fuente de reconstrucción**, y e
 
 ---
 
-# 5. Fechas y contradicciones históricas resueltas
+# 5. Cronología consolidada
 
-Las fuentes previas contienen fechas incompatibles.
+Para recuperar el laboratorio meses después basta con conservar la secuencia consolidada. Las discrepancias encontradas durante la migración ya fueron analizadas al construir esta baseline y no forman parte de la lectura normal.
 
-## 5.1 Fecha de la primera fase Claude
-
-Una tabla de versiones de Gemini indica:
-
-```text
-20-04-2025
-```
-
-Sin embargo, existen evidencias internas que sitúan la ejecución práctica en abril de 2026:
-
-- `notas_sesion.md` está fechado **20-04-2026**;
-- `IA-Claude_Notas Varias.txt` contiene notas del **20-04-2026**;
-- la nota de Cline continúa el **21-04-2026**;
-- los scripts tempranos recuperados corresponden a esa secuencia de trabajo.
-
-### Decisión documental
-
-💡 **INFERIDO CON ALTA CONFIANZA:** `20-04-2025` es una fecha histórica inconsistente/posible error de edición. Para la cronología operativa del laboratorio se adopta **abril de 2026**.
-
-## 5.2 Fecha de adopción de Cline
-
-La tabla de versiones de una bitácora indica `01-03-2026`, mientras la nota local más específica documenta instalación/configuración de Cline el `21-04-2026`.
-
-### Decisión documental
-
-Se adopta **21-04-2026** como fecha mejor sustentada para la configuración práctica de Cline. El `01-03-2026` queda registrado solo como dato histórico no corroborado.
-
-## 5.3 Cronología consolidada
-
-| Fecha | Hito | Evidencia |
+| Fecha | Hito | Evidencia principal |
 |---|---|---|
 | Abril 2026 | prueba mínima MCP local | script de conectividad + notas |
-| 20-04-2026 | sesión funcional Claude + MCP Maximo en simulación | `notas_sesion.md` |
-| 21-04-2026 | configuración de Cline y réplica de servidores | `IA-Claude_Notas Varias.txt` |
-| 09-09-2026 | actualización documental “Tridente” / 14 Tools | bitácora histórica |
-| 10-09-2026 | migración y consolidación en `ai-eam-learning-lab` | GitHub + ChatGPT |
+| 20-04-2026 | sesión funcional Claude + MCP Maximo en simulación | notas de sesión |
+| 21-04-2026 | configuración de Cline y réplica de servidores MCP | notas contemporáneas |
+| 09-09-2026 | consolidación del “Tridente” y expansión documentada a 14 Tools | bitácora + código final |
+| 10-09-2026 | migración, auditoría y consolidación en `ai-eam-learning-lab` | GitHub + ChatGPT |
 
-> La fecha exacta de cada edición del código no debe deducirse únicamente del timestamp del ZIP, porque la cronología documental y el contenido versionado no son completamente consistentes.
+> Si alguna vez fuese necesario auditar una discrepancia histórica concreta, se volverá a las fuentes de transición originales.
 
 ---
 
@@ -569,6 +577,22 @@ Esto identifica el script como código de la línea histórica **MCP Python SDK 
 ## 6.3 Node.js / npx
 
 Se incorporó para ejecutar servidores distribuidos como paquetes Node, concretamente Filesystem MCP y el GitHub MCP usado en aquel momento.
+
+## 6.4 Ubicación local histórica
+
+La carpeta local utilizada para el laboratorio fue:
+
+```text
+C:\Users\jpperdomo\JP\Profesional\IA\MCP-Claude
+```
+
+El script principal se encontraba en:
+
+```text
+C:\Users\jpperdomo\JP\Profesional\IA\MCP-Claude\maximo_mcp.py
+```
+
+Esta ubicación se conserva como referencia de reconstrucción del entorno histórico; no es una ruta portable ni un requisito para futuras pruebas.
 
 ---
 
@@ -1801,7 +1825,7 @@ respuesta fundamentada
 si hay acción → confirmación humana
 ```
 
-El siguiente laboratorio podrá estudiar RAG desde cero sin reabrir decisiones MCP ya cerradas.
+El siguiente laboratorio podrá estudiar RAG desde cero sin reabrir decisiones MCP ya cerradas. Cuando comience, su documentación y artefactos se crearán bajo la carpeta raíz `rag/` de `ai-eam-learning-lab`. Allí se documentarán y probarán preguntas como **“¿Cómo calibro este equipo según su manual?”** desde la perspectiva de recuperación de conocimiento, mientras MCP seguirá cubriendo acceso a capacidades, sistemas y acciones.
 
 ---
 
@@ -1911,6 +1935,7 @@ Estas fuentes sirven como respaldo histórico. El conocimiento vigente que aport
 - MCP Python SDK: `https://py.sdk.modelcontextprotocol.io/`
 - MCP Python SDK — migración v1 → v2: `https://py.sdk.modelcontextprotocol.io/migration/`
 - MCP Python SDK — Host real / stdio: `https://py.sdk.modelcontextprotocol.io/get-started/real-host/`
+- MCP Python SDK — transporte stdio / JSON-RPC: `https://py.sdk.modelcontextprotocol.io/client/transports/`
 - GitHub MCP Server oficial: `https://github.com/github/github-mcp-server`
 
 > Estas referencias se usan para actualizar conceptos y distinguir el estado tecnológico actual del entorno histórico de la PoC.
