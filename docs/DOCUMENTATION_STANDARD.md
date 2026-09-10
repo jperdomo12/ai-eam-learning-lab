@@ -6,10 +6,17 @@
 | Campo | Valor |
 |---|---|
 | **Ruta** | `docs/DOCUMENTATION_STANDARD.md` |
-| **Versión** | 0.1 |
+| **Versión** | 0.2 |
 | **Estado** | Borrador activo de laboratorio |
 | **Fecha** | 10/09/2026 |
 | **Ámbito** | Notas de estudio, experimentos, guías prácticas, handoffs e histórico del Learning Lab |
+
+## 🕘 Historial
+
+| Versión | Fecha | Cambio |
+|---|---:|---|
+| 0.2 | 10/09/2026 | Se incorpora un bloque `Historial` obligatorio y ligero en cada documento del Learning Lab. |
+| 0.1 | 10/09/2026 | Primera versión del estándar, adaptada a un repositorio ágil de estudio y experimentación. |
 
 ---
 
@@ -32,25 +39,35 @@ El objetivo no es reproducir el nivel formal de documentación de un producto. E
 ## ⚡ 2. Filosofía del Learning Lab
 
 ### 2.1 Aprender haciendo
-
 Siempre que sea razonable, un concepto debe terminar en una prueba, ejemplo, ejercicio o experimento reproducible.
 
 ### 2.2 Claridad antes que formalismo
-
 No se añade una sección porque una plantilla diga que debe existir. Si no aporta valor al aprendizaje, se omite.
 
-### 2.3 Git conserva la historia
+### 2.3 Historial mínimo, siempre
+Todo documento Markdown mantenido por el laboratorio debe incluir un bloque breve `## 🕘 Historial`.
 
-No es obligatorio mantener tablas extensas de versiones en cada nota de estudio. Git conserva la evolución del contenido.
+La intención no es duplicar Git ni mantener control de versiones pesado. El bloque sirve para que, al abrir un documento, se entienda inmediatamente **cuándo nació y qué cambios relevantes tuvo**.
 
-Solo los documentos estructurales del propio laboratorio —como este estándar o un HandOff importante— necesitan versión explícita cuando aporte valor.
+Formato recomendado:
+
+```markdown
+## 🕘 Historial
+
+| Fecha | Cambio |
+|---|---|
+| AAAA-MM-DD | Creación inicial. |
+| AAAA-MM-DD | Cambio relevante posterior. |
+```
+
+Si el documento usa versión explícita, puede añadirse la columna `Versión`.
+
+No registrar correcciones ortográficas, ajustes cosméticos o cambios sin valor para el aprendizaje.
 
 ### 2.4 Escribir para el “yo de dentro de seis meses”
-
 Una buena nota debe poder entenderse sin reconstruir el chat original.
 
 ### 2.5 Separar conocimiento de evidencia
-
 No confundir:
 
 - 📘 **ENTENDIDO** — concepto estudiado y explicado;
@@ -83,14 +100,17 @@ El laboratorio utiliza pocos tipos documentales y solo se crean cuando son neces
 
 ## 🧠 4. Formato fresco para una nota de estudio
 
-Una nota de estudio puede utilizar esta estructura como guía flexible:
-
 ```markdown
 # 🧠 Tema
 
 > 🎯 **Quiero entender:** ...
 > 📍 **Estado:** estudiando / entendido / pendiente de práctica
 > 🗓️ **Actualizado:** AAAA-MM-DD
+
+## 🕘 Historial
+| Fecha | Cambio |
+|---|---|
+| AAAA-MM-DD | Creación inicial. |
 
 ## 💡 En mis palabras
 Explicación breve del concepto como lo entiendo ahora.
@@ -99,7 +119,6 @@ Explicación breve del concepto como lo entiendo ahora.
 Diagrama, analogía o estructura que ayude a recordarlo.
 
 ## 🔑 Ideas que quiero recordar
-- ...
 - ...
 
 ## 🧪 Lo llevamos a la práctica
@@ -121,13 +140,11 @@ Una acción concreta para continuar.
 Fuentes realmente utilizadas.
 ```
 
-No es obligatorio usar todas las secciones.
+No es obligatorio usar todas las secciones, salvo el bloque `Historial`.
 
 ---
 
 ## 🧪 5. Formato para experimentos
-
-Un experimento debe privilegiar reproducibilidad y aprendizaje:
 
 ```markdown
 # 🧪 LAB — Nombre del experimento
@@ -135,6 +152,11 @@ Un experimento debe privilegiar reproducibilidad y aprendizaje:
 > 🎯 **Objetivo:** ...
 > 📍 **Resultado:** pendiente / funciona / funciona parcialmente / no funciona
 > 🗓️ **Fecha:** AAAA-MM-DD
+
+## 🕘 Historial
+| Fecha | Cambio |
+|---|---|
+| AAAA-MM-DD | Creación inicial. |
 
 ## Hipótesis
 ¿Qué esperamos que ocurra?
@@ -169,15 +191,7 @@ Un experimento fallido sigue siendo un resultado válido si deja aprendizaje út
 
 Cada área activa —por ejemplo `mcp/`— debe tener un `README.md` corto que funcione como **panel de estudio**.
 
-Debe permitir ver rápidamente:
-
-1. qué estamos estudiando;
-2. qué nivel hemos alcanzado;
-3. conceptos principales;
-4. experimentos realizados;
-5. qué está pendiente;
-6. siguiente paso;
-7. enlaces a los documentos relevantes.
+Debe permitir ver rápidamente qué estamos estudiando, qué nivel hemos alcanzado, qué probamos, qué está pendiente y cuál es el siguiente paso.
 
 El README no debe convertirse en un tratado. Su función principal es orientar.
 
@@ -187,10 +201,13 @@ El README no debe convertirse en un tratado. Su función principal es orientar.
 
 Un HandOff se crea o actualiza cuando sea útil cambiar de chat, cerrar una etapa o dejar una pausa prolongada.
 
-Debe contener solo:
+Estructura mínima:
 
 ```markdown
 # 🧭 <TEMA>_HANDOFF
+
+## 🕘 Historial
+...
 
 ## Dónde estamos
 ...
@@ -229,16 +246,7 @@ El histórico se conserva para aprender de lo realizado, no para asumir que sigu
 
 ## 🔐 9. Seguridad en un repositorio público
 
-Este repositorio es público. Nunca almacenar:
-
-- contraseñas;
-- API keys;
-- tokens o PATs;
-- secretos MCP;
-- credenciales Maximo;
-- URLs internas sensibles;
-- datos reales de clientes;
-- información personal o confidencial.
+Este repositorio es público. Nunca almacenar contraseñas, API keys, tokens o PATs, secretos MCP, credenciales Maximo, URLs internas sensibles, datos reales de clientes o información personal/confidencial.
 
 Las configuraciones reutilizables deben usar ejemplos seguros, variables de entorno o archivos `*.example.*`.
 
@@ -265,15 +273,14 @@ El repositorio oficial `ai-driven-eam-copilot` sigue siendo la fuente de verdad 
 
 ## ✅ 11. Quality Check de 30 segundos
 
-Antes de dar por útil una nota o experimento, comprobar solamente:
+Antes de dar por útil una nota o experimento, comprobar:
 
 - ¿entiendo qué aprendimos?;
-- ¿queda claro qué fue probado y qué es solo explicación o inferencia?;
+- ¿queda claro qué fue probado y qué es explicación o inferencia?;
 - ¿podría retomarlo dentro de seis meses?;
+- ¿el bloque `Historial` refleja los cambios relevantes?;
 - ¿hay información sensible?;
 - ¿existe un siguiente paso si el tema continúa?
-
-Si las respuestas son satisfactorias, la documentación es suficiente.
 
 ---
 
