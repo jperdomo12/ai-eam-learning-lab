@@ -1,66 +1,61 @@
 # 🧭 MCP_LAB_HANDOFF
 
-> 📍 **Estado:** inicialización del laboratorio MCP
+> 📍 **Estado:** ✅ CERRADO — laboratorio MCP completado para el alcance de aprendizaje actual
 > 🗓️ **Actualizado:** 2026-09-10
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-10 | Cierre del laboratorio MCP tras recuperar y auditar la PoC histórica de Maximo. |
 | 2026-09-10 | Creación del HandOff inicial del laboratorio MCP. |
 
-## Dónde estamos
+## Cierre
 
-Se creó el repositorio público `jperdomo12/ai-eam-learning-lab` como espacio general de aprendizaje práctico de IA aplicada a EAM.
+El laboratorio MCP se considera **cerrado para el alcance actual**. No se repetirá una PoC mínima adicional porque el laboratorio histórico ya aporta evidencia suficiente de ejecución práctica MCP con un servidor Python y tools orientadas a IBM Maximo.
 
-MCP es el primer tema activo.
+## Qué quedó comprendido
 
-El laboratorio adopta una forma de trabajo ágil: aprender, experimentar, registrar solo lo importante y mantener una separación explícita respecto al producto AI-EAM-MAXIMO.
+- MCP no convierte por sí mismo a un LLM en un agente autónomo.
+- El MCP Host es la aplicación de IA que administra conexiones MCP, no el PC físico.
+- Un MCP Server expone capacidades como Tools, Resources y Prompts.
+- MCP puede actuar como capa estandarizada sobre APIs y servicios existentes.
+- En Maximo, MCP puede encapsular operaciones que internamente utilicen OSLC/REST u otros servicios.
+- Múltiples servidores MCP pueden aportar capacidades diferentes a un mismo entorno de IA.
 
-## Qué ya entendimos
+## Qué quedó probado / recuperado
 
-Conceptualmente se ha aclarado que:
+Se localizó y auditó el artefacto histórico real `jperdomo12/Maximo-IA-Project/maximo_mcp.py`.
 
-- MCP no convierte por sí mismo a un LLM en un agente autónomo;
-- un MCP Host es la aplicación de IA que administra las conexiones MCP, no el PC físico;
-- un MCP Server expone capacidades que pueden incluir Tools, Resources y Prompts;
-- MCP puede actuar como una capa estandarizada sobre APIs y servicios existentes;
-- una integración MCP con Maximo no implica necesariamente sustituir OSLC, REST u otras APIs subyacentes.
+La evidencia recuperada confirma:
 
-## Qué ya probamos históricamente
+- servidor MCP local implementado en Python/FastMCP;
+- ejecución histórica desde Claude Desktop;
+- modo simulación para trabajar sin Maximo real;
+- evolución posterior a VS Code + Cline;
+- configuración histórica de Maximo MCP + Filesystem MCP + GitHub MCP;
+- catálogo real de **14 tools** en `maximo_mcp.py`;
+- experimentación con lectura, escritura, workflow y preview/confirmación de cambios.
 
-La evidencia histórica disponible indica que se llegó a ejecutar al menos un flujo:
+El detalle se conserva en `mcp/docs/history/MCP_HISTORICAL_LAB.md`.
 
-```text
-AI / MCP Client
-      ↓
-MCP Server local en Python
-      ↓
-tool verificar_conexion
-```
+## Límites del resultado
 
-También existen documentos que describen una ampliación posterior del PoC, pero todavía deben ser auditados contra código y configuraciones reales.
+No quedó validado:
 
-## Qué NO está demostrado todavía
+- conexión con una instancia viva de IBM Maximo;
+- lectura/escritura real contra Maximo;
+- que las configuraciones históricas de Claude/Cline/MCP funcionen hoy sin cambios;
+- que los patrones históricos deban trasladarse automáticamente al producto AI-EAM-MAXIMO.
 
-No se considera probado en este laboratorio:
+Estos puntos no impiden cerrar el laboratorio de aprendizaje MCP actual.
 
-- conexión real con IBM Maximo;
-- operaciones reales de lectura o escritura en Maximo;
-- vigencia de todas las tools históricas;
-- validez técnica actual de toda la documentación histórica;
-- RAG;
-- ninguna incorporación automática al producto AI-EAM-MAXIMO.
+## Relación con AI-EAM-MAXIMO
 
-## Archivos clave
+Los resultados del Learning Lab son antecedentes y conocimiento reutilizable. Cualquier elemento que se quiera llevar a `jperdomo12/ai-driven-eam-copilot` deberá evaluarse allí como **🟨 CANDIDATO A INCORPORAR** y seguir la gobernanza del producto.
 
-- `README.md` — entrada general al Learning Lab.
-- `docs/DOCUMENTATION_STANDARD.md` — estándar documental ligero.
-- `mcp/README.md` — panel principal del estudio MCP.
-- `mcp/docs/MCP_LAB_HANDOFF.md` — continuidad de esta línea de aprendizaje.
+## Próximo laboratorio
 
-## Próximo paso
+➡️ **RAG (Retrieval-Augmented Generation)**.
 
-Importar y auditar el material histórico del PoC Gemini / Claude.
-
-La prioridad será recuperar evidencia real —documentos, código y configuración sanitizada— y clasificar cada elemento como histórico, probado, diseñado, inferido o pendiente antes de iniciar nuevos experimentos.
+Se iniciará como una nueva línea de aprendizaje dentro de `ai-eam-learning-lab`, manteniendo la misma filosofía: aprender haciendo, avanzar rápido y documentar únicamente lo necesario para recordar y reutilizar el aprendizaje.
