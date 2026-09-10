@@ -1,61 +1,104 @@
 # 🧭 MCP_LAB_HANDOFF
 
-> 📍 **Estado:** ✅ CERRADO — laboratorio MCP completado para el alcance de aprendizaje actual
+> 📍 **Estado:** ✅ CERRADO — laboratorio MCP completado y documentado para el alcance actual
 > 🗓️ **Actualizado:** 2026-09-10
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-10 | Cierre documental reforzado: `docs/history/MCP_HISTORICAL_LAB.md` pasa a ser el registro canónico y autosuficiente del laboratorio. |
 | 2026-09-10 | Cierre del laboratorio MCP tras recuperar y auditar la PoC histórica de Maximo. |
-| 2026-09-10 | Creación del HandOff inicial del laboratorio MCP. |
+| 2026-09-10 | Creación del HandOff inicial. |
 
-## Cierre
+## Dónde estamos
 
-El laboratorio MCP se considera **cerrado para el alcance actual**. No se repetirá una PoC mínima adicional porque el laboratorio histórico ya aporta evidencia suficiente de ejecución práctica MCP con un servidor Python y tools orientadas a IBM Maximo.
+El laboratorio MCP está **cerrado para el alcance actual**.
+
+No se repetirá una PoC mínima adicional porque la evidencia histórica ya demuestra una ejecución MCP real en modo simulación y se ha recuperado el artefacto técnico principal.
+
+## Documento canónico
+
+La fuente principal para reconstruir este laboratorio dentro de semanas o meses es:
+
+```text
+mcp/docs/history/MCP_HISTORICAL_LAB.md
+```
+
+Ese documento contiene:
+
+- objetivo original;
+- evolución Gemini → Claude Desktop → VS Code/Cline;
+- instalaciones y dependencias;
+- configuración de Claude Desktop;
+- configuración de Cline;
+- creación de `maximo_mcp.py`;
+- modo simulación / modo real previsto;
+- pruebas realizadas;
+- expansión a 14 tools;
+- Working Set;
+- Filesystem MCP y GitHub MCP;
+- Tridente MCP;
+- incidencias y soluciones;
+- clasificación de evidencia;
+- limitaciones técnicas;
+- cómo reproducir conceptualmente el laboratorio;
+- ventajas obtenidas al trasladar la memoria del trabajo al Learning Lab.
+
+## Evidencia principal
+
+El artefacto real conservado es:
+
+```text
+jperdomo12/Maximo-IA-Project/maximo_mcp.py
+```
+
+La auditoría del código confirma:
+
+- servidor FastMCP;
+- `MODO_SIMULACION = True`;
+- datasets mock;
+- lógica OSLC/REST preparada;
+- exactamente 14 tools;
+- lectura, escritura, workflow y patrón de confirmación mediante Working Set.
+
+También permitió corregir inconsistencias presentes en documentación histórica sobre cuáles eran realmente esas 14 tools.
 
 ## Qué quedó comprendido
 
-- MCP no convierte por sí mismo a un LLM en un agente autónomo.
-- El MCP Host es la aplicación de IA que administra conexiones MCP, no el PC físico.
-- Un MCP Server expone capacidades como Tools, Resources y Prompts.
-- MCP puede actuar como capa estandarizada sobre APIs y servicios existentes.
-- En Maximo, MCP puede encapsular operaciones que internamente utilicen OSLC/REST u otros servicios.
-- Múltiples servidores MCP pueden aportar capacidades diferentes a un mismo entorno de IA.
+- MCP no convierte por sí mismo a un LLM en agente autónomo.
+- El Host es la aplicación de IA, no el PC físico.
+- Un MCP Server puede exponer Tools, Resources y Prompts.
+- MCP puede situarse por encima de APIs existentes.
+- En Maximo, OSLC/REST puede seguir siendo el mecanismo real bajo una tool MCP.
+- Varios MCP Servers pueden coexistir en un mismo entorno de IA.
 
 ## Qué quedó probado / recuperado
 
-Se localizó y auditó el artefacto histórico real `jperdomo12/Maximo-IA-Project/maximo_mcp.py`.
-
-La evidencia recuperada confirma:
-
-- servidor MCP local implementado en Python/FastMCP;
+- servidor MCP local en Python/FastMCP;
 - ejecución histórica desde Claude Desktop;
-- modo simulación para trabajar sin Maximo real;
+- modo simulación;
 - evolución posterior a VS Code + Cline;
-- configuración histórica de Maximo MCP + Filesystem MCP + GitHub MCP;
-- catálogo real de **14 tools** en `maximo_mcp.py`;
-- experimentación con lectura, escritura, workflow y preview/confirmación de cambios.
+- Maximo MCP + Filesystem MCP + GitHub MCP;
+- 14 tools verificadas en código;
+- pruebas EAM simuladas;
+- investigación vía GitHub MCP;
+- patrón experimental preview → confirmar/cancelar.
 
-El detalle se conserva en `mcp/docs/history/MCP_HISTORICAL_LAB.md`.
-
-## Límites del resultado
-
-No quedó validado:
+## Qué NO quedó validado
 
 - conexión con una instancia viva de IBM Maximo;
 - lectura/escritura real contra Maximo;
-- que las configuraciones históricas de Claude/Cline/MCP funcionen hoy sin cambios;
-- que los patrones históricos deban trasladarse automáticamente al producto AI-EAM-MAXIMO.
-
-Estos puntos no impiden cerrar el laboratorio de aprendizaje MCP actual.
+- workflow real;
+- seguridad productiva;
+- compatibilidad actual exacta de las configuraciones históricas de Claude/Cline.
 
 ## Relación con AI-EAM-MAXIMO
 
-Los resultados del Learning Lab son antecedentes y conocimiento reutilizable. Cualquier elemento que se quiera llevar a `jperdomo12/ai-driven-eam-copilot` deberá evaluarse allí como **🟨 CANDIDATO A INCORPORAR** y seguir la gobernanza del producto.
+Los resultados son aprendizaje y evidencia. Cualquier elemento que se quiera trasladar al producto `jperdomo12/ai-driven-eam-copilot` debe tratarse allí como **🟨 CANDIDATO A INCORPORAR** y seguir su gobernanza formal.
 
 ## Próximo laboratorio
 
 ➡️ **RAG (Retrieval-Augmented Generation)**.
 
-Se iniciará como una nueva línea de aprendizaje dentro de `ai-eam-learning-lab`, manteniendo la misma filosofía: aprender haciendo, avanzar rápido y documentar únicamente lo necesario para recordar y reutilizar el aprendizaje.
+Se iniciará como una nueva línea dentro de `ai-eam-learning-lab`, manteniendo la filosofía de aprender haciendo, trabajar con agilidad y dejar una memoria técnica suficientemente buena para retomar el trabajo meses después.
