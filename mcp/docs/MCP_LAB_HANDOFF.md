@@ -1,31 +1,38 @@
 # 🧭 MCP_LAB_HANDOFF
 
-> 📍 **Estado:** ✅ **CERRADO — baseline MCP v1.0 consolidada y aprobada**
->
+> 📍 **Estado:** ✅ CERRADO — laboratorio MCP completado para el alcance actual y consolidado en el Learning Lab
 > 🗓️ **Actualizado:** 2026-09-10
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Cierre definitivo de la consolidación: `MCP_LAB_DOCUMENTATION.md` v1.0 queda como fuente canónica y se preservan los artefactos técnicos necesarios dentro del Learning Lab. |
-| 2026-09-10 | Consolidación del trabajo previo Gemini / Claude Desktop / VS Code + Cline bajo el modelo ChatGPT ↔ GitHub. |
+| 2026-09-10 | Se cierra la consolidación documental con `MCP_LAB_DOCUMENTATION.md` v1.1 y `MCP_LAB_FAST_READING.md` como entrada rápida. |
+| 2026-09-10 | Se adopta `MCP_LAB_DOCUMENTATION.md` como documento principal; el código `maximo_mcp.py` y la configuración sanitizada de Claude quedan preservados dentro del propio Learning Lab. |
+| 2026-09-10 | Consolidación del trabajo previo realizado con Gemini / Claude Desktop / VS Code + Cline. |
+| 2026-09-10 | Creación del HandOff inicial. |
 
 ## Dónde estamos
 
-El laboratorio MCP está cerrado para su alcance actual de aprendizaje.
+El laboratorio MCP está **cerrado para el alcance actual de aprendizaje**.
 
-La consolidación incluye **todo el recorrido relevante**, no solo lo realizado desde la migración a ChatGPT. La documentación cruda anterior se utilizó como fuente para reconstruir, contrastar y mejorar la memoria técnica vigente.
+El traslado a `ai-eam-learning-lab` no inicia un proyecto nuevo: consolida y continúa el trabajo realizado previamente con Gemini, Claude Desktop y Cline bajo un modelo ChatGPT ↔ GitHub más organizado y persistente.
 
-## Fuente principal
+La documentación cruda previa queda como material de referencia de transición; el conocimiento vigente ya está absorbido en la documentación del Learning Lab.
+
+## Documentos vigentes
+
+Para recuperar el laboratorio:
 
 ```text
-mcp/docs/MCP_LAB_DOCUMENTATION.md
+mcp/docs/MCP_LAB_FAST_READING.md      ← recuperación rápida
+mcp/docs/MCP_LAB_DOCUMENTATION.md     ← fuente completa y canónica
+mcp/docs/MCP_LAB_HANDOFF.md           ← estado y continuidad
 ```
 
-Es la baseline aprobada y autosuficiente. Si se retoma MCP dentro de meses, este es el primer documento que debe leerse.
+`MCP_LAB_DOCUMENTATION.md` contiene el recorrido completo: objetivo, conceptos MCP, cronología, instalaciones, configuración, comunicación JSON-RPC/stdio, Claude Desktop, VS Code + Cline, Tridente MCP, código, 14 Tools, pruebas, Working Set, evidencia, límites y relación con RAG / AI-EAM-MAXIMO.
 
-## Artefactos clave
+## Artefactos preservados
 
 ```text
 mcp/src/maximo_mcp.py
@@ -34,34 +41,41 @@ mcp/src/history/maximo_mcp_gemini_v1.py
 mcp/config/claude_desktop_config.example.json
 ```
 
-El código final preservado contiene `MODO_SIMULACION = True`, datos mock, lógica HTTP/OSLC prevista, Working Set y exactamente 14 Tools MCP.
+El código final confirma servidor Python/FastMCP, `MODO_SIMULACION = True`, datos mock, rama OSLC/REST preparada, 14 Tools y Working Set temporal.
+
+La configuración Claude sanitizada deriva del archivo real obtenido desde:
+
+```text
+Claude Desktop → Configuración → Desarrollador → Editar configuración
+```
+
+y confirma Maximo MCP + Filesystem MCP + GitHub MCP.
 
 ## Qué quedó probado
 
-- Claude Desktop ↔ MCP Server local en Python/FastMCP;
-- descubrimiento e invocación de Tools;
-- capacidades EAM ejecutadas en simulación;
-- consultas de OT e inventario;
-- cambios de estado simulados;
-- Filesystem MCP para acceso delimitado a archivos;
-- uso histórico de GitHub MCP para investigación de código;
-- evolución hasta 14 Tools;
-- VS Code + Cline como entorno posterior de trabajo;
-- patrón `proponer → revisar → confirmar` mediante Working Set.
+- ejecución de un MCP Server local con Python/FastMCP;
+- invocación histórica de Tools desde Claude Desktop;
+- modo simulación para capacidades EAM;
+- consultas y cambios de estado simulados;
+- Filesystem MCP para listar/escribir archivos;
+- uso histórico de GitHub MCP para investigar código;
+- evolución a VS Code + Cline;
+- entorno multi-MCP “Tridente”;
+- catálogo final de 14 Tools recuperado en código;
+- experimentación con Working Set / confirmación humana.
 
 ## Qué NO quedó validado
 
 - conexión con una instancia viva de IBM Maximo;
-- lectura o escritura real contra Maximo;
-- workflow real;
-- seguridad y autorización de producción;
-- beneficio cuantificado del 30 %;
-- RAG.
+- lectura/escritura real contra Maximo;
+- workflow real contra Maximo;
+- seguridad productiva;
+- compatibilidad exacta actual de toda la configuración histórica.
 
 ## Relación con AI-EAM-MAXIMO
 
-Los resultados son aprendizaje y evidencia. Cualquier patrón que se quiera trasladar a `jperdomo12/ai-driven-eam-copilot` debe tratarse allí como **🟨 CANDIDATO A INCORPORAR** y seguir la gobernanza formal del producto.
+El Learning Lab conserva aprendizaje y evidencia. Cualquier patrón que deba trasladarse al producto `jperdomo12/ai-driven-eam-copilot` se tratará allí como **🟨 CANDIDATO A INCORPORAR** y seguirá su gobernanza formal.
 
-## Próximo paso
+## Próximo laboratorio
 
-➡️ Abrir **RAG (Retrieval-Augmented Generation)** como laboratorio independiente cuando comience su estudio práctico. No es necesario reabrir MCP para iniciar RAG.
+➡️ **RAG (Retrieval-Augmented Generation)**. Cuando comience, su documentación y artefactos se crearán bajo la carpeta raíz `rag/` de `ai-eam-learning-lab`.
