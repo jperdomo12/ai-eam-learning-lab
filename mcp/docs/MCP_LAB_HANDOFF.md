@@ -7,6 +7,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-10 | Se corrige una observación de la sesión: en `Configuración → Conectores` sí aparece **Integración de GitHub** de tipo Web, actualmente no conectada. El issue #1 se mantiene pendiente para decidir y validar el mecanismo vigente. |
 | 2026-09-10 | Se reabre el laboratorio práctico para refrescar y revalidar la configuración histórica. Maximo MCP y Filesystem MCP continúan operativos; la recuperación de GitHub MCP en Claude Desktop queda **PENDIENTE** en el issue [#1](https://github.com/jperdomo12/ai-eam-learning-lab/issues/1). |
 | 2026-09-10 | Se cierra la consolidación documental con `MCP_LAB_DOCUMENTATION.md` v1.1 y `MCP_LAB_FAST_READING.md` como entrada rápida. |
 | 2026-09-10 | Se adopta `MCP_LAB_DOCUMENTATION.md` como documento principal; el código `maximo_mcp.py` y la configuración sanitizada de Claude quedan preservados dentro del propio Learning Lab. |
@@ -22,6 +23,7 @@ Estado actual de esa revalidación:
 - ✅ Maximo MCP continúa configurado y operativo en Claude Desktop.
 - ✅ Filesystem MCP continúa configurado y operativo en Claude Desktop.
 - ⏸️ GitHub MCP queda pendiente de recuperación/reconfiguración en la versión actual de Claude Desktop: issue [#1 — Recuperar GitHub MCP en Claude Desktop actual](https://github.com/jperdomo12/ai-eam-learning-lab/issues/1).
+- ✅ En `Configuración → Conectores` aparece **Integración de GitHub**, tipo **Web**, con estado **Conectar**; todavía no se ha validado si sustituye funcionalmente al GitHub MCP local histórico para nuestro laboratorio.
 - ⏸️ No continuar todavía con la revalidación completa desde VS Code + Cline hasta cerrar o decidir conscientemente diferir el issue #1.
 
 El traslado a `ai-eam-learning-lab` no inicia un proyecto nuevo: consolida y continúa el trabajo realizado previamente con Gemini, Claude Desktop y Cline bajo un modelo ChatGPT ↔ GitHub más organizado y persistente.
@@ -41,8 +43,9 @@ Durante la revalidación del 2026-09-10 se comprobó que la configuración hist�
 - antes de limpiar la configuración, reaparecía el PAT histórico ya revocado;
 - se identificó y detuvo de forma aislada el árbol de procesos de GitHub MCP sin afectar Maximo ni Filesystem;
 - al eliminar `github` desde `Configuración → Desarrollador`, Claude eliminó correctamente su bloque del JSON;
-- tras reiniciar, GitHub MCP dejó de aparecer y el bloque sigue ausente;
-- en `Configuración → Conectores` no aparece actualmente una opción GitHub;
+- tras reiniciar, el GitHub MCP local histórico dejó de aparecer y el bloque sigue ausente;
+- **corrección:** en `Configuración → Conectores` sí aparece **Integración de GitHub**, de tipo **Web**, actualmente con estado **Conectar**;
+- la misma pantalla muestra `filesystem` y `maximo` como conectores **Escritorio / Dev local**, ambos conectados;
 - un intento posterior de reinserción manual contenía un JSON inválido por falta de una coma, por lo que no constituye una prueba válida de fallo de una reinserción limpia.
 
 El detalle técnico, evidencias, hipótesis, próximos pasos y criterio de cierre están registrados en el issue #1. **No crear un PAT adicional ni modificar Maximo/Filesystem al retomar.**
@@ -98,7 +101,8 @@ y conserva como evidencia la configuración histórica Maximo MCP + Filesystem M
 - workflow real contra Maximo;
 - seguridad productiva;
 - compatibilidad exacta actual de toda la configuración histórica;
-- recuperación actual de GitHub MCP en Claude Desktop — **issue #1 pendiente**.
+- recuperación actual de GitHub MCP en Claude Desktop — **issue #1 pendiente**;
+- equivalencia funcional entre la **Integración de GitHub Web** actual y el GitHub MCP local histórico.
 
 ## Relación con AI-EAM-MAXIMO
 
@@ -106,6 +110,8 @@ El Learning Lab conserva aprendizaje y evidencia. Cualquier patrón que deba tra
 
 ## Próximo paso
 
-➡️ **Retomar el issue #1 con una sesión fresca**, investigando primero la documentación vigente de Claude Desktop / GitHub MCP y sin tocar Maximo MCP ni Filesystem MCP.
+➡️ **Retomar el issue #1 con una sesión fresca**. Primero revisar la documentación vigente de Claude Desktop sobre **Integración de GitHub Web / Connectors** y compararla con el GitHub MCP local histórico. Después, como primera opción práctica, evaluar `Conectar` la integración Web y validar una consulta real a `jperdomo12/ai-eam-learning-lab`.
+
+Solo si esa integración no cubre el objetivo del laboratorio, decidir si merece la pena repetir una prueba histórica limpia con `@modelcontextprotocol/server-github` + PAT nuevo y JSON validado.
 
 Después de cerrar o resolver conscientemente ese pendiente, continuar con la revalidación desde **VS Code + Cline** y posteriormente con el siguiente laboratorio de aprendizaje (**RAG**) cuando corresponda.
