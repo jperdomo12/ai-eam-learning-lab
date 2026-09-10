@@ -8,7 +8,8 @@ Hands-on learning and experimentation lab for AI applied to EAM: MCP, RAG, agent
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Se cierra y aprueba la baseline v1.0 del laboratorio MCP; RAG queda identificado como siguiente tema a iniciar. |
+| 2026-09-10 | MCP queda cerrado y consolidado en baseline v1.1 con documentación completa, Fast Reading y artefactos preservados; RAG queda como siguiente laboratorio. |
+| 2026-09-10 | Se cierra y aprueba la baseline inicial del laboratorio MCP. |
 | 2026-09-10 | Se inicializa el Learning Lab y se define MCP como primer tema. |
 
 ## 🎯 Para qué existe este repositorio
@@ -41,8 +42,8 @@ El estándar documental está en [`docs/DOCUMENTATION_STANDARD.md`](docs/DOCUMEN
 
 | Tema | Estado | Entrada |
 |---|---|---|
-| MCP — Model Context Protocol | ✅ Cerrado · baseline v1.0 | [`mcp/README.md`](mcp/README.md) |
-| RAG — Retrieval-Augmented Generation | ⏭️ Siguiente | Se creará al iniciar el estudio práctico. |
+| MCP — Model Context Protocol | ✅ Cerrado · baseline v1.1 | [`mcp/README.md`](mcp/README.md) |
+| RAG — Retrieval-Augmented Generation | ⏭️ Siguiente | Se creará bajo `rag/` cuando comience el estudio práctico. |
 | Agentes | ⏳ Futuro | Se creará cuando comience el estudio real. |
 
 > No se crean carpetas ni documentación de un tema hasta que realmente se empiece a trabajar en él.
@@ -77,7 +78,13 @@ Los ejemplos que requieran configuración sensible deben utilizar variables de e
 
 ## 🚀 Estado actual
 
-El primer laboratorio, **MCP**, está consolidado y cerrado para el alcance actual. Su documentación principal está en:
+El laboratorio **MCP** está consolidado y cerrado para el alcance actual.
+
+Para recuperarlo rápidamente:
+
+[`mcp/docs/MCP_LAB_FAST_READING.md`](mcp/docs/MCP_LAB_FAST_READING.md)
+
+Documentación completa:
 
 [`mcp/docs/MCP_LAB_DOCUMENTATION.md`](mcp/docs/MCP_LAB_DOCUMENTATION.md)
 
