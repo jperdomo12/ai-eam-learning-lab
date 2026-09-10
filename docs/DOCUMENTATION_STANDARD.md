@@ -6,8 +6,8 @@
 | Campo | Valor |
 |---|---|
 | **Ruta** | `docs/DOCUMENTATION_STANDARD.md` |
-| **Versión** | 0.2 |
-| **Estado** | Borrador activo de laboratorio |
+| **Versión** | 0.3 |
+| **Estado** | Activo de laboratorio |
 | **Fecha** | 10/09/2026 |
 | **Ámbito** | Notas de estudio, experimentos, guías prácticas, handoffs e histórico del Learning Lab |
 
@@ -15,6 +15,7 @@
 
 | Versión | Fecha | Cambio |
 |---|---:|---|
+| 0.3 | 10/09/2026 | Se adopta `main` como rama de trabajo por defecto para cambios habituales del Learning Lab; branches y PR quedan reservados para cambios donde aporten valor real. |
 | 0.2 | 10/09/2026 | Se incorpora un bloque `Historial` obligatorio y ligero en cada documento del Learning Lab. |
 | 0.1 | 10/09/2026 | Primera versión del estándar, adaptada a un repositorio ágil de estudio y experimentación. |
 
@@ -78,6 +79,27 @@ No confundir:
 - 🟩 **INCORPORADO AI-EAM-MAXIMO** — solo cuando haya sido aprobado e incorporado allí.
 
 Nada pasa del Learning Lab al producto automáticamente.
+
+### 2.6 `main` por defecto: agilidad antes que ceremonia
+
+El Learning Lab trabaja **directamente sobre `main` como regla general**.
+
+Esto aplica especialmente a:
+
+- notas de estudio;
+- README y handoffs;
+- material histórico;
+- documentación y ajustes de estructura pequeños;
+- pequeños scripts de laboratorio;
+- experimentos acotados y fácilmente reversibles.
+
+Crear una branch es **opcional** y se utiliza cuando el cambio tiene suficiente entidad como para que aislarlo aporte valor: refactorizaciones relevantes, automatizaciones, CI/CD, cambios estructurales amplios, código que pueda afectar varios experimentos o pruebas que convenga mantener separadas temporalmente.
+
+Los Pull Requests tampoco son obligatorios en el laboratorio. Se usan cuando ayudan a revisar, comparar o cerrar un cambio importante; no como trámite.
+
+> **Regla práctica:** si trabajar directamente en `main` es seguro, claro y reversible, trabajar en `main`.
+
+Esta regla es propia del Learning Lab y **no modifica** el flujo formal del repositorio de producto `ai-driven-eam-copilot`.
 
 ---
 
