@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** recuperar en pocos minutos qué buscó el laboratorio MCP, qué se construyó, cómo se configuró, cómo se probó y qué quedó realmente demostrado.
 >
-> 📍 **Estado:** ✅ resumen vigente del laboratorio MCP cerrado para su alcance actual.
+> 📍 **Estado:** ✅ resumen vigente del laboratorio MCP; queda una última revalidación en VS Code + Cline antes de congelar/cerrar definitivamente el frente MCP.
 >
 > 📘 **Documento completo:** [`MCP_LAB_DOCUMENTATION.md`](MCP_LAB_DOCUMENTATION.md)
 
@@ -10,7 +10,10 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-10 | Se amplían las explicaciones de Node.js/`npx`, `@mcp.tool()`, Filesystem MCP, configuración general de Cline y JSON/JSON-RPC; se añaden ejemplos de GitHub MCP y una prueba mixta Maximo + Filesystem claramente marcada como propuesta. |
+| 2026-09-11 | Se valida con éxito una prueba mixta real del laboratorio: Claude combina **Maximo MCP** para obtener OTs abiertas simuladas y **Filesystem MCP** para crear `ots_abiertas.csv` en una carpeta autorizada (`Downloads`). Se confirma además que no es obligatorio mencionar “usa MCP” si el Host puede inferir las Tools adecuadas. |
+| 2026-09-11 | Se aclara que el nombre, la descripción/docstring y el esquema de parámetros de una Tool ayudan al modelo a decidir cuándo usarla; buenas descripciones mejoran la selección, pero no son una regla determinista. |
+| 2026-09-11 | Se documenta el cierre consciente del incidente GitHub MCP histórico: el patrón MCP local sigue vigente, pero `@modelcontextprotocol/server-github` quedó deprecated y no se reinstala en esta fase. |
+| 2026-09-10 | Se amplían las explicaciones de Node.js/`npx`, `@mcp.tool()`, Filesystem MCP, configuración general de Cline y JSON/JSON-RPC; se añaden ejemplos de GitHub MCP y una prueba mixta Maximo + Filesystem inicialmente marcada como propuesta. |
 | 2026-09-10 | Creación del resumen de lectura rápida a partir de la baseline consolidada del laboratorio. |
 
 ---
@@ -36,11 +39,12 @@ Lo que **no** se probó fue una conexión viva contra IBM Maximo. El código con
 | Elemento | Resultado |
 |---|---:|
 | Entornos principales usados | **2** — Claude Desktop y VS Code + Cline |
-| MCP Servers combinados | **3** — Maximo, Filesystem y GitHub |
+| MCP Servers combinados históricamente | **3** — Maximo, Filesystem y GitHub |
 | Tools del servidor Maximo final | **14** |
 | Transporte local principal | **stdio** |
 | Modo Maximo realmente probado | **Simulación** |
 | Conexiones reales a IBM Maximo probadas | **0** |
+| Prueba mixta Maximo + Filesystem | **1 validada** — consulta OTs abiertas + creación CSV |
 
 ---
 
@@ -152,6 +156,42 @@ Tool MCP publicada
 Claude/Cline puede descubrirla e invocarla
 ```
 
+### ¿Las descripciones de las Tools ayudan a la IA a decidir cuál usar?
+
+**Sí.** En FastMCP, el Host recibe metadatos de cada Tool. El SDK deriva normalmente:
+
+- **nombre de la Tool** → del nombre de la función;
+- **descripción** → del docstring de la función, salvo que se configure otra explícitamente;
+- **esquema de argumentos** → de los type hints y parámetros.
+
+El modelo usa esa información para decidir qué Tool parece adecuada para una petición. Por ejemplo, nuestro código contiene:
+
+```python
+@mcp.tool()
+def consultar_ot(num_ot: str) -> str:
+    """Consulta los detalles completos de una Orden de Trabajo (OT) en Maximo."""
+```
+
+y una descripción más rica en:
+
+```python
+@mcp.tool()
+def listar_transiciones_ot(num_ot: str) -> str:
+    """
+    Muestra el estado actual de una OT y los cambios de estado permitidos.
+    Úsala antes de cambiar_estado_ot para saber qué opciones hay disponibles.
+    Ejemplo: "¿A qué estados puedo mover la OT-1002?"
+    """
+```
+
+La segunda ofrece al modelo más contexto semántico para diferenciar **consultar una OT** de **averiguar transiciones permitidas**.
+
+Regla práctica del laboratorio:
+
+> **Tool names claros + docstrings precisos + parámetros bien definidos = mejor probabilidad de selección correcta por el modelo.**
+
+Esto **no garantiza** una elección determinista. El Host/modelo sigue razonando sobre la petición, las Tools disponibles, permisos, contexto y políticas. Para pruebas controladas conviene indicar explícitamente qué MCP/Tool se quiere observar; en uso normal no debería ser obligatorio decir “usa MCP”.
+
 El patrón de **Working Set** fue especialmente útil como aprendizaje de Human-in-the-Loop:
 
 ```text
@@ -173,9 +213,9 @@ El Working Set era memoria temporal del script Python; no una funcionalidad nati
 | Python + FastMCP | implementar el MCP Server Maximo |
 | Claude Desktop | primer Host práctico de la PoC |
 | VS Code + Cline | iterar sobre código/configuración con menos fricción |
-| Node.js / `npx` | ejecutar los MCP Servers de Filesystem y GitHub usados en el laboratorio |
+| Node.js / `npx` | ejecutar los MCP Servers de Filesystem y GitHub usados históricamente |
 | Filesystem MCP | leer/escribir únicamente en carpetas autorizadas |
-| GitHub MCP | investigar repositorios y código |
+| GitHub MCP | investigar repositorios y código durante la etapa histórica |
 | `requests` / `urllib3` | preparar llamadas HTTP/OSLC hacia Maximo |
 
 ### Node.js y `npx` — por qué aparecieron si nuestro servidor era Python
@@ -198,10 +238,12 @@ Python
 
 Node.js / npx
   ├─ ejecuta Filesystem MCP
-  └─ ejecuta GitHub MCP histórico
+  └─ ejecutaba GitHub MCP histórico
 ```
 
 No fue necesario aprender o programar JavaScript para esta PoC; Node.js actuó principalmente como **runtime de esos servidores adicionales**.
+
+> Nota 2026-09-11: `@modelcontextprotocol/server-github` quedó deprecated. El aprendizaje histórico sigue siendo válido, pero no se reinstala ese paquete. Si algún día se necesita recuperar GitHub MCP, se usará el servidor oficial actual `github/github-mcp-server`.
 
 ---
 
@@ -231,6 +273,8 @@ Conceptualmente:
 ```
 
 Las rutas que aparecen **después del nombre del paquete** son las carpetas que el servidor puede exponer. Esto es importante porque Filesystem MCP no debería recibir acceso indiscriminado a todo el disco.
+
+La prueba final de Claude Desktop del 2026-09-11 utilizó precisamente `Downloads` como carpeta autorizada para generar `ots_abiertas.csv`.
 
 La versión pública sanitizada de esta configuración está en:
 
@@ -397,6 +441,8 @@ La operación habitual documentada era:
 
 Ese flujo fue la razón principal para pasar de Claude Desktop a Cline durante el desarrollo: **menos fricción para editar → refrescar → probar**.
 
+> Próximo y último paso antes de congelar el LAB MCP: refrescar esta configuración desde VS Code + Cline y verificar qué MCP siguen operativos hoy. GitHub MCP no bloquea el cierre; su configuración histórica queda solo como evidencia.
+
 ---
 
 ## 10. Ejemplos de pruebas y resultados
@@ -454,35 +500,43 @@ soumyaprasadrana/maximo-mcp-server
 
 La comparación de capacidades contribuyó al proceso que terminó ampliando nuestro servidor Maximo hasta el catálogo final de 14 Tools.
 
-### 10.6 Prueba mixta Maximo MCP + Filesystem MCP — propuesta útil
+La implementación histórica de GitHub (`@modelcontextprotocol/server-github`) ya no se reinstala porque quedó deprecated. Si en el futuro vuelve a hacer falta, se utilizará el servidor oficial actual de GitHub.
 
-Esta prueba **no queda registrada como una prueba histórica ya realizada**. Es un buen ejemplo para reproducir en el futuro cómo un Host puede combinar dos MCP Servers en una misma tarea:
+### 10.6 Prueba mixta Maximo MCP + Filesystem MCP — ✅ REALIZADA 2026-09-11
+
+Esta prueba estaba documentada inicialmente como propuesta y finalmente se ejecutó con éxito desde Claude Desktop.
+
+Instrucción utilizada, en esencia:
 
 ```text
 “Consulta las OTs abiertas, genera un archivo CSV con wonum,
-descripción, estado y activo, y guarda el archivo en la carpeta autorizada XXXX.”
+descripción, estado y activo, y guarda el archivo en Downloads.”
 ```
 
-Flujo esperado:
+Resultado:
 
 ```text
 Usuario
   ↓
-IA / Host
-  ├─ Maximo MCP → obtiene las OTs
+Claude Desktop
+  ├─ Maximo MCP → obtiene las OTs abiertas de los mocks
   │
-  └─ Filesystem MCP → crea y guarda el CSV
+  └─ Filesystem MCP → crea ots_abiertas.csv
+                         ↓
+                 C:\Users\jpperdomo\Downloads
 ```
 
-El valor de esta prueba sería demostrar **composición de capacidades**: un servidor obtiene información EAM y otro persiste un artefacto local.
+La prueba confirmó **composición de capacidades**: un servidor obtiene información EAM y otro persiste un artefacto local.
 
-> En nuestro laboratorio actual, como Maximo continúa en simulación, el contenido del CSV vendría de los mocks, no de IBM Maximo real.
+También se confirmó un aprendizaje importante: para uso normal **no es obligatorio** escribir “usa Maximo MCP” o “usa Filesystem MCP” si el Host tiene las Tools disponibles y sus metadatos permiten inferir qué capacidades necesita. Durante una prueba de laboratorio puede ser útil mencionarlos explícitamente para controlar qué camino se está validando.
+
+> El contenido de `ots_abiertas.csv` provino de los mocks de `maximo_mcp.py`; no de IBM Maximo real.
 
 ---
 
 ## 11. “Tridente MCP”
 
-La configuración avanzada combinó:
+La configuración avanzada combinó históricamente:
 
 ```text
                 Host / entorno de IA
@@ -497,6 +551,8 @@ Cada servidor resolvía un dominio distinto. El aprendizaje fue que un Host pued
 
 “Tridente” solo fue nuestro nombre informal para recordar los **tres** servidores.
 
+La prueba final de 2026-09-11 confirmó en la práctica la composición entre dos de esas puntas: **Maximo + Filesystem**.
+
 ---
 
 ## 12. Lo más importante que aprendimos
@@ -504,16 +560,19 @@ Cada servidor resolvía un dominio distinto. El aprendizaje fue que un Host pued
 1. **Host ≠ PC.** El Host es la aplicación/entorno de IA.
 2. Un MCP Server expone capacidades; nuestra PoC se centró en **Tools**.
 3. `@mcp.tool()` registra una función Python para que FastMCP la publique como Tool.
-4. MCP también contempla otras primitivas como **Resources** y **Prompts**.
-5. MCP no convierte por sí solo a un LLM en agente autónomo.
-6. En local, **stdio** permite conectar Client y Server sin desplegar un servicio HTTP.
-7. **JSON** es un formato de datos; **JSON-RPC** define mensajes de llamada/respuesta; no significa intercambiar archivos `.json`.
-8. **MCP y OSLC/REST son complementarios**: MCP puede ser la frontera orientada a IA y OSLC/REST la integración real con Maximo.
-9. **Node.js / npx** fueron necesarios para ejecutar los MCP Servers adicionales usados en aquella PoC, no para programar nuestro servidor Maximo.
-10. Filesystem MCP recibe explícitamente las **carpetas autorizadas** en su configuración.
-11. **Simular primero** permitió aprender MCP sin depender de la infraestructura Maximo.
-12. Para escrituras EAM, el patrón **proponer → revisar → confirmar** es más seguro que ejecutar cambios silenciosamente.
-13. Combinar servidores especializados —Maximo, Filesystem y GitHub— permite componer tareas más ricas.
+4. **Nombre, docstring y esquema de parámetros importan**: son señales que el modelo usa para decidir qué Tool invocar.
+5. MCP también contempla otras primitivas como **Resources** y **Prompts**.
+6. MCP no convierte por sí solo a un LLM en agente autónomo.
+7. En local, **stdio** permite conectar Client y Server sin desplegar un servicio HTTP.
+8. **JSON** es un formato de datos; **JSON-RPC** define mensajes de llamada/respuesta; no significa intercambiar archivos `.json`.
+9. **MCP y OSLC/REST son complementarios**: MCP puede ser la frontera orientada a IA y OSLC/REST la integración real con Maximo.
+10. **Node.js / npx** fueron necesarios para ejecutar los MCP Servers adicionales usados en aquella PoC, no para programar nuestro servidor Maximo.
+11. Filesystem MCP recibe explícitamente las **carpetas autorizadas** en su configuración.
+12. **Simular primero** permitió aprender MCP sin depender de la infraestructura Maximo.
+13. Para escrituras EAM, el patrón **proponer → revisar → confirmar** es más seguro que ejecutar cambios silenciosamente.
+14. Combinar servidores especializados permite componer tareas más ricas; esto quedó validado con **Maximo MCP + Filesystem MCP → CSV**.
+15. La instrucción del usuario no necesita mencionar MCP explícitamente en uso normal; el Host puede seleccionar Tools a partir de la intención y de sus metadatos.
+16. Una implementación concreta puede quedar obsoleta sin invalidar el patrón MCP: eso ocurrió con el GitHub MCP histórico.
 
 ---
 
@@ -582,4 +641,4 @@ Leer/utilizar en este orden:
 
 Si solo necesitas recuperar el concepto, recuerda esta frase:
 
-> **MCP permitió conectar la aplicación de IA con capacidades EAM externas mediante Tools; nosotros validamos el mecanismo con un servidor Python y datos simulados, no con IBM Maximo real.**
+> **MCP permitió conectar la aplicación de IA con capacidades EAM externas mediante Tools; validamos el mecanismo, la selección de Tools y la composición entre servidores usando un servidor Maximo Python con datos simulados y Filesystem MCP, no IBM Maximo real.**
