@@ -8,6 +8,7 @@ Hands-on learning and experimentation lab for AI applied to EAM: MCP, RAG, agent
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | MCP queda **cerrado/congelado en v1.2** tras la revalidación final de VS Code + Cline: configuración efectiva recuperada, Maximo/Filesystem probados y composición multi-MCP validada. |
 | 2026-09-10 | MCP queda cerrado y consolidado en baseline v1.1 con documentación completa, Fast Reading y artefactos preservados; RAG queda como siguiente laboratorio. |
 | 2026-09-10 | Se cierra y aprueba la baseline inicial del laboratorio MCP. |
 | 2026-09-10 | Se inicializa el Learning Lab y se define MCP como primer tema. |
@@ -42,7 +43,7 @@ El estándar documental está en [`docs/DOCUMENTATION_STANDARD.md`](docs/DOCUMEN
 
 | Tema | Estado | Entrada |
 |---|---|---|
-| MCP — Model Context Protocol | ✅ Cerrado · baseline v1.1 | [`mcp/README.md`](mcp/README.md) |
+| MCP — Model Context Protocol | ✅ Cerrado / congelado · v1.2 | [`mcp/README.md`](mcp/README.md) |
 | RAG — Retrieval-Augmented Generation | ⏭️ Siguiente | Se creará bajo `rag/` cuando comience el estudio práctico. |
 | Agentes | ⏳ Futuro | Se creará cuando comience el estudio real. |
 
@@ -78,14 +79,18 @@ Los ejemplos que requieran configuración sensible deben utilizar variables de e
 
 ## 🚀 Estado actual
 
-El laboratorio **MCP** está consolidado y cerrado para el alcance actual.
+El laboratorio **MCP** está cerrado y congelado para el alcance actual.
 
-Para recuperarlo rápidamente:
+Entrada rápida:
 
 [`mcp/docs/MCP_LAB_FAST_READING.md`](mcp/docs/MCP_LAB_FAST_READING.md)
 
 Documentación completa:
 
 [`mcp/docs/MCP_LAB_DOCUMENTATION.md`](mcp/docs/MCP_LAB_DOCUMENTATION.md)
+
+Estado final / continuidad:
+
+[`mcp/docs/MCP_LAB_HANDOFF.md`](mcp/docs/MCP_LAB_HANDOFF.md)
 
 El siguiente frente de aprendizaje será **RAG**, cuando se abra explícitamente ese laboratorio.
