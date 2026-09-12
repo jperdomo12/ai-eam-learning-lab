@@ -1,0 +1,28 @@
+{
+  "source_system": "IBM_MAXIMO_MOCK",
+  "description": "Simulación mínima de documentos enlazados a un activo para aprender RAG sin depender de una instancia Maximo real.",
+  "assets": [
+    {
+      "assetnum": "PT-201",
+      "siteid": "PLANTA1",
+      "documents": [
+        {
+          "document_id": "MAN-PT201-R4",
+          "description": "Manual técnico simulado del transmisor de presión PT-201",
+          "document_type": "MANUAL",
+          "revision": "4",
+          "current": true,
+          "path": "rag/data/documents/manual_transmisor_PT201.md"
+        },
+        {
+          "document_id": "PROC-SEG-INST-R1",
+          "description": "Procedimiento simulado de seguridad para intervención de instrumentación",
+          "document_type": "PROCEDURE",
+          "revision": "1",
+          "current": true,
+          "path": "rag/data/documents/procedimiento_seguridad_instrumentacion.md"
+        }
+      ]
+    }
+  ]
+}
