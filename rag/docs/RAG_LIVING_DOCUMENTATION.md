@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — etapa conceptual + primer experimento**
+> 📍 **Estado:** 🟢 **EN CURSO — etapa conceptual + primer experimento local**
 >
 > 🗓️ **Actualizado:** 2026-09-12
 
@@ -10,7 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-12 | Se adopta IBM Maximo como referencia EAM para el descubrimiento de documentos del primer experimento. Se documenta el modelo multi-fuente/multi-formato y se crean datos/documentos sintéticos para probar primero el descubrimiento antes del retrieval semántico. |
+| 2026-09-12 | Se corrige la secuencia práctica: las primeras pruebas RAG usarán una **carpeta local del portátil** como fuente. IBM Maximo queda como deseable posterior, primero simulado y eventualmente real. Se elimina la simulación Maximo creada prematuramente y se reutilizan únicamente los documentos sintéticos locales. |
 | 2026-09-12 | Creación inicial del documento vivo del RAG Learning Lab. Se define el problema, el modelo mental, la pregunta guía y el plan incremental de aprendizaje. |
 
 ---
@@ -172,7 +172,7 @@ Comprobación de que:
 ## 6. Pipeline inicial de referencia
 
 ```text
-MANUAL
+DOCUMENTOS
   ↓
 extraer texto
   ↓
@@ -223,21 +223,71 @@ La prioridad es saber **qué está ocurriendo y por qué**, no conseguir rápida
 
 ---
 
-## 8. Primer experimento previsto
+## 8. Fuente del primer experimento: carpeta local
+
+Las primeras prácticas usarán una **carpeta local del portátil** como fuente de documentos.
+
+Razón:
+
+- elimina inicialmente conectores y autenticación;
+- hace visible cada paso del pipeline;
+- permite depurar fácilmente;
+- nos deja concentrarnos en RAG, no en integración de sistemas.
+
+Carpeta reproducible del LAB:
+
+```text
+rag/data/documents/
+```
+
+Después de sincronizar GitHub, esta carpeta existe físicamente dentro del repositorio local del portátil.
+
+Documentos sintéticos iniciales:
+
+```text
+manual_transmisor_PT201.md
+procedimiento_seguridad_instrumentacion.md
+```
+
+El script:
+
+```text
+rag/src/step01_discover_documents.py
+```
+
+lista archivos soportados desde esa carpeta por defecto y también acepta como argumento otra carpeta local.
+
+Ejemplo conceptual:
+
+```text
+python rag/src/step01_discover_documents.py
+```
+
+O, más adelante, apuntando a otra carpeta del portátil:
+
+```text
+python rag/src/step01_discover_documents.py "C:\\ruta\\a\\mis\\manuales"
+```
+
+Este paso todavía **no es RAG completo**. Solo valida el primer eslabón: localizar las fuentes documentales disponibles.
+
+---
+
+## 9. Primer experimento RAG previsto
 
 Objetivo:
 
-> construir un RAG pequeño donde podamos ver claramente qué documentos se descubren y qué fragmentos se recuperan antes de que el LLM genere la respuesta.
+> construir un RAG pequeño donde podamos ver claramente qué fragmentos se recuperan antes de que el LLM genere la respuesta.
 
-Queremos poder observar algo como:
+Queremos observar algo como:
 
 ```text
-Activo en Maximo:
-PT-201
+Carpeta fuente:
+rag/data/documents/
 
-Documentos enlazados:
-1. Manual técnico
-2. Procedimiento de seguridad
+Documentos:
+1. manual técnico
+2. procedimiento de seguridad
 
 Pregunta:
 ¿Cómo calibro PT-201?
@@ -258,7 +308,7 @@ No consideraremos exitoso el experimento solo porque la respuesta “suene bien�
 
 ---
 
-## 9. Casos de prueba que debe soportar el primer LAB
+## 10. Casos de prueba que debe soportar el primer LAB
 
 ### Caso A — respuesta presente
 
@@ -286,7 +336,7 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 10. Fuentes, formatos y papel de IBM Maximo
+## 11. Fuentes y formatos futuros
 
 RAG no depende de un único formato ni de un único repositorio documental.
 
@@ -331,9 +381,11 @@ CHUNKS + METADATOS
 ÍNDICE / RETRIEVAL
 ```
 
-### 10.1 Maximo como referencia del LAB
+---
 
-Para el aprendizaje EAM queremos utilizar **IBM Maximo como ejemplo de sistema que conoce qué documentos están asociados a un activo**.
+## 12. Papel deseable de IBM Maximo
+
+IBM Maximo es el **ejemplo EAM deseable para una fase posterior**, no la fuente inicial del LAB.
 
 Conceptualmente:
 
@@ -351,7 +403,7 @@ RAG
 
 Maximo puede actuar como **catálogo/contexto EAM** del documento, aunque el archivo físico pueda residir en filesystem, object storage u otro repositorio.
 
-Metadatos útiles para RAG:
+Metadatos potencialmente útiles:
 
 ```text
 assetnum
@@ -364,38 +416,22 @@ ruta / URL
 source_system
 ```
 
-Estos metadatos permiten restringir primero el universo documental y luego aplicar búsqueda semántica sobre contenido relevante.
-
-### 10.2 Decisión para el primer experimento
-
-No disponemos de una instancia Maximo viva para este LAB. Por eso se simula únicamente la capa de descubrimiento documental:
+### Secuencia prevista
 
 ```text
-asset_doclinks_mock.json
-      ↓
-PT-201 / PLANTA1
-      ↓
-manual + procedimiento enlazados
-      ↓
-archivos sintéticos del repositorio
+1. Carpeta local                     ← AHORA
+2. RAG mínimo observable             ← SIGUIENTE
+3. Variaciones de chunking/retrieval
+4. Simulación de Maximo/doclinks
+5. Combinación de contexto EAM + RAG
+6. Integración real con Maximo       ← solo si procede
 ```
 
-Esto permite aprender el patrón correcto sin afirmar que exista integración real con Maximo.
-
-Artefactos iniciales:
-
-```text
-rag/data/maximo/asset_doclinks_mock.json
-rag/data/documents/manual_transmisor_PT201.md
-rag/data/documents/procedimiento_seguridad_instrumentacion.md
-rag/src/step01_discover_documents.py
-```
-
-Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
+La simulación Maximo se construirá cuando lleguemos realmente a ese paso; no se mantiene una simulación prematura como parte del primer ejercicio.
 
 ---
 
-## 11. Aplicación futura a EAM / IBM Maximo
+## 13. Aplicación futura a EAM / IBM Maximo
 
 Fuentes candidatas de conocimiento:
 
@@ -423,7 +459,7 @@ Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 12. Decisiones todavía NO tomadas
+## 14. Decisiones todavía NO tomadas
 
 Aún no se ha decidido:
 
@@ -440,25 +476,23 @@ Estas decisiones se tomarán durante experimentos concretos y se documentarán c
 
 ---
 
-## 13. Siguiente paso
+## 15. Siguiente paso
 
-Ejecutar y observar el **Paso 01 — descubrimiento de documentos desde Maximo simulado**:
+Ejecutar y observar el **Paso 01 — descubrimiento de documentos desde una carpeta local**:
 
 ```text
-PT-201 / PLANTA1
+carpeta local
       ↓
-consultar catálogo Maximo simulado
+listar documentos soportados
       ↓
-obtener documentos vigentes enlazados
-      ↓
-verificar que los archivos existen
+confirmar rutas y formatos
 ```
 
-Después:
+Después construiremos el primer paso propiamente RAG:
 
-1. leer los documentos encontrados;
-2. dividirlos en chunks observables;
-3. construir el primer retrieval;
-4. mostrar los chunks recuperados;
-5. generar respuesta basada únicamente en ellos;
+1. leer el contenido de los documentos;
+2. dividirlo en chunks visibles;
+3. construir un retrieval mínimo;
+4. mostrar qué chunks recupera cada pregunta;
+5. solo después generar una respuesta fundamentada;
 6. probar deliberadamente una pregunta sin respuesta.
