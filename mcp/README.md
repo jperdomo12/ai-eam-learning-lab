@@ -6,6 +6,14 @@
 >
 > 🗓️ **Actualizado:** 2026-09-12
 
+## 🕘 Historial
+
+| Fecha | Cambio |
+|---|---|
+| 2026-09-12 | Se incorpora el Historial exigido por el estándar documental y se aclara que la configuración Cline sanitizada conserva también el GitHub MCP histórico como evidencia, aunque no fue revalidado funcionalmente. |
+| 2026-09-12 | Cierre/congelación del MCP LAB v1.2 tras la revalidación final de VS Code + Cline. |
+| 2026-09-10 | Creación y consolidación inicial del área MCP en el Learning Lab. |
+
 ## 📚 Por dónde empezar
 
 Para recuperar MCP rápidamente, leer en este orden:
@@ -15,9 +23,11 @@ Para recuperar MCP rápidamente, leer en este orden:
 3. [`docs/MCP_LAB_HANDOFF.md`](docs/MCP_LAB_HANDOFF.md) — estado final y continuidad hacia RAG.
 4. [`src/maximo_mcp.py`](src/maximo_mcp.py) — código de la PoC Maximo MCP preservado.
 5. [`config/claude_desktop_config.example.json`](config/claude_desktop_config.example.json) — configuración Claude Desktop sanitizada.
-6. [`config/cline_mcp_settings.example.json`](config/cline_mcp_settings.example.json) — configuración VS Code + Cline sanitizada y revalidada conceptualmente.
+6. [`config/cline_mcp_settings.example.json`](config/cline_mcp_settings.example.json) — configuración VS Code + Cline sanitizada; conserva `maximo`, `filesystem` y el `github` histórico recuperado.
 
 `src/history/` conserva código temprano únicamente para reconstrucción histórica.
+
+> **Importante:** la sección `github` del ejemplo Cline representa la configuración histórica recuperada. El paquete `@modelcontextprotocol/server-github` está deprecated y **no fue revalidado funcionalmente** en el cierre 2026-09-12; no debe usarse como receta para una instalación nueva.
 
 ---
 
