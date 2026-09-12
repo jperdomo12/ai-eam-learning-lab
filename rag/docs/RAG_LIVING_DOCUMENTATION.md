@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | Se separan los documentos fuente en `rag/data/source_documents/` para no mezclarlos con `docs/` ni `src/`. Se formaliza el principio de que **la adquisición cambia según la fuente**, mientras que extracción, normalización, chunking, indexación y retrieval deben permanecer desacoplados y reutilizables. |
 | 2026-09-12 | Se corrige la secuencia práctica: las primeras pruebas RAG usarán una **carpeta local del portátil** como fuente. IBM Maximo queda como deseable posterior, primero simulado y eventualmente real. Se elimina la simulación Maximo creada prematuramente y se reutilizan únicamente los documentos sintéticos locales. |
 | 2026-09-12 | Creación inicial del documento vivo del RAG Learning Lab. Se define el problema, el modelo mental, la pregunta guía y el plan incremental de aprendizaje. |
 
@@ -127,39 +128,43 @@ mostrar fuente / sección utilizada
 
 Manual, procedimiento, instructivo, boletín técnico u otra fuente de conocimiento.
 
-### 5.2 Extracción
+### 5.2 Adquisición / acceso
+
+Mecanismo utilizado para obtener el documento desde su sistema de origen. Esta capa cambia según la fuente: filesystem, API, conector, SDK, URL, repositorio documental, etc.
+
+### 5.3 Extracción
 
 Conversión del documento a contenido utilizable por el sistema.
 
-### 5.3 Chunking
+### 5.4 Chunking
 
 División del documento en fragmentos manejables llamados **chunks**.
 
-### 5.4 Embeddings
+### 5.5 Embeddings
 
 Representaciones numéricas que permiten comparar similitud semántica entre textos.
 
-### 5.5 Índice / vector store
+### 5.6 Índice / vector store
 
 Estructura donde se almacenan representaciones y metadatos para recuperar información.
 
-### 5.6 Retriever
+### 5.7 Retriever
 
 Componente que recibe una consulta y devuelve los fragmentos considerados más relevantes.
 
-### 5.7 Contexto
+### 5.8 Contexto
 
 Fragmentos recuperados que se incorporan a la petición enviada al LLM.
 
-### 5.8 Generación
+### 5.9 Generación
 
 El LLM utiliza pregunta + contexto para producir la respuesta.
 
-### 5.9 Grounding / citas
+### 5.10 Grounding / citas
 
 Capacidad de vincular la respuesta con la evidencia utilizada.
 
-### 5.10 Evaluación
+### 5.11 Evaluación
 
 Comprobación de que:
 
@@ -172,9 +177,11 @@ Comprobación de que:
 ## 6. Pipeline inicial de referencia
 
 ```text
-DOCUMENTOS
+FUENTE
+  ↓ acceso específico
+DOCUMENTO + METADATOS
   ↓
-extraer texto
+extraer / normalizar
   ↓
 crear chunks
   ↓
@@ -199,6 +206,8 @@ RESPUESTA + EVIDENCIA
 ```
 
 Este es el pipeline típico que iremos desmontando y probando pieza por pieza.
+
+**Principio de diseño:** la capa de acceso a la fuente puede cambiar; las etapas posteriores deberían depender de una representación común de documento + metadatos, no del sistema de origen.
 
 ---
 
@@ -237,7 +246,15 @@ Razón:
 Carpeta reproducible del LAB:
 
 ```text
-rag/data/documents/
+rag/data/source_documents/
+```
+
+La separación queda así:
+
+```text
+rag/docs/                  → documentación SOBRE el laboratorio
+rag/src/                   → código fuente del laboratorio
+rag/data/source_documents/ → documentos QUE CONSUME el RAG
 ```
 
 Después de sincronizar GitHub, esta carpeta existe físicamente dentro del repositorio local del portátil.
@@ -257,13 +274,13 @@ rag/src/step01_discover_documents.py
 
 lista archivos soportados desde esa carpeta por defecto y también acepta como argumento otra carpeta local.
 
-Ejemplo conceptual:
+Ejemplo:
 
 ```text
 python rag/src/step01_discover_documents.py
 ```
 
-O, más adelante, apuntando a otra carpeta del portátil:
+O, apuntando a otra carpeta del portátil:
 
 ```text
 python rag/src/step01_discover_documents.py "C:\\ruta\\a\\mis\\manuales"
@@ -283,7 +300,7 @@ Queremos observar algo como:
 
 ```text
 Carpeta fuente:
-rag/data/documents/
+rag/data/source_documents/
 
 Documentos:
 1. manual técnico
@@ -336,11 +353,11 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 11. Fuentes y formatos futuros
+## 11. Fuentes, formatos y adquisición
 
 RAG no depende de un único formato ni de un único repositorio documental.
 
-Una arquitectura empresarial puede recibir documentos desde:
+Fuentes posibles:
 
 ```text
 Windows / Linux filesystem
@@ -352,7 +369,7 @@ IBM Maximo / Maximo Manage
 otros repositorios documentales
 ```
 
-Los formatos pueden incluir, según el parser disponible:
+Formatos posibles, según el parser disponible:
 
 ```text
 PDF
@@ -365,21 +382,37 @@ imágenes escaneadas + OCR
 otros formatos convertibles a contenido utilizable
 ```
 
-El patrón general es:
+La **forma de adquirir** el documento sí depende del origen:
 
 ```text
-FUENTE
-  ↓
-CONECTOR / ACCESO
-  ↓
-EXTRACCIÓN / PARSING
-  ↓
-NORMALIZACIÓN
-  ↓
-CHUNKS + METADATOS
-  ↓
-ÍNDICE / RETRIEVAL
+Windows / Linux → filesystem
+Documentum      → API / conector
+SharePoint      → API / conector
+Object storage  → SDK / API
+IBM Maximo      → metadata/doclinks + recuperación del archivo o URL
 ```
+
+Después buscamos normalizar todas esas entradas hacia un contrato común:
+
+```text
+DOCUMENTO
++ contenido extraído
++ metadatos
++ identificación de fuente
+```
+
+A partir de ahí, el resto del pipeline puede ser compartido:
+
+```text
+normalización
+→ chunking
+→ embeddings
+→ índice
+→ retrieval
+→ generación
+```
+
+Esto evita construir un RAG distinto para cada sistema fuente.
 
 ---
 
@@ -478,10 +511,10 @@ Estas decisiones se tomarán durante experimentos concretos y se documentarán c
 
 ## 15. Siguiente paso
 
-Ejecutar y observar el **Paso 01 — descubrimiento de documentos desde una carpeta local**:
+Repetir el **Paso 01 — descubrimiento de documentos desde una carpeta local** después de sincronizar el cambio de estructura:
 
 ```text
-carpeta local
+rag/data/source_documents/
       ↓
 listar documentos soportados
       ↓
