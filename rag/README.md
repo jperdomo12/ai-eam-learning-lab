@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — primer experimento local iniciado**
+> 📍 **Estado:** 🟢 **EN CURSO — Paso 01 verificado; Paso 02 chunking visible**
 >
 > 🗓️ **Actualizado:** 2026-09-12
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | ✅ Se verifica en el portátil el **Paso 01**: descubrimiento correcto de los dos documentos fuente desde `rag/data/source_documents/`. Se crea el **Paso 02** para leer contenido y mostrar chunks de forma explícita antes de introducir embeddings. |
 | 2026-09-12 | Se separan claramente los documentos fuente del código y de la documentación del LAB usando `rag/data/source_documents/`. Se aclara además que la forma de obtener los documentos cambia según la fuente, mientras que el pipeline RAG posterior debe mantenerse lo más estable posible. |
 | 2026-09-12 | Se corrige el alcance del primer experimento: la fuente inicial será una **carpeta local del portátil**. IBM Maximo queda como deseable posterior, primero mediante simulación y más adelante mediante integración real si procede. |
 | 2026-09-12 | Inicio formal del RAG Learning Lab tras cerrar/congelar MCP. Se define la pregunta guía y el enfoque incremental de aprendizaje. |
@@ -70,6 +71,7 @@ Artefactos iniciales:
 rag/data/source_documents/manual_transmisor_PT201.md
 rag/data/source_documents/procedimiento_seguridad_instrumentacion.md
 rag/src/step01_discover_documents.py
+rag/src/step02_read_and_chunk.py
 ```
 
 Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
@@ -123,9 +125,9 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 ## 🧭 Ruta de aprendizaje
 
 1. **Conceptos esenciales** — qué problema resuelve RAG y por qué un LLM por sí solo no basta.
-2. **Fuente local** — descubrir y leer documentos desde una carpeta del portátil.
-3. **Primer pipeline mínimo** — documentos pequeños, una pregunta y recuperación observable.
-4. **Chunking** — cómo dividir documentos y por qué cambia la calidad.
+2. **Fuente local** — ✅ descubrir documentos desde una carpeta del portátil.
+3. **Lectura + chunking visible** — 🟢 dividir los documentos en fragmentos observables y entendibles.
+4. **Primer retrieval mínimo** — una pregunta y recuperación observable.
 5. **Embeddings y búsqueda semántica** — cómo representar y recuperar significado.
 6. **Vector store / índice** — dónde se guarda la representación recuperable.
 7. **Retrieval** — `top-k`, metadatos y relevancia.
@@ -167,4 +169,17 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Sincronizar el repositorio local y repetir el **Paso 01 — descubrimiento de documentos desde una carpeta local**, ahora sobre `rag/data/source_documents/`. Después avanzaremos a lectura de contenido y chunking visible.
+Sincronizar el repositorio con GitHub Desktop y ejecutar:
+
+```text
+python rag/src/step02_read_and_chunk.py
+```
+
+El objetivo es **ver físicamente cómo los documentos se convierten en chunks**. En esta baseline:
+
+```text
+Markdown → un chunk por sección/encabezado
+TXT      → un chunk por bloque separado por línea en blanco
+```
+
+Todavía **no** usamos embeddings ni búsqueda semántica. Primero queremos entender qué estamos dividiendo y por qué.
