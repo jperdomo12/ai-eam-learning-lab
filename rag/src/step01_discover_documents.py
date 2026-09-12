@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DOCUMENTS_DIR = REPO_ROOT / "rag" / "data" / "documents"
+DEFAULT_SOURCE_DOCUMENTS_DIR = REPO_ROOT / "rag" / "data" / "source_documents"
 
 SUPPORTED_EXTENSIONS = {".md", ".txt", ".pdf", ".docx", ".html", ".htm"}
 
@@ -25,7 +25,11 @@ def discover_documents(folder: Path) -> list[Path]:
 
 
 def main() -> None:
-    folder = Path(sys.argv[1]).expanduser().resolve() if len(sys.argv) > 1 else DEFAULT_DOCUMENTS_DIR
+    folder = (
+        Path(sys.argv[1]).expanduser().resolve()
+        if len(sys.argv) > 1
+        else DEFAULT_SOURCE_DOCUMENTS_DIR
+    )
 
     print("RAG LAB — Paso 01: descubrimiento de documentos desde una carpeta local")
     print(f"Carpeta fuente: {folder}\n")
