@@ -6,6 +6,14 @@
 >
 > ➡️ **Próximo frente:** RAG Learning Lab bajo `rag/`.
 
+## 🕘 Historial
+
+| Fecha | Cambio |
+|---|---|
+| 2026-09-12 | Se incorpora el Historial exigido por el estándar documental y se mantiene el estado final del MCP LAB tras la revisión documental. |
+| 2026-09-12 | Cierre/congelación del laboratorio tras completar la revalidación final en VS Code + Cline. |
+| 2026-09-10 | Creación del HandOff para continuidad del laboratorio MCP. |
+
 ## 1. Estado final
 
 El laboratorio MCP queda cerrado para el alcance actual de aprendizaje.
@@ -82,6 +90,8 @@ Ejemplo sanitizado vigente:
 ```text
 mcp/config/cline_mcp_settings.example.json
 ```
+
+El ejemplo conserva también la sección `github` histórica recuperada. Esa sección representa evidencia de configuración; el paquete `@modelcontextprotocol/server-github` está deprecated y no fue revalidado funcionalmente en el cierre.
 
 ---
 
@@ -218,6 +228,7 @@ No reabrir este punto salvo nueva necesidad real.
 ## 8. Documentos y artefactos vigentes
 
 ```text
+DOCUMENTATION_STANDARD.md
 mcp/docs/MCP_LAB_FAST_READING.md
 mcp/docs/MCP_LAB_DOCUMENTATION.md
 mcp/docs/MCP_LAB_HANDOFF.md
