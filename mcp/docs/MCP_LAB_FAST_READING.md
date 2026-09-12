@@ -12,6 +12,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | Se aclara que la instalación mínima para reproducir **todo** el LAB incluye Claude Desktop y después Cline; se documenta además que Cline puede ejecutarse en varias superficies, pero en este laboratorio se utilizó específicamente como extensión de VS Code porque VS Code ya era el IDE principal y permitía concentrar código, terminal, diff, MCP y pruebas en un mismo entorno. |
 | 2026-09-12 | Se reorganiza la lectura para reflejar la secuencia real **Claude Desktop → VS Code + Cline**, se incorpora la configuración resumida de Claude Desktop y se explican explícitamente la razón del cambio y las ventajas prácticas de Cline. |
 | 2026-09-12 | Se añade Historial, se aclara Filesystem MCP/sandbox, se incorpora el prompt exacto de la prueba combinada final en Cline y se explica brevemente `verify=False`. |
 | 2026-09-12 | Cierre/congelación del MCP LAB tras la revalidación final en VS Code + Cline. |
@@ -60,8 +61,8 @@ MODO_SIMULACION = True
 
 | Producto | Papel |
 |---|---|
-| **VS Code** | IDE |
-| **Cline** | extensión/agente dentro de VS Code |
+| **VS Code** | IDE utilizado en el LAB |
+| **Cline** | agente de desarrollo; en este LAB se utilizó como extensión de VS Code |
 | **Claude Desktop** | primer Host usado en la PoC |
 | **Python + FastMCP** | servidor Maximo MCP |
 | **Node.js / npx** | ejecución de Filesystem MCP y del GitHub MCP histórico |
@@ -70,21 +71,26 @@ MODO_SIMULACION = True
 
 Cline **no es el modelo**. Cline usa un modelo seleccionado por el usuario.
 
+Cline tampoco está conceptualmente limitado a VS Code: actualmente dispone de otras superficies/editores, además de CLI/SDK. **Nuestro laboratorio, sin embargo, se realizó con VS Code + Cline.**
+
 ---
 
-## 4. Instalación mínima para reproducir el aprendizaje
+## 4. Instalación mínima para reproducir TODO el aprendizaje
+
+Si se quiere reproducir la secuencia completa del LAB —incluyendo la primera etapa con Claude Desktop y la posterior evolución a Cline— el orden mental es:
 
 ```text
 1. Instalar VS Code.
-2. Instalar extensión Python de Microsoft.
-3. Instalar Cline.
-4. Instalar Python y verificar PATH.
-5. pip install mcp requests urllib3
-6. Instalar Node.js para disponer de node/npm/npx.
-7. Instalar Claude Desktop si se quiere reproducir también la primera etapa del LAB.
-8. Iniciar sesión en Cline si lo solicita.
-9. Seleccionar un modelo vigente en Cline.
-10. Configurar los MCP Servers en el Host correspondiente.
+2. Instalar la extensión Python de Microsoft.
+3. Instalar Python y verificar PATH.
+4. pip install mcp requests urllib3
+5. Instalar Node.js para disponer de node/npm/npx.
+6. Instalar Claude Desktop.
+7. Configurar y probar primero los MCP Servers en Claude Desktop.
+8. Instalar Cline como extensión de VS Code.
+9. Iniciar sesión en Cline si lo solicita.
+10. Seleccionar un modelo vigente en Cline.
+11. Configurar en Cline los MCP Servers que se quieran utilizar.
 ```
 
 Comprobaciones útiles:
@@ -96,6 +102,8 @@ node --version
 npm --version
 npx --version
 ```
+
+> Si solo se quisiera reproducir la etapa final de VS Code + Cline, Claude Desktop no sería técnicamente obligatorio. Para **reproducir nuestro laboratorio completo**, sí forma parte del recorrido.
 
 ---
 
@@ -179,6 +187,32 @@ pedir/realizar cambio
 → aprobar
 → Restart Server
 → probar
+```
+
+### ¿Por qué VS Code específicamente?
+
+No hicimos una evaluación formal comparando todos los posibles front ends de Cline. **VS Code ya era el IDE principal del laboratorio** para trabajar con Python y `maximo_mcp.py`; por tanto, instalar Cline allí era la evolución con menor fricción y preservaba el entorno que ya estábamos usando.
+
+Además, en nuestro trabajo práctico VS Code + Cline nos dio exactamente lo que necesitábamos:
+
+- código y proyecto abiertos en el mismo IDE;
+- extensión Python;
+- terminal integrada;
+- edición directa de archivos;
+- revisión de cambios mediante diff;
+- acceso a la configuración MCP;
+- visibilidad de Tools / Resources / Prompts;
+- reinicio individual de MCP Servers;
+- prueba inmediata después de cada cambio.
+
+Por eso la decisión real fue más bien:
+
+```text
+VS Code ya era nuestro IDE
+        +
+Cline aportaba el agente dentro de ese IDE
+        ↓
+menor fricción para editar → refrescar → probar
 ```
 
 ### Ventajas prácticas comprobadas de VS Code + Cline
