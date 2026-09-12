@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | Se separan claramente los documentos fuente del código y de la documentación del LAB usando `rag/data/source_documents/`. Se aclara además que la forma de obtener los documentos cambia según la fuente, mientras que el pipeline RAG posterior debe mantenerse lo más estable posible. |
 | 2026-09-12 | Se corrige el alcance del primer experimento: la fuente inicial será una **carpeta local del portátil**. IBM Maximo queda como deseable posterior, primero mediante simulación y más adelante mediante integración real si procede. |
 | 2026-09-12 | Inicio formal del RAG Learning Lab tras cerrar/congelar MCP. Se define la pregunta guía y el enfoque incremental de aprendizaje. |
 
@@ -50,7 +51,15 @@ Para las primeras prácticas usaremos una **carpeta local del portátil**. Esto 
 La carpeta reproducible del LAB es:
 
 ```text
-rag/data/documents/
+rag/data/source_documents/
+```
+
+Separación de responsabilidades:
+
+```text
+rag/docs/                  → documentación SOBRE el laboratorio
+rag/src/                   → código del laboratorio
+rag/data/source_documents/ → documentos QUE CONSUME el RAG
 ```
 
 Al clonar/sincronizar el repositorio, esa carpeta existe físicamente en el equipo local. El script inicial también acepta como argumento cualquier otra carpeta local del portátil.
@@ -58,12 +67,42 @@ Al clonar/sincronizar el repositorio, esa carpeta existe físicamente en el equi
 Artefactos iniciales:
 
 ```text
-rag/data/documents/manual_transmisor_PT201.md
-rag/data/documents/procedimiento_seguridad_instrumentacion.md
+rag/data/source_documents/manual_transmisor_PT201.md
+rag/data/source_documents/procedimiento_seguridad_instrumentacion.md
 rag/src/step01_discover_documents.py
 ```
 
 Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
+
+## 🔌 Las fuentes cambian; el pipeline RAG no debería reinventarse
+
+La forma de **obtener** los documentos dependerá de la fuente:
+
+```text
+Carpeta Windows/Linux → acceso a filesystem
+Documentum            → API/conector
+SharePoint            → API/conector
+IBM Maximo            → documentos enlazados + metadata + acceso al archivo/URL
+Object storage        → SDK/API
+```
+
+Pero, una vez obtenido el documento, buscamos converger hacia un flujo común:
+
+```text
+FUENTE
+  ↓ acceso específico
+DOCUMENTO + METADATOS
+  ↓
+EXTRACCIÓN / NORMALIZACIÓN
+  ↓
+CHUNKING
+  ↓
+ÍNDICE / RETRIEVAL
+  ↓
+LLM
+```
+
+**Idea clave:** cambia principalmente la capa de acceso/adquisición; el núcleo del RAG debería ser reutilizable.
 
 ## 🏭 Papel futuro de IBM Maximo
 
@@ -128,4 +167,4 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Ejecutar el **Paso 01 — descubrimiento de documentos desde una carpeta local** y observar qué archivos encuentra antes de introducir chunking, embeddings o un vector store.
+Sincronizar el repositorio local y repetir el **Paso 01 — descubrimiento de documentos desde una carpeta local**, ahora sobre `rag/data/source_documents/`. Después avanzaremos a lectura de contenido y chunking visible.
