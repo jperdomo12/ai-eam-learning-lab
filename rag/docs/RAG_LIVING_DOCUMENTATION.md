@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — etapa conceptual inicial**
+> 📍 **Estado:** 🟢 **EN CURSO — etapa conceptual + primer experimento**
 >
 > 🗓️ **Actualizado:** 2026-09-12
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | Se adopta IBM Maximo como referencia EAM para el descubrimiento de documentos del primer experimento. Se documenta el modelo multi-fuente/multi-formato y se crean datos/documentos sintéticos para probar primero el descubrimiento antes del retrieval semántico. |
 | 2026-09-12 | Creación inicial del documento vivo del RAG Learning Lab. Se define el problema, el modelo mental, la pregunta guía y el plan incremental de aprendizaje. |
 
 ---
@@ -94,7 +95,7 @@ RAG es principalmente un patrón de **recuperación + contexto + generación**.
 Supongamos que preguntamos:
 
 ```text
-¿Cuál es el procedimiento exacto de calibración de la bomba B-201?
+¿Cuál es el procedimiento exacto de calibración del activo PT-201?
 ```
 
 Sin el manual correcto, el LLM podría:
@@ -226,18 +227,25 @@ La prioridad es saber **qué está ocurriendo y por qué**, no conseguir rápida
 
 Objetivo:
 
-> construir un RAG pequeño donde podamos ver claramente qué fragmentos se recuperan antes de que el LLM genere la respuesta.
+> construir un RAG pequeño donde podamos ver claramente qué documentos se descubren y qué fragmentos se recuperan antes de que el LLM genere la respuesta.
 
 Queremos poder observar algo como:
 
 ```text
+Activo en Maximo:
+PT-201
+
+Documentos enlazados:
+1. Manual técnico
+2. Procedimiento de seguridad
+
 Pregunta:
-¿Cómo calibro el sensor de presión?
+¿Cómo calibro PT-201?
 
 Chunks recuperados:
-1. sección 4.2 — calibración
-2. sección 4.3 — tolerancias
-3. sección 2.1 — seguridad
+1. manual — procedimiento de calibración
+2. manual — criterio de aceptación
+3. procedimiento — seguridad previa
 
 Respuesta:
 ...
@@ -262,11 +270,11 @@ La pregunta usa palabras diferentes a las del manual, para comprobar recuperaci�
 
 ### Caso C — información repartida
 
-La respuesta requiere combinar más de un fragmento.
+La respuesta requiere combinar más de un fragmento o más de un documento.
 
 ### Caso D — respuesta inexistente
 
-El documento no contiene la respuesta.
+La documentación disponible no contiene la respuesta.
 
 Resultado esperado:
 
@@ -278,7 +286,116 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 10. Aplicación futura a EAM / IBM Maximo
+## 10. Fuentes, formatos y papel de IBM Maximo
+
+RAG no depende de un único formato ni de un único repositorio documental.
+
+Una arquitectura empresarial puede recibir documentos desde:
+
+```text
+Windows / Linux filesystem
+Documentum
+SharePoint
+web interna
+object storage
+IBM Maximo / Maximo Manage
+otros repositorios documentales
+```
+
+Los formatos pueden incluir, según el parser disponible:
+
+```text
+PDF
+DOCX
+TXT
+Markdown
+HTML
+CSV
+imágenes escaneadas + OCR
+otros formatos convertibles a contenido utilizable
+```
+
+El patrón general es:
+
+```text
+FUENTE
+  ↓
+CONECTOR / ACCESO
+  ↓
+EXTRACCIÓN / PARSING
+  ↓
+NORMALIZACIÓN
+  ↓
+CHUNKS + METADATOS
+  ↓
+ÍNDICE / RETRIEVAL
+```
+
+### 10.1 Maximo como referencia del LAB
+
+Para el aprendizaje EAM queremos utilizar **IBM Maximo como ejemplo de sistema que conoce qué documentos están asociados a un activo**.
+
+Conceptualmente:
+
+```text
+Activo en Maximo
+      ↓
+documentos enlazados / metadata
+      ↓
+localizar documento físico o URL
+      ↓
+extraer contenido
+      ↓
+RAG
+```
+
+Maximo puede actuar como **catálogo/contexto EAM** del documento, aunque el archivo físico pueda residir en filesystem, object storage u otro repositorio.
+
+Metadatos útiles para RAG:
+
+```text
+assetnum
+siteid
+document_id
+tipo_documento
+revision
+vigencia
+ruta / URL
+source_system
+```
+
+Estos metadatos permiten restringir primero el universo documental y luego aplicar búsqueda semántica sobre contenido relevante.
+
+### 10.2 Decisión para el primer experimento
+
+No disponemos de una instancia Maximo viva para este LAB. Por eso se simula únicamente la capa de descubrimiento documental:
+
+```text
+asset_doclinks_mock.json
+      ↓
+PT-201 / PLANTA1
+      ↓
+manual + procedimiento enlazados
+      ↓
+archivos sintéticos del repositorio
+```
+
+Esto permite aprender el patrón correcto sin afirmar que exista integración real con Maximo.
+
+Artefactos iniciales:
+
+```text
+rag/data/maximo/asset_doclinks_mock.json
+rag/data/documents/manual_transmisor_PT201.md
+rag/data/documents/procedimiento_seguridad_instrumentacion.md
+rag/src/step01_discover_documents.py
+```
+
+Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
+
+---
+
+## 11. Aplicación futura a EAM / IBM Maximo
 
 Fuentes candidatas de conocimiento:
 
@@ -306,7 +423,7 @@ Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 11. Decisiones todavía NO tomadas
+## 12. Decisiones todavía NO tomadas
 
 Aún no se ha decidido:
 
@@ -317,22 +434,31 @@ Aún no se ha decidido:
 - ejecución local vs API;
 - estrategia de chunking;
 - tamaño de `top-k`;
-- formato de documentos definitivo;
 - framework de evaluación.
 
 Estas decisiones se tomarán durante experimentos concretos y se documentarán con evidencia, no por anticipado.
 
 ---
 
-## 12. Siguiente paso
+## 13. Siguiente paso
 
-Primera etapa práctica:
+Ejecutar y observar el **Paso 01 — descubrimiento de documentos desde Maximo simulado**:
 
-1. seleccionar un documento pequeño y controlable;
-2. definir preguntas con respuesta conocida;
-3. construir el pipeline mínimo;
+```text
+PT-201 / PLANTA1
+      ↓
+consultar catálogo Maximo simulado
+      ↓
+obtener documentos vigentes enlazados
+      ↓
+verificar que los archivos existen
+```
+
+Después:
+
+1. leer los documentos encontrados;
+2. dividirlos en chunks observables;
+3. construir el primer retrieval;
 4. mostrar los chunks recuperados;
 5. generar respuesta basada únicamente en ellos;
 6. probar deliberadamente una pregunta sin respuesta.
-
-El código y las carpetas técnicas se crearán en GitHub cuando este primer experimento defina qué artefactos necesita realmente.
