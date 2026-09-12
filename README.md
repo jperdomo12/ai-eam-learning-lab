@@ -8,6 +8,7 @@ Hands-on learning and experimentation lab for AI applied to EAM: MCP, RAG, agent
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | Se simplifica la estructura documental: `DOCUMENTATION_STANDARD.md` pasa a la raíz del repositorio y se refuerza la regla de Historial obligatorio en toda documentación Markdown viva. |
 | 2026-09-12 | MCP queda **cerrado/congelado en v1.2** tras la revalidación final de VS Code + Cline: configuración efectiva recuperada, Maximo/Filesystem probados y composición multi-MCP validada. |
 | 2026-09-10 | MCP queda cerrado y consolidado en baseline v1.1 con documentación completa, Fast Reading y artefactos preservados; RAG queda como siguiente laboratorio. |
 | 2026-09-10 | Se cierra y aprueba la baseline inicial del laboratorio MCP. |
@@ -37,7 +38,7 @@ No busca reproducir el proceso formal de un producto. La documentación y el Git
 
 La documentación se mantiene **viva en GitHub**. Materiales provenientes de chats, Gemini, Claude, Cline u otras etapas son fuentes de reconstrucción; el conocimiento consolidado debe terminar en la documentación vigente del laboratorio.
 
-El estándar documental está en [`docs/DOCUMENTATION_STANDARD.md`](docs/DOCUMENTATION_STANDARD.md).
+El estándar documental está en [`DOCUMENTATION_STANDARD.md`](DOCUMENTATION_STANDARD.md).
 
 ## 🧭 Temas
 
