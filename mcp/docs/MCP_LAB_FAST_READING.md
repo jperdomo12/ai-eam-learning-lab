@@ -12,6 +12,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-12 | Se reorganiza la lectura para reflejar la secuencia real **Claude Desktop → VS Code + Cline**, se incorpora la configuración resumida de Claude Desktop y se explican explícitamente la razón del cambio y las ventajas prácticas de Cline. |
 | 2026-09-12 | Se añade Historial, se aclara Filesystem MCP/sandbox, se incorpora el prompt exacto de la prueba combinada final en Cline y se explica brevemente `verify=False`. |
 | 2026-09-12 | Cierre/congelación del MCP LAB tras la revalidación final en VS Code + Cline. |
 | 2026-09-10 | Creación del resumen de recuperación rápida del laboratorio MCP. |
@@ -80,9 +81,10 @@ Cline **no es el modelo**. Cline usa un modelo seleccionado por el usuario.
 4. Instalar Python y verificar PATH.
 5. pip install mcp requests urllib3
 6. Instalar Node.js para disponer de node/npm/npx.
-7. Iniciar sesión en Cline si lo solicita.
-8. Seleccionar un modelo vigente.
-9. Configurar los MCP Servers.
+7. Instalar Claude Desktop si se quiere reproducir también la primera etapa del LAB.
+8. Iniciar sesión en Cline si lo solicita.
+9. Seleccionar un modelo vigente en Cline.
+10. Configurar los MCP Servers en el Host correspondiente.
 ```
 
 Comprobaciones útiles:
@@ -97,7 +99,104 @@ npx --version
 
 ---
 
-## 5. Configuración Cline actual verificada
+## 5. Claude Desktop — configuración y primera etapa
+
+**Claude Desktop fue el primer Host MCP real del laboratorio.** Con él comprobamos que una aplicación de IA podía descubrir e invocar nuestro servidor Maximo local, usar Filesystem MCP y combinar servidores en una misma tarea.
+
+Ruta efectiva utilizada en la instalación Windows Store del LAB:
+
+```text
+C:\Users\jpperdomo\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json
+```
+
+Acceso usado:
+
+```text
+Claude Desktop
+→ Settings / Configuración
+→ Developer / Desarrollador
+→ Edit Configuration / Editar configuración
+```
+
+Patrón de configuración observado:
+
+```json
+"maximo": {
+  "command": "C:/.../python.exe",
+  "args": ["-u", "C:/.../maximo_mcp.py"]
+}
+```
+
+En el mismo `mcpServers` se configuraron históricamente:
+
+```text
+maximo      → Python + maximo_mcp.py
+filesystem  → npx + carpetas autorizadas
+github      → npx + PAT histórico
+```
+
+Ejemplo sanitizado:
+
+```text
+mcp/config/claude_desktop_config.example.json
+```
+
+Para recoger determinados cambios era frecuente tener que:
+
+```text
+modificar configuración/código
+→ Quit Claude completamente desde bandeja
+→ abrir Claude otra vez
+→ verificar MCP Server en Developer
+→ volver a probar
+```
+
+Claude Desktop **funcionó correctamente** para aprender y usar MCP. El cambio posterior a Cline no se hizo porque Claude no sirviera, sino para reducir la fricción del ciclo de desarrollo.
+
+---
+
+## 6. Por qué pasamos de Claude Desktop a VS Code + Cline
+
+El laboratorio evolucionó a **VS Code + Cline** porque estábamos modificando y probando `maximo_mcp.py` continuamente.
+
+Con Claude Desktop el ciclo podía ser:
+
+```text
+editar fuera de Claude
+→ guardar
+→ cerrar completamente Claude
+→ abrir
+→ verificar servidor
+→ probar
+```
+
+Con VS Code + Cline pudimos concentrar el trabajo en un único entorno:
+
+```text
+pedir/realizar cambio
+→ editar código en VS Code
+→ revisar diff
+→ aprobar
+→ Restart Server
+→ probar
+```
+
+### Ventajas prácticas comprobadas de VS Code + Cline
+
+- editar `maximo_mcp.py` directamente en el IDE;
+- revisar cambios mediante diff antes de aceptarlos;
+- disponer de terminal integrada cuando correspondía;
+- visualizar MCP Servers y, para Maximo, **Tools (14), Resources (0), Prompts (0)**;
+- reiniciar individualmente un servidor mediante **Restart Server**;
+- editar la configuración MCP y probar sin reiniciar todo VS Code;
+- seleccionar/cambiar el modelo de IA utilizado por Cline;
+- combinar MCP con capacidades propias del agente/IDE.
+
+**Idea clave:** Cline añadió capacidades agénticas y redujo la fricción de iteración; MCP siguió siendo el protocolo que exponía nuestras capacidades externas.
+
+---
+
+## 7. VS Code + Cline — configuración actual verificada
 
 Ruta efectiva recuperada directamente:
 
@@ -138,9 +237,11 @@ Ese ejemplo conserva `maximo`, `filesystem` y el `github` histórico recuperado.
 
 La ruta histórica `%APPDATA%\Code\User\globalStorage\...` pertenece a una configuración/versión anterior de Cline y ya no es la ruta efectiva actual.
 
+Durante la revalidación final fue necesario iniciar sesión de nuevo en Cline y sustituir el modelo histórico que devolvía 404 por **DeepSeek V4 Flash**, mostrado entonces como `Free`.
+
 ---
 
-## 6. Maximo MCP
+## 8. Maximo MCP
 
 Cline mostró:
 
@@ -177,7 +278,7 @@ PASILLO-B2-ESTANTE4
 
 ---
 
-## 7. Selección de Tools
+## 9. Selección de Tools
 
 El modelo utiliza señales como:
 
@@ -202,7 +303,7 @@ El servidor seguía activo. Una tarea nueva usando `consultar_inventario` real v
 
 ---
 
-## 8. Filesystem MCP y sandbox
+## 10. Filesystem MCP y sandbox
 
 **Qué es:** un MCP Server especializado en leer/escribir archivos y carpetas locales.
 
@@ -230,7 +331,7 @@ Además se observó que una petición no controlada puede hacer que **Cline use 
 
 ---
 
-## 9. Prueba combinada final en Cline
+## 11. Prueba combinada final en Cline
 
 Prompt utilizado en la prueba controlada final:
 
@@ -271,20 +372,23 @@ Claude Desktop ya había superado una prueba equivalente creando `ots_abiertas.c
 
 ---
 
-## 10. Claude Desktop vs Cline
+## 12. Claude Desktop vs VS Code + Cline
 
 | Tema | Claude Desktop | VS Code + Cline |
 |---|---|---|
+| Papel en el LAB | primer Host MCP | entorno posterior de desarrollo/prueba |
 | Modelo | Claude integrado | modelo seleccionable |
 | Config | `claude_desktop_config.json` | `cline_mcp_settings.json` |
 | JSON observado | `command/args/env` | `transport.type/command/args/env` |
 | Recarga | podía requerir Quit/reabrir | `Restart Server` individual |
-| Capacidades locales | principalmente las ofrecidas por el Host/conectores | MCP + herramientas IDE + terminal |
+| Edición de código | fuera del flujo principal de chat | integrada en el IDE + diff/approve |
+| Terminal | no fue el foco del Host | integrada en el entorno Cline/VS Code |
+| Visibilidad MCP | servidor/conectores según UI | servidores + Tools/Resources/Prompts visibles |
 | Prueba Maximo + Filesystem | ✅ | ✅ |
 
 ---
 
-## 11. GitHub MCP
+## 13. GitHub MCP
 
 Históricamente se usó:
 
@@ -300,7 +404,7 @@ Si alguna vez se recupera, se usará la implementación oficial vigente `github/
 
 ---
 
-## 12. Lo que NO debe confundirse con producción
+## 14. Lo que NO debe confundirse con producción
 
 La PoC incluye simplificaciones deliberadas:
 
@@ -319,7 +423,7 @@ Conclusión correcta:
 
 ---
 
-## 13. Próximo paso
+## 15. Próximo paso
 
 ➡️ **RAG Learning Lab** bajo `rag/`.
 
