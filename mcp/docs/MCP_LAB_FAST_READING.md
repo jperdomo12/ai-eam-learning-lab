@@ -8,6 +8,14 @@
 >
 > 📘 **Documento completo:** [`MCP_LAB_DOCUMENTATION.md`](MCP_LAB_DOCUMENTATION.md)
 
+## 🕘 Historial
+
+| Fecha | Cambio |
+|---|---|
+| 2026-09-12 | Se añade Historial, se aclara Filesystem MCP/sandbox, se incorpora el prompt exacto de la prueba combinada final en Cline y se explica brevemente `verify=False`. |
+| 2026-09-12 | Cierre/congelación del MCP LAB tras la revalidación final en VS Code + Cline. |
+| 2026-09-10 | Creación del resumen de recuperación rápida del laboratorio MCP. |
+
 ## 1. En una frase
 
 Se validó una PoC local donde aplicaciones de IA —primero **Claude Desktop** y después **VS Code + Cline**— utilizaron MCP Servers especializados para ejecutar capacidades EAM simuladas y trabajar con archivos locales.
@@ -126,6 +134,8 @@ Ejemplo sanitizado:
 mcp/config/cline_mcp_settings.example.json
 ```
 
+Ese ejemplo conserva `maximo`, `filesystem` y el `github` histórico recuperado. La sección GitHub es **evidencia de configuración**, no recomendación de instalación nueva: `@modelcontextprotocol/server-github` está deprecated y no fue revalidado funcionalmente en el cierre.
+
 La ruta histórica `%APPDATA%\Code\User\globalStorage\...` pertenece a una configuración/versión anterior de Cline y ya no es la ruta efectiva actual.
 
 ---
@@ -194,6 +204,12 @@ El servidor seguía activo. Una tarea nueva usando `consultar_inventario` real v
 
 ## 8. Filesystem MCP y sandbox
 
+**Qué es:** un MCP Server especializado en leer/escribir archivos y carpetas locales.
+
+**Dónde se limita:** en la configuración del Host, dentro de los `args` de `@modelcontextprotocol/server-filesystem`, se indican las carpetas raíz permitidas.
+
+**Cómo funciona:** Filesystem MCP solo puede operar dentro de esas raíces y sus subcarpetas; una ruta fuera de ellas queda bloqueada. Ese límite actúa como **sandbox**.
+
 Prueba controlada:
 
 ```text
@@ -216,7 +232,11 @@ Además se observó que una petición no controlada puede hacer que **Cline use 
 
 ## 9. Prueba combinada final en Cline
 
-Se obligó a utilizar:
+Prompt utilizado en la prueba controlada final:
+
+> Usa la Tool `query_maximo` del servidor MCP `maximo` para consultar `MXWO` y obtener las órdenes de trabajo disponibles, incluyendo `wonum`, `description`, `status` y `assetnum`. Considera abiertas las que no estén en estado `COMP`, `CLOSE` o `CAN`. Después usa exclusivamente una Tool del servidor MCP `filesystem` para crear `C:\Users\jpperdomo\Downloads\ots_abiertas_cline_mcp.csv` con las columnas `numero_ot`, `descripcion`, `estado` y `activo`. No uses terminal, comandos del sistema, herramientas nativas de archivos ni leas ningún CSV existente.
+
+Se obligó así a utilizar:
 
 ```text
 Maximo MCP
@@ -274,6 +294,8 @@ Históricamente se usó:
 
 Ese paquete quedó deprecated. El issue #1 del Learning Lab documenta el incidente y la decisión de **no reinstalarlo ahora**.
 
+La configuración Cline sanitizada conserva esa sección histórica porque formó parte del entorno recuperado, pero **no se considera revalidada ni recomendada para nuevas instalaciones**.
+
 Si alguna vez se recupera, se usará la implementación oficial vigente `github/github-mcp-server` y autenticación de mínimo privilegio.
 
 ---
@@ -284,7 +306,7 @@ La PoC incluye simplificaciones deliberadas:
 
 - `MODO_SIMULACION = True`;
 - sin Maximo real;
-- `verify=False` en rama HTTP histórica;
+- `verify=False` en la rama HTTP histórica: Python `requests` acepta la conexión HTTPS **sin verificar el certificado TLS/SSL del servidor**. Fue útil en una PoC con certificados internos, pero reduce seguridad y **no debe trasladarse a producción**;
 - credenciales modeladas de forma simple;
 - Working Set en memoria;
 - reglas de estado locales;
