@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; Pasos 07A–07B verificados; siguiente etapa: generación fundamentada**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; Paso 08 generación fundamentada preparado**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | 🧪 Se prepara el **Paso 08 — generación fundamentada con LLM externo**. Para aislar el aprendizaje de generación se selecciona **OpenAI Responses API** como proveedor inicial del LAB y `gpt-5.6-luna` como modelo por defecto orientado a coste, configurable mediante `OPENAI_MODEL`. Se mantiene `Top-k=4` como baseline temporal ya evaluada, el LLM no recibe herramientas externas y la clave se lee exclusivamente desde `OPENAI_API_KEY`; nunca se almacena en código ni GitHub. Esta elección es solo del LAB y no constituye arquitectura de AI-EAM-MAXIMO. |
 | 2026-09-13 | ✅ Se verifica el **Paso 07B — sensibilidad a `Top-k`** manteniendo fijos modelo, embeddings, corpus y consultas. En la baseline actual, el Caso A alcanza cobertura completa desde `k=2`, el Caso B desde `k=3` y el Caso C desde `k=4`; el Caso D sigue sin respuesta documental aunque se amplíe hasta `k=5`. Se adopta **`k=4` únicamente como baseline temporal para la próxima evaluación de generación**, por ser el menor valor probado que cubre toda la evidencia esperada de A–C. No se considera un `Top-k` universal ni una decisión productiva. |
 | 2026-09-13 | 🧪 Diagnóstico completo del **Caso C**: `Inspección previa` queda #1 (`0.6864`), `Procedimiento de calibración` #2 (`0.6438`), `Criterio de aceptación` #3 (`0.4909`), la sección alternativa de seguridad `Antes de calibrar un transmisor de presión` #4 (`0.4400`) y `Seguridad previa` #5 (`0.4209`). Se aprende que evaluar únicamente por heading exacto puede ser demasiado rígido y que aumentar `k` puede mejorar cobertura a costa de más contexto. Se añaden **grupos de evidencia** al dataset y el **Paso 07B** para medir sensibilidad a `k=1..5` sin cambiar modelo, corpus, embeddings ni consultas. |
 | 2026-09-13 | 🧪 Se ejecuta el **Paso 07A — baseline A–D**. Casos A y B recuperan toda la evidencia esperada dentro del `Top-3`; el Caso C recupera `Inspección previa` y `Procedimiento de calibración`, pero deja fuera `Seguridad previa` (`1/2` headings esperados); el Caso D confirma que existe `Top-k` aun sin respuesta documental. Antes de cambiar `top-k`, modelo, query o chunking, se diagnosticará la posición exacta de `Seguridad previa` en el ranking completo del Caso C. |
@@ -94,6 +95,7 @@ rag/src/step05_query_vector_index.py
 rag/src/step06_build_grounded_context.py
 rag/src/step07_evaluate_retrieval_cases.py
 rag/src/step07b_evaluate_topk_sensitivity.py
+rag/src/step08_generate_grounded_answer.py
 ```
 
 Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
@@ -154,7 +156,7 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 6. **Índice vectorial persistente mínimo** — ✅ separar indexación y consulta guardando vectores + metadata localmente, todavía sin una vector database dedicada.
 7. **Construcción de contexto fundamentado** — ✅ recuperar `Top-k`, volver al texto original y construir el contexto/prompt que recibiría el LLM.
 8. **Baseline de evaluación y abstención** — ✅ casos A–D reproducibles y sensibilidad a `Top-k` evaluada; `k=4` queda como baseline temporal mínima para cubrir A–C en este corpus, mientras D sigue sin respuesta documental.
-9. **Generación fundamentada** — 🟢 conectar un LLM usando la baseline evaluada para medir respuesta, citas y abstención.
+9. **Generación fundamentada** — 🧪 Paso 08 preparado con OpenAI Responses API, `gpt-5.6-luna` por defecto y `Top-k=4`; pendiente de ejecución y evaluación real.
 10. **Mejoras** — filtros, búsqueda híbrida, reranking, query rewriting, etc., solo cuando aporten valor.
 11. **Aplicación EAM** — manuales, procedimientos, troubleshooting, seguridad y mantenimiento.
 12. **Maximo simulado** — usar contexto EAM para descubrir documentos asociados a un activo.
@@ -196,30 +198,35 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-El **Paso 07B** ya permite fijar una baseline concreta para la siguiente etapa:
+La primera generación real del LAB usará temporalmente:
 
 ```text
-Caso A → cobertura completa desde k=2
-Caso B → cobertura completa desde k=3
-Caso C → cobertura completa desde k=4
-Caso D → no tiene respuesta documental; aumentar k no cambia ese hecho
+Proveedor/API: OpenAI Responses API
+Modelo:        gpt-5.6-luna
+Top-k:         4
+Herramientas:  ninguna
 ```
 
-Para la **primera evaluación de generación** se utilizará temporalmente:
+`gpt-5.6-luna` es una elección **de laboratorio orientada a coste** y puede sustituirse sin cambiar el pipeline mediante la variable `OPENAI_MODEL`. No es una decisión de arquitectura del producto.
+
+Instalar dependencias actualizadas:
 
 ```text
-Top-k = 4
+python -m pip install -r rag/requirements.txt
 ```
 
-porque es el menor valor probado que cubre toda la evidencia esperada de A–C en este corpus. Esta elección es **solo una baseline del LAB**: no sustituye evaluación futura, no modifica retrospectivamente los experimentos anteriores con `Top-k=3` y no constituye una decisión de arquitectura productiva.
-
-El siguiente paso será conectar un **LLM real** al prompt fundamentado y ejecutar los casos A–D para comprobar:
+La credencial se obtiene fuera del repositorio y debe exponerse al proceso únicamente mediante:
 
 ```text
-- groundedness: ¿usa únicamente evidencia recuperada?
-- completeness: ¿cubre la evidencia necesaria?
-- citation correctness: ¿cita [FUENTE n] de forma coherente?
-- abstention: ¿se niega a inventar en el Caso D?
+OPENAI_API_KEY
 ```
 
-La forma de ejecutar el LLM —API externa o modelo local— se decidirá explícitamente antes de introducir esa nueva dependencia, porque afecta instalación, credenciales, coste y reproducibilidad del laboratorio.
+Nunca debe escribirse la clave en el código, documentación, commits o chat. `.gitignore` ya excluye archivos `.env`, aunque el Paso 08 no depende de un archivo `.env` y usa directamente la variable de entorno.
+
+Después ejecutar:
+
+```text
+python rag/src/step08_generate_grounded_answer.py
+```
+
+La consulta por defecto es el **Caso C** porque requiere integrar inspección, seguridad y procedimiento. El script mostrará primero el `Top-4` y el prompt exacto enviado al LLM, y después la respuesta. Una vez verificada esa ejecución, se repetirá con el **Caso D** para comprobar abstención ante evidencia inexistente.
