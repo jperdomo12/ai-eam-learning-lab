@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01, 02 y 03 verificados; Paso 04 embeddings / retrieval semántico**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01, 02 y 03 verificados; Paso 04 probado y en diagnóstico**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | 🧪 Primera ejecución real del **Paso 04** con embeddings locales (`paraphrase-multilingual-MiniLM-L12-v2`): se evaluaron 14 chunks con vectores de 384 dimensiones. El retrieval semántico funcionó técnicamente, pero el chunk de calibración no apareció en el `Top-3`; se añade ranking completo como diagnóstico antes de cambiar modelo, chunking o estrategia. |
 | 2026-09-13 | ✅ Se verifica el **Paso 03** con dos consultas: el retrieval léxico funciona por coincidencia de términos, pero una formulación semánticamente equivalente puede dejar fuera del `Top-k` el chunk realmente útil. Se crea el **Paso 04** con embeddings y similitud semántica, manteniendo todavía los vectores solo en memoria RAM para aislar el concepto antes del vector store. |
 | 2026-09-13 | Se crea `rag/docs/study/` y se trasladan allí las notas `STUDY-*`, separando el material pedagógico de la documentación canónica/viva del laboratorio. |
 | 2026-09-13 | Se crea la nota de estudio **RAG — Conceptos esenciales**, con fundamentos y conceptos intermedios importantes como retrieval híbrido, reranking, reindexación, seguridad y evaluación. |
@@ -133,7 +134,7 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 2. **Fuente local** — ✅ descubrir documentos desde una carpeta del portátil.
 3. **Lectura + chunking visible** — ✅ dividir los documentos en fragmentos observables y entendibles.
 4. **Primer retrieval mínimo** — ✅ recuperar chunks mediante coincidencia léxica y comprobar sus limitaciones.
-5. **Embeddings y búsqueda semántica** — 🟢 representar pregunta y chunks como vectores y comparar similitud de significado.
+5. **Embeddings y búsqueda semántica** — 🧪 embeddings funcionando; diagnosticando la calidad del ranking antes de dar el paso por verificado.
 6. **Vector store / índice** — dónde se guarda de forma persistente la representación recuperable.
 7. **Retrieval** — `top-k`, metadatos y relevancia.
 8. **Generación fundamentada** — responder solo con contexto recuperado y citar evidencia.
@@ -179,22 +180,10 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Sincronizar con **GitHub Desktop** y, desde la terminal de **VS Code**, instalar una vez la dependencia del Paso 04:
-
-```text
-python -m pip install -r rag/requirements.txt
-```
-
-Después ejecutar:
+Sincronizar con **GitHub Desktop** y volver a ejecutar:
 
 ```text
 python rag/src/step04_semantic_retrieval.py
 ```
 
-La consulta por defecto será la misma que expuso la limitación del Paso 03:
-
-```text
-¿Cómo ajusto el transmisor de presión?
-```
-
-El objetivo es comparar el nuevo ranking con el retrieval léxico. En este paso los embeddings se calculan y comparan **solo en memoria RAM**; todavía no se introduce persistencia ni vector store.
+El script mostrará ahora, además del `Top-3`, un **ranking compacto de los 14 chunks**. El objetivo inmediato es localizar la posición y similitud exactas del chunk **`4. Procedimiento de calibración`** antes de modificar cualquier variable del experimento.
