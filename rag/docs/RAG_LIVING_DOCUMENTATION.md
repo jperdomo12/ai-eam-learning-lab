@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; siguiente etapa: generación fundamentada**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; siguiente etapa: generación fundamentada**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se completa la baseline de **evaluación del retrieval (Pasos 07A–07B)** con casos A–D. La sensibilidad a `Top-k` muestra cobertura completa desde `k=2` para A, `k=3` para B y `k=4` para C; D sigue sin respuesta documental aunque se amplíe hasta `k=5`. Se adopta **`k=4` solo como baseline temporal de la próxima evaluación de generación**, por ser el menor valor probado que cubre la evidencia esperada de A–C. También se confirma que evaluar únicamente por heading exacto es insuficiente: la cobertura debe considerar grupos de evidencia equivalentes. |
 | 2026-09-13 | ✅ Se verifica el **Paso 06**: el índice persistido recupera el `Top-3`, el sistema vuelve desde los vectores al **texto original** de cada chunk, conserva documento/sección/chunk como procedencia y construye un **prompt fundamentado** con instrucciones explícitas de no inventar, declarar evidencia insuficiente y citar `[FUENTE n]`. Se confirma físicamente que los embeddings sirven para localizar evidencia, mientras que el LLM recibiría **pregunta + instrucciones + texto recuperado**, no los vectores. Se abre la etapa de **generación fundamentada**. |
 | 2026-09-13 | ✅ Se verifica el **Paso 05** completo. La fase de indexación persiste 11 embeddings de 384 dimensiones en `embeddings.npy` junto con `metadata.json` y `manifest.json`; la fase de consulta posterior carga esos vectores y reproduce exactamente el mismo `Top-3` del Paso 04b generando únicamente el embedding de la pregunta. Se confirma experimentalmente la separación entre **INDEXACIÓN** y **CONSULTA**. Se abre el **Paso 06** para hacer visible la construcción del contexto y del prompt fundamentado antes de llamar a un LLM. |
 | 2026-09-13 | ✅ Se verifica el **Paso 04 / 04b**: embeddings locales de 384 dimensiones, similitud semántica y `Top-k` funcionan. Las pruebas muestran que similitud temática no equivale necesariamente a capacidad de responder y que estructura/identificación pueden competir con contenido operativo. Al excluir solo estructura/metadata, el `Top-3` queda formado por seguridad antes de calibrar, seguridad previa y procedimiento de calibración. Se abre el **Paso 05** para persistir vectores + metadata localmente y separar claramente indexación de consulta, todavía sin vector database. |
@@ -736,7 +737,107 @@ Este paso completa físicamente el puente entre **retrieval** y **generation**.
 
 ---
 
-## 15. Casos de prueba que debe soportar el primer LAB
+## 15. Paso 07 — Baseline de evaluación del retrieval
+
+Antes de conectar un LLM se creó una pequeña baseline reproducible con cuatro tipos de caso:
+
+```text
+A. respuesta presente
+B. formulación distinta
+C. información repartida
+D. respuesta inexistente
+```
+
+Artefactos:
+
+```text
+rag/data/evaluation_cases.json
+rag/src/step07_evaluate_retrieval_cases.py
+rag/src/step07b_evaluate_topk_sensitivity.py
+```
+
+### 15.1 Paso 07A — casos A–D
+
+Resultados iniciales con `Top-k = 3`:
+
+```text
+Caso A → evidencia esperada recuperada
+Caso B → evidencia esperada recuperada
+Caso C → recuperación parcial; seguridad previa fuera del Top-3
+Caso D → existe Top-k aunque la respuesta no está documentada
+```
+
+El Caso D confirma:
+
+```text
+Top-k encontrado
+≠
+respuesta encontrada
+```
+
+Además, una similarity relativamente alta no demuestra suficiencia de evidencia: el Caso D obtuvo un primer candidato de `0.5414` sin contener el dato solicitado.
+
+### 15.2 Diagnóstico del Caso C
+
+Ranking relevante:
+
+```text
+#1 | 0.6864 | Inspección previa
+#2 | 0.6438 | Procedimiento de calibración
+#3 | 0.4909 | Criterio de aceptación
+#4 | 0.4400 | Antes de calibrar un transmisor de presión
+#5 | 0.4209 | Seguridad previa
+```
+
+Esto muestra que evaluar únicamente por un heading exacto puede ser demasiado rígido. Se introducen **grupos de evidencia**, donde distintas secciones pueden aportar evidencia equivalente para una necesidad concreta.
+
+Para el Caso C se evalúan tres grupos:
+
+```text
+1. inspección previa
+2. seguridad previa
+3. procedimiento de calibración
+```
+
+### 15.3 Paso 07B — sensibilidad a Top-k
+
+Se mantiene fijo:
+
+```text
+modelo
+embeddings
+corpus
+consultas
+```
+
+y solo se varía:
+
+```text
+k = 1, 2, 3, 4, 5
+```
+
+Resultado:
+
+```text
+Caso A → cobertura completa desde k=2
+Caso B → cobertura completa desde k=3
+Caso C → cobertura completa desde k=4
+Caso D → sigue sin respuesta documental; aumentar k no crea evidencia inexistente
+```
+
+Por tanto, para la próxima evaluación de generación se adopta temporalmente:
+
+```text
+Top-k = 4
+```
+
+porque es el menor valor probado que cubre toda la evidencia esperada de A–C en este corpus.
+
+**Importante:** `k=4` es solo una baseline pedagógica del LAB. No existe un `Top-k` universalmente correcto; aumentar `k` puede mejorar recall/cobertura, pero también añade ruido, tokens y coste.
+
+---
+
+## 16. Casos de prueba que debe soportar el primer LAB
 
 ### Caso A — respuesta presente
 
@@ -764,7 +865,7 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 16. Fuentes, formatos y adquisición
+## 17. Fuentes, formatos y adquisición
 
 RAG no depende de un único formato ni de un único repositorio documental.
 
@@ -827,7 +928,7 @@ Esto evita construir un RAG distinto para cada sistema fuente.
 
 ---
 
-## 17. Papel deseable de IBM Maximo
+## 18. Papel deseable de IBM Maximo
 
 IBM Maximo es el **ejemplo EAM deseable para una fase posterior**, no la fuente inicial del LAB.
 
@@ -869,17 +970,18 @@ Secuencia vigente:
 4. Embeddings / retrieval semántico           ✅
 5. Índice vectorial persistente mínimo        ✅
 6. Construcción de contexto fundamentado      ✅
-7. Generación fundamentada / evaluación       ← AHORA
-8. Simulación de Maximo/doclinks
-9. Combinación de contexto EAM + RAG
-10. Integración real con Maximo                ← solo si procede
+7. Baseline de evaluación del retrieval       ✅
+8. Generación fundamentada / evaluación       ← AHORA
+9. Simulación de Maximo/doclinks
+10. Combinación de contexto EAM + RAG
+11. Integración real con Maximo                ← solo si procede
 ```
 
 La simulación Maximo se construirá cuando lleguemos realmente a ese paso.
 
 ---
 
-## 18. Aplicación futura a EAM / IBM Maximo
+## 19. Aplicación futura a EAM / IBM Maximo
 
 Fuentes candidatas de conocimiento:
 
@@ -907,7 +1009,7 @@ Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 19. Decisiones todavía NO tomadas
+## 20. Decisiones todavía NO tomadas
 
 Aún no se ha decidido:
 
@@ -918,22 +1020,39 @@ Aún no se ha decidido:
 - ejecución local vs API;
 - estrategia de chunking definitiva;
 - tamaño de `top-k` definitivo;
-- framework de evaluación.
+- framework de evaluación definitivo.
 
-El modelo `paraphrase-multilingual-MiniLM-L12-v2` y el índice NumPy/JSON son **baselines de aprendizaje del LAB**, no decisiones de arquitectura de AI-EAM-MAXIMO.
+El modelo `paraphrase-multilingual-MiniLM-L12-v2`, el índice NumPy/JSON y `Top-k = 4` para la siguiente evaluación son **baselines de aprendizaje del LAB**, no decisiones de arquitectura de AI-EAM-MAXIMO.
 
 ---
 
-## 20. Siguiente paso
+## 21. Siguiente paso
 
-El Paso 06 deja construido y visible el **prompt fundamentado** que recibiría un LLM. La siguiente etapa es probar la **generación** usando exactamente ese prompt como baseline y comprobar:
+La baseline de retrieval ya está suficientemente entendida para introducir la primera **generación real**.
+
+Se utilizará inicialmente:
 
 ```text
-¿la respuesta usa solo la evidencia recuperada?
-¿integra correctamente los varios chunks?
-¿mantiene valores y condiciones exactos?
-¿cita [FUENTE 1], [FUENTE 2], [FUENTE 3]?
-¿declara evidencia insuficiente cuando corresponda?
+Top-k = 4
 ```
 
-Antes de acoplar una API o un modelo local al código, se realizará una generación controlada con el prompt ya observado. La elección posterior de proveedor/modelo será una decisión explícita del LAB, no una decisión automática de arquitectura de AI-EAM-MAXIMO.
+solo durante la evaluación de generación, manteniendo intactos los experimentos históricos con `Top-k = 3`.
+
+Los casos A–D permitirán evaluar:
+
+```text
+groundedness       → ¿usa solo evidencia recuperada?
+completeness       → ¿cubre la evidencia necesaria?
+citation correctness → ¿cita [FUENTE n] coherentemente?
+abstention         → ¿evita inventar cuando no existe respuesta?
+```
+
+Antes de incorporar el generador al código debe elegirse explícitamente el modo de ejecución del LLM:
+
+```text
+API externa
+vs.
+modelo local
+```
+
+Esa elección afecta instalación, credenciales, coste y reproducibilidad, por lo que se trata como una decisión de laboratorio independiente y no como una decisión productiva de AI-EAM-MAXIMO.
