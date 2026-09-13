@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; Paso 07A ejecutado; Caso C en diagnóstico**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; Paso 07B sensibilidad a `Top-k` preparado**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | 🧪 Diagnóstico completo del **Caso C**: `Inspección previa` queda #1 (`0.6864`), `Procedimiento de calibración` #2 (`0.6438`), `Criterio de aceptación` #3 (`0.4909`), la sección alternativa de seguridad `Antes de calibrar un transmisor de presión` #4 (`0.4400`) y `Seguridad previa` #5 (`0.4209`). Se aprende que evaluar únicamente por heading exacto puede ser demasiado rígido y que aumentar `k` puede mejorar cobertura a costa de más contexto. Se añaden **grupos de evidencia** al dataset y el **Paso 07B** para medir sensibilidad a `k=1..5` sin cambiar modelo, corpus, embeddings ni consultas. |
 | 2026-09-13 | 🧪 Se ejecuta el **Paso 07A — baseline A–D**. Casos A y B recuperan toda la evidencia esperada dentro del `Top-3`; el Caso C recupera `Inspección previa` y `Procedimiento de calibración`, pero deja fuera `Seguridad previa` (`1/2` headings esperados); el Caso D confirma que existe `Top-k` aun sin respuesta documental. Antes de cambiar `top-k`, modelo, query o chunking, se diagnosticará la posición exacta de `Seguridad previa` en el ranking completo del Caso C. |
 | 2026-09-13 | 🧪 Se prueba el **Caso D — respuesta inexistente** con la pregunta sobre el par de apriete de los bornes del `PT-201`. El retriever devuelve igualmente un `Top-3` (`0.5414`, `0.4098`, `0.3795`), pero ninguno contiene el dato solicitado. Se confirma que **Top-k encontrado ≠ respuesta encontrada** y que la `similarity` no demuestra por sí sola suficiencia de evidencia. Se crea `evaluation_cases.json` y el **Paso 07A** para ejecutar de forma reproducible los casos A–D antes de conectar un LLM. |
 | 2026-09-13 | ✅ Se verifica el **Paso 06**: el LAB recupera el `Top-3` desde el índice persistido, vuelve desde los vectores al **texto original**, construye un contexto explícito con documento/sección/chunk y genera el **prompt fundamentado** que recibiría un LLM. Se confirma que los embeddings sirven para localizar evidencia, mientras que el LLM recibe la pregunta + instrucciones + texto recuperado. |
@@ -91,6 +92,7 @@ rag/src/step05_build_vector_index.py
 rag/src/step05_query_vector_index.py
 rag/src/step06_build_grounded_context.py
 rag/src/step07_evaluate_retrieval_cases.py
+rag/src/step07b_evaluate_topk_sensitivity.py
 ```
 
 Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
@@ -150,7 +152,7 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 5. **Embeddings y búsqueda semántica** — ✅ representar pregunta y chunks como vectores, comparar similitud y comprobar el impacto de separar estructura/metadata del contenido recuperable.
 6. **Índice vectorial persistente mínimo** — ✅ separar indexación y consulta guardando vectores + metadata localmente, todavía sin una vector database dedicada.
 7. **Construcción de contexto fundamentado** — ✅ recuperar `Top-k`, volver al texto original y construir el contexto/prompt que recibiría el LLM.
-8. **Baseline de evaluación y abstención** — 🧪 A y B cumplen; C recupera parcialmente la evidencia esperada; D confirma que `Top-k` no implica respuesta. Diagnóstico del Caso C en curso.
+8. **Baseline de evaluación y abstención** — 🧪 A y B cumplen; C muestra el compromiso de cobertura; D confirma que `Top-k` no implica respuesta. Paso 07B medirá sensibilidad a `k` con grupos de evidencia.
 9. **Generación fundamentada** — conectar un LLM solo después de disponer de una baseline entendida para evaluar respuesta, citas y abstención.
 10. **Mejoras** — filtros, búsqueda híbrida, reranking, query rewriting, etc., solo cuando aporten valor.
 11. **Aplicación EAM** — manuales, procedimientos, troubleshooting, seguridad y mantenimiento.
@@ -193,10 +195,26 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-La baseline A–D ya fue ejecutada. Antes de cambiar cualquier variable del retriever, se diagnosticará el **Caso C** con el ranking completo usando exactamente la misma pregunta:
+El diagnóstico del Caso C muestra que la evidencia relevante de seguridad está inmediatamente fuera del `Top-3`:
 
 ```text
-¿Qué debo verificar antes de ajustar el PT-201 y cómo debo calibrarlo?
+#04 | 0.4400 | Antes de calibrar un transmisor de presión
+#05 | 0.4209 | Seguridad previa
 ```
 
-Se mantendrán modelo, embeddings, chunking, filtro de contenido y consulta. El objetivo es localizar la posición exacta de **`2. Seguridad previa`** fuera del `Top-3`. Solo después se decidirá si conviene experimentar con `top-k`, formulación de consulta, retrieval híbrido u otra estrategia, cambiando una sola variable cada vez.
+No se cambia todavía el `Top-k` operativo del LAB. Primero se ejecutará un experimento de **sensibilidad a `k`** manteniendo fijos modelo, índice, corpus y consultas:
+
+```text
+python rag/src/step07b_evaluate_topk_sensitivity.py
+```
+
+El script compara `k = 1, 2, 3, 4, 5` y mide la cobertura de **grupos de evidencia** definidos manualmente para los casos A–C. En el Caso C se distinguen inspección previa, seguridad previa y procedimiento de calibración; para seguridad se acepta evidencia equivalente desde cualquiera de las dos secciones sintéticas pertinentes. El Caso D sigue tratándose como no respondible y no se convierte en “respondible” por aumentar `k`.
+
+El objetivo es observar el compromiso:
+
+```text
+k pequeño → menos contexto / posible pérdida de evidencia
+k mayor   → más recall / más ruido, tokens y coste
+```
+
+Solo después de medirlo se decidirá qué aprender del `Top-k`; no se asumirá que “más chunks” es automáticamente mejor.
