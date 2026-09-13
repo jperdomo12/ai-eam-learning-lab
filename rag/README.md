@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–05 verificados; Paso 06 construcción de contexto fundamentado**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; siguiente etapa: generación fundamentada**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica el **Paso 06**: el LAB recupera el `Top-3` desde el índice persistido, vuelve desde los vectores al **texto original**, construye un contexto explícito con documento/sección/chunk y genera el **prompt fundamentado** que recibiría un LLM. Se confirma que los embeddings sirven para localizar evidencia, mientras que el LLM recibe la pregunta + instrucciones + texto recuperado. Se abre la etapa de **generación fundamentada**. |
 | 2026-09-13 | ✅ Se verifica el **Paso 05** completo: la indexación persiste 11 embeddings de 384 dimensiones y la consulta posterior reproduce exactamente el mismo `Top-3` del Paso 04b generando únicamente el embedding de la pregunta. Se confirma experimentalmente la separación entre **INDEXACIÓN** y **CONSULTA**. Se abre el **Paso 06** para construir explícitamente el contexto y el prompt fundamentado que recibiría un LLM, todavía sin llamar a ningún modelo generativo. |
 | 2026-09-13 | ✅ Se verifica el **Paso 04 / 04b**: los embeddings semánticos funcionan y el experimento demuestra que separar estructura/identificación del contenido operativo mejora la utilidad del `Top-k`. Con la misma consulta y el mismo modelo, el `Top-3` queda formado por seguridad antes de calibrar, seguridad previa y procedimiento de calibración. Se abre el **Paso 05** para separar indexación y consulta mediante un índice vectorial local persistente mínimo, sin introducir todavía una vector database. |
 | 2026-09-13 | 🧪 Tras tres consultas del **Paso 04** se observa que el ranking semántico cambia con la formulación de la consulta, pero también que chunks de título/identificación pueden competir con conocimiento operativo. Se crea el **Paso 04b** como experimento controlado: mismo modelo, mismos chunks, misma consulta y `Top-k`, excluyendo únicamente estructura/identificación del conjunto elegible para retrieval. |
@@ -144,8 +145,8 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 4. **Primer retrieval mínimo** — ✅ recuperar chunks mediante coincidencia léxica y comprobar sus limitaciones.
 5. **Embeddings y búsqueda semántica** — ✅ representar pregunta y chunks como vectores, comparar similitud y comprobar el impacto de separar estructura/metadata del contenido recuperable.
 6. **Índice vectorial persistente mínimo** — ✅ separar indexación y consulta guardando vectores + metadata localmente, todavía sin una vector database dedicada.
-7. **Construcción de contexto fundamentado** — 🟢 recuperar `Top-k`, volver al texto original y construir el contexto/prompt que recibiría el LLM.
-8. **Generación fundamentada** — responder solo con contexto recuperado y citar evidencia.
+7. **Construcción de contexto fundamentado** — ✅ recuperar `Top-k`, volver al texto original y construir el contexto/prompt que recibiría el LLM.
+8. **Generación fundamentada** — 🟢 usar pregunta + contexto recuperado para generar una respuesta respaldada por evidencia y citas.
 9. **Evaluación** — medir recuperación, respuestas correctas y casos sin evidencia.
 10. **Mejoras** — filtros, búsqueda híbrida, reranking, query rewriting, etc., solo cuando aporten valor.
 11. **Aplicación EAM** — manuales, procedimientos, troubleshooting, seguridad y mantenimiento.
@@ -188,20 +189,14 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Sincronizar con **GitHub Desktop** y ejecutar:
+El **Paso 06** ya verificó la transición entre retrieval y generation: el índice devuelve el `Top-3`, el sistema recupera el **texto original** y construye explícitamente:
 
 ```text
-python rag/src/step06_build_grounded_context.py
+INSTRUCCIONES
++
+PREGUNTA
++
+CONTEXTO RECUPERADO CON FUENTES
 ```
 
-El script reutiliza el índice persistido del Paso 05, recupera el `Top-3` y muestra explícitamente dos cosas:
-
-```text
-CONTEXTO RECUPERADO
-→ texto original de los chunks seleccionados + fuente/sección
-
-PROMPT FUNDAMENTADO
-→ instrucciones + pregunta + contexto que recibiría un LLM
-```
-
-Todavía no se llama a ningún modelo generativo. La finalidad es hacer visible la transición entre **retrieval** y **generation** antes de introducir un LLM.
+La siguiente etapa será **generación fundamentada**. Antes de acoplar una API o un modelo local al código, se usará el prompt ya construido como baseline observable para comprobar qué respuesta debería producir un LLM cuando se le obliga a responder únicamente con la evidencia recuperada. La elección posterior de proveedor/modelo seguirá siendo una decisión de laboratorio, no una decisión de arquitectura de AI-EAM-MAXIMO.
