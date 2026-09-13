@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; Paso 07A baseline de evaluación del retrieval**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; Paso 07A ejecutado; Caso C en diagnóstico**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | 🧪 Se ejecuta el **Paso 07A — baseline A–D**. Casos A y B recuperan toda la evidencia esperada dentro del `Top-3`; el Caso C recupera `Inspección previa` y `Procedimiento de calibración`, pero deja fuera `Seguridad previa` (`1/2` headings esperados); el Caso D confirma que existe `Top-k` aun sin respuesta documental. Antes de cambiar `top-k`, modelo, query o chunking, se diagnosticará la posición exacta de `Seguridad previa` en el ranking completo del Caso C. |
 | 2026-09-13 | 🧪 Se prueba el **Caso D — respuesta inexistente** con la pregunta sobre el par de apriete de los bornes del `PT-201`. El retriever devuelve igualmente un `Top-3` (`0.5414`, `0.4098`, `0.3795`), pero ninguno contiene el dato solicitado. Se confirma que **Top-k encontrado ≠ respuesta encontrada** y que la `similarity` no demuestra por sí sola suficiencia de evidencia. Se crea `evaluation_cases.json` y el **Paso 07A** para ejecutar de forma reproducible los casos A–D antes de conectar un LLM. |
 | 2026-09-13 | ✅ Se verifica el **Paso 06**: el LAB recupera el `Top-3` desde el índice persistido, vuelve desde los vectores al **texto original**, construye un contexto explícito con documento/sección/chunk y genera el **prompt fundamentado** que recibiría un LLM. Se confirma que los embeddings sirven para localizar evidencia, mientras que el LLM recibe la pregunta + instrucciones + texto recuperado. |
 | 2026-09-13 | ✅ Se verifica el **Paso 05** completo: la indexación persiste 11 embeddings de 384 dimensiones y la consulta posterior reproduce exactamente el mismo `Top-3` del Paso 04b generando únicamente el embedding de la pregunta. Se confirma experimentalmente la separación entre **INDEXACIÓN** y **CONSULTA**. |
@@ -149,8 +150,8 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 5. **Embeddings y búsqueda semántica** — ✅ representar pregunta y chunks como vectores, comparar similitud y comprobar el impacto de separar estructura/metadata del contenido recuperable.
 6. **Índice vectorial persistente mínimo** — ✅ separar indexación y consulta guardando vectores + metadata localmente, todavía sin una vector database dedicada.
 7. **Construcción de contexto fundamentado** — ✅ recuperar `Top-k`, volver al texto original y construir el contexto/prompt que recibiría el LLM.
-8. **Baseline de evaluación y abstención** — 🟢 ejecutar casos A–D y distinguir retrieval relevante de evidencia suficiente.
-9. **Generación fundamentada** — conectar un LLM solo después de disponer de casos reproducibles para evaluar respuesta, citas y abstención.
+8. **Baseline de evaluación y abstención** — 🧪 A y B cumplen; C recupera parcialmente la evidencia esperada; D confirma que `Top-k` no implica respuesta. Diagnóstico del Caso C en curso.
+9. **Generación fundamentada** — conectar un LLM solo después de disponer de una baseline entendida para evaluar respuesta, citas y abstención.
 10. **Mejoras** — filtros, búsqueda híbrida, reranking, query rewriting, etc., solo cuando aporten valor.
 11. **Aplicación EAM** — manuales, procedimientos, troubleshooting, seguridad y mantenimiento.
 12. **Maximo simulado** — usar contexto EAM para descubrir documentos asociados a un activo.
@@ -192,19 +193,10 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Sincronizar con **GitHub Desktop** y ejecutar:
+La baseline A–D ya fue ejecutada. Antes de cambiar cualquier variable del retriever, se diagnosticará el **Caso C** con el ranking completo usando exactamente la misma pregunta:
 
 ```text
-python rag/src/step07_evaluate_retrieval_cases.py
+¿Qué debo verificar antes de ajustar el PT-201 y cómo debo calibrarlo?
 ```
 
-El script ejecuta cuatro casos reproducibles:
-
-```text
-A. respuesta presente
-B. formulación distinta
-C. información repartida
-D. respuesta inexistente
-```
-
-Para A–C comprueba de forma pedagógica si los headings de evidencia esperados aparecen en el `Top-k`. Para D **no intenta decidir automáticamente** que existe o no respuesta mediante un umbral de `similarity`: muestra el `Top-k` para que observemos que recuperar candidatos no equivale a disponer de evidencia suficiente. Este baseline se reutilizará después para evaluar un LLM real.
+Se mantendrán modelo, embeddings, chunking, filtro de contenido y consulta. El objetivo es localizar la posición exacta de **`2. Seguridad previa`** fuera del `Top-3`. Solo después se decidirá si conviene experimentar con `top-k`, formulación de consulta, retrieval híbrido u otra estrategia, cambiando una sola variable cada vez.
