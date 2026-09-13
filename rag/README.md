@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01 y 02 verificados; Paso 03 retrieval mínimo**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01, 02 y 03 verificados; Paso 04 embeddings / retrieval semántico**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica el **Paso 03** con dos consultas: el retrieval léxico funciona por coincidencia de términos, pero una formulación semánticamente equivalente puede dejar fuera del `Top-k` el chunk realmente útil. Se crea el **Paso 04** con embeddings y similitud semántica, manteniendo todavía los vectores solo en memoria RAM para aislar el concepto antes del vector store. |
 | 2026-09-13 | Se crea `rag/docs/study/` y se trasladan allí las notas `STUDY-*`, separando el material pedagógico de la documentación canónica/viva del laboratorio. |
 | 2026-09-13 | Se crea la nota de estudio **RAG — Conceptos esenciales**, con fundamentos y conceptos intermedios importantes como retrieval híbrido, reranking, reindexación, seguridad y evaluación. |
 | 2026-09-13 | Se crea la nota de estudio **LLM vs. RAG — Cómo se relacionan técnicamente**, como apoyo conceptual vivo para comparar entrenamiento, inferencia, embeddings, retrieval y generación. |
@@ -71,9 +72,11 @@ Artefactos actuales:
 ```text
 rag/data/source_documents/manual_transmisor_PT201.md
 rag/data/source_documents/procedimiento_seguridad_instrumentacion.md
+rag/requirements.txt
 rag/src/step01_discover_documents.py
 rag/src/step02_read_and_chunk.py
 rag/src/step03_lexical_retrieval.py
+rag/src/step04_semantic_retrieval.py
 ```
 
 Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
@@ -129,9 +132,9 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 1. **Conceptos esenciales** — qué problema resuelve RAG y por qué un LLM por sí solo no basta.
 2. **Fuente local** — ✅ descubrir documentos desde una carpeta del portátil.
 3. **Lectura + chunking visible** — ✅ dividir los documentos en fragmentos observables y entendibles.
-4. **Primer retrieval mínimo** — 🟢 recuperar chunks mediante coincidencia léxica y observar sus limitaciones.
-5. **Embeddings y búsqueda semántica** — representar y recuperar significado, no solo palabras iguales.
-6. **Vector store / índice** — dónde se guarda la representación recuperable.
+4. **Primer retrieval mínimo** — ✅ recuperar chunks mediante coincidencia léxica y comprobar sus limitaciones.
+5. **Embeddings y búsqueda semántica** — 🟢 representar pregunta y chunks como vectores y comparar similitud de significado.
+6. **Vector store / índice** — dónde se guarda de forma persistente la representación recuperable.
 7. **Retrieval** — `top-k`, metadatos y relevancia.
 8. **Generación fundamentada** — responder solo con contexto recuperado y citar evidencia.
 9. **Evaluación** — medir recuperación, respuestas correctas y casos sin evidencia.
@@ -176,22 +179,22 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Sincronizar con **GitHub Desktop** y ejecutar en la terminal de **VS Code**:
+Sincronizar con **GitHub Desktop** y, desde la terminal de **VS Code**, instalar una vez la dependencia del Paso 04:
 
 ```text
-python rag/src/step03_lexical_retrieval.py
+python -m pip install -r rag/requirements.txt
 ```
 
-Primero se prueba una consulta con términos cercanos al documento:
+Después ejecutar:
 
 ```text
-procedimiento calibracion PT-201
+python rag/src/step04_semantic_retrieval.py
 ```
 
-Después se repetirá con una formulación equivalente pero distinta:
+La consulta por defecto será la misma que expuso la limitación del Paso 03:
 
 ```text
 ¿Cómo ajusto el transmisor de presión?
 ```
 
-El objetivo es observar una limitación esencial: **la búsqueda por palabras puede funcionar cuando coinciden los términos, pero no entiende realmente el significado**. Esa comparación prepara el paso siguiente: embeddings + búsqueda semántica.
+El objetivo es comparar el nuevo ranking con el retrieval léxico. En este paso los embeddings se calculan y comparan **solo en memoria RAM**; todavía no se introduce persistencia ni vector store.
