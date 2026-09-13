@@ -44,7 +44,7 @@ def build_chunk_records(folder: Path) -> list[dict]:
     return records
 
 
-def semantic_retrieve(model, records: list[dict], query: str, top_k: int = TOP_K) -> tuple[list[dict], int]:
+def semantic_rank(model, records: list[dict], query: str) -> tuple[list[dict], int]:
     texts = [record["searchable_text"] for record in records]
 
     # Normalizamos los embeddings para poder usar producto punto como cosine similarity.
@@ -68,7 +68,7 @@ def semantic_retrieve(model, records: list[dict], query: str, top_k: int = TOP_K
         ranked.append({**record, "similarity": float(score)})
 
     ranked.sort(key=lambda item: item["similarity"], reverse=True)
-    return ranked[:top_k], len(query_embedding)
+    return ranked, len(query_embedding)
 
 
 def main() -> None:
@@ -91,7 +91,8 @@ def main() -> None:
         print("No se encontraron chunks para comparar.")
         return
 
-    results, dimensions = semantic_retrieve(model, records, query)
+    ranked, dimensions = semantic_rank(model, records, query)
+    results = ranked[:TOP_K]
 
     print(f"Chunks evaluados: {len(records)}")
     print(f"Dimensiones del embedding: {dimensions}")
@@ -109,10 +110,23 @@ def main() -> None:
         print()
 
     print("=" * 80)
+    print("RANKING COMPLETO — diagnóstico")
+    print("Permite ver dónde quedó cada chunk aunque no entre en el Top-k.\n")
+    for position, result in enumerate(ranked, start=1):
+        marker = " <== Top-k" if position <= TOP_K else ""
+        print(
+            f"#{position:02d} | {result['similarity']:.4f} | "
+            f"{result['document']} | chunk {result['chunk']} | "
+            f"{result['heading']}{marker}"
+        )
+
+    print("=" * 80)
     print("OBSERVACIÓN")
     print("Compara este ranking con el Paso 03 léxico usando la misma pregunta.")
     print("Aquí no contamos palabras iguales: comparamos representaciones vectoriales del significado.")
-    print("Los embeddings de este paso NO se guardan todavía; el siguiente paso estudiará persistencia/indexación.")
+    print("Un retrieval semántico tampoco garantiza por sí solo que el chunk correcto sea #1.")
+    print("El ranking depende del modelo, del texto del chunk, del chunking y de la consulta.")
+    print("Los embeddings de este paso NO se guardan todavía; siguen viviendo solo en memoria RAM.")
     print("=" * 80)
 
 
