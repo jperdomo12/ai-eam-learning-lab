@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01 y 02 verificados; Paso 03 retrieval léxico**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–04 verificados; Paso 05 índice vectorial persistente mínimo**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,8 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica el **Paso 04 / 04b**: embeddings locales de 384 dimensiones, similitud semántica y `Top-k` funcionan. Las pruebas muestran que similitud temática no equivale necesariamente a capacidad de responder y que estructura/identificación pueden competir con contenido operativo. Al excluir solo estructura/metadata, el `Top-3` queda formado por seguridad antes de calibrar, seguridad previa y procedimiento de calibración. Se abre el **Paso 05** para persistir vectores + metadata localmente y separar claramente indexación de consulta, todavía sin vector database. |
+| 2026-09-13 | ✅ Se verifica el **Paso 03**: el retrieval léxico funciona por coincidencia de términos, pero una formulación equivalente puede dejar fuera del `Top-k` el chunk realmente útil. |
 | 2026-09-13 | ✅ Se verifica en el portátil el **Paso 02**: lectura y chunking visible. El manual `PT-201` se divide en 9 chunks usando encabezados Markdown. Se abre el **Paso 03** con retrieval léxico mínimo para observar primero búsqueda por palabras y sus limitaciones antes de introducir embeddings. |
 | 2026-09-12 | Se separan los documentos fuente en `rag/data/source_documents/` para no mezclarlos con `docs/` ni `src/`. Se formaliza el principio de que **la adquisición cambia según la fuente**, mientras que extracción, normalización, chunking, indexación y retrieval deben permanecer desacoplados y reutilizables. |
 | 2026-09-12 | Se corrige la secuencia práctica: las primeras pruebas RAG usarán una **carpeta local del portátil** como fuente. IBM Maximo queda como deseable posterior, primero simulado y eventualmente real. Se elimina la simulación Maximo creada prematuramente y se reutilizan únicamente los documentos sintéticos locales. |
@@ -131,7 +133,7 @@ Manual, procedimiento, instructivo, boletín técnico u otra fuente de conocimie
 
 ### 5.2 Adquisición / acceso
 
-Mecanismo utilizado para obtener el documento desde su sistema de origen. Esta capa cambia según la fuente: filesystem, API, conector, SDK, URL, repositorio documental, etc.
+Mecanismo utilizado para obtener el documento desde su fuente. Esta capa cambia según el origen: filesystem, API, conector, SDK, URL, repositorio documental, etc.
 
 ### 5.3 Extracción
 
@@ -354,35 +356,251 @@ ordenar
 Top-k chunks
 ```
 
-Consulta inicial:
+### Resultado observado
+
+✅ **VERIFICADO**.
+
+La consulta:
 
 ```text
 procedimiento calibracion PT-201
 ```
 
-La finalidad **no** es considerar esta estrategia suficiente para RAG empresarial. La usamos como baseline observable para entender qué significa retrieval antes de ocultar el mecanismo dentro de embeddings o frameworks.
+funciona razonablemente porque existen coincidencias literales.
 
-Luego se probará una formulación conceptualmente equivalente pero con palabras distintas:
+Al usar:
 
 ```text
 ¿Cómo ajusto el transmisor de presión?
 ```
 
-La hipótesis de aprendizaje es:
+se observa que el algoritmo reconoce `transmisor` y `presión`, pero no entiende equivalencias como:
 
 ```text
-búsqueda léxica
-→ reconoce principalmente coincidencia de términos
-
-búsqueda semántica con embeddings
-→ debería capturar mejor similitud de significado
+ajusto ≈ ajustar
+ajustar ≈ calibrar
 ```
 
-Esta comparación será la puerta de entrada a embeddings.
+El chunk de calibración puede quedar fuera del `Top-3` aunque contenga la respuesta.
+
+**Lección:** que la información exista en los documentos no significa que el LLM vaya a recibirla; el retrieval debe encontrar primero la evidencia correcta.
 
 ---
 
-## 11. Casos de prueba que debe soportar el primer LAB
+## 11. Paso 04 — Embeddings y retrieval semántico
+
+Scripts:
+
+```text
+rag/src/step04_semantic_retrieval.py
+rag/src/step04b_semantic_retrieval_content_filter.py
+```
+
+Modelo de laboratorio:
+
+```text
+sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+```
+
+Características observadas:
+
+```text
+14 chunks evaluados inicialmente
+384 dimensiones por embedding
+cosine similarity mediante vectores normalizados
+Top-k = 3
+embeddings calculados todavía en RAM
+```
+
+### 11.1 Primera consulta
+
+```text
+¿Cómo ajusto el transmisor de presión?
+```
+
+El chunk **4. Procedimiento de calibración** quedó en:
+
+```text
+#06 | similarity=0.3804
+```
+
+mientras chunks de título, identificación y seguridad quedaron por encima.
+
+### 11.2 Consulta con intención procedural explícita
+
+```text
+¿Qué pasos debo seguir para ajustar correctamente el transmisor de presión PT-201?
+```
+
+El chunk de calibración subió a:
+
+```text
+#04 | similarity=0.5694
+```
+
+Esto demuestra que la formulación de la consulta afecta el ranking.
+
+### 11.3 Consulta sin identificador del activo
+
+```text
+¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?
+```
+
+El chunk de calibración quedó en:
+
+```text
+#05 | similarity=0.4643
+```
+
+La hipótesis de que quitar `PT-201` mejoraría automáticamente el ranking **no se confirmó**. En cambio, quedaron arriba contenidos de seguridad relacionados con la intervención/calibración.
+
+### 11.4 Lección sobre similarity
+
+Un valor como:
+
+```text
+similarity = 0.6545
+```
+
+**no significa 65,45 % de probabilidad de ser la respuesta correcta**. Es una medida de proximidad relativa en el espacio vectorial del modelo.
+
+También se confirma:
+
+```text
+similitud semántica
+≠
+capacidad garantizada de responder
+```
+
+El embedding puede identificar muy bien el **tema** sin priorizar exactamente el fragmento que un humano considera más útil para responder.
+
+---
+
+## 12. Paso 04b — Separar estructura/metadata de contenido recuperable
+
+Se mantiene deliberadamente:
+
+```text
+mismo modelo
+mismos documentos
+mismo chunking
+misma consulta
+mismo Top-k
+```
+
+Solo cambia el conjunto elegible para retrieval.
+
+En este experimento se excluyen:
+
+```text
+chunk 1 de cada documento → estructura/título/aviso
+sección Identificación    → metadata
+```
+
+No se eliminan del documento. Simplemente no compiten en el ranking semántico de contenido operativo.
+
+Resultado observado:
+
+```text
+#01 | 0.6545 | Antes de calibrar un transmisor de presión
+#02 | 0.5852 | Seguridad previa
+#03 | 0.4643 | Procedimiento de calibración
+```
+
+✅ **VERIFICADO**.
+
+La respuesta potencial ya recibe un conjunto mucho más útil de candidatos:
+
+```text
+seguridad
++
+seguridad específica previa
++
+procedimiento operativo
+```
+
+### Aprendizaje de diseño
+
+El experimento muestra la utilidad de distinguir:
+
+```text
+ESTRUCTURA / METADATA
+→ título
+→ activo
+→ sitio
+→ revisión
+→ tipo
+
+CONTENIDO RECUPERABLE
+→ seguridad
+→ inspección
+→ calibración
+→ criterio de aceptación
+→ troubleshooting
+```
+
+En EAM, datos como:
+
+```text
+assetnum = PT-201
+siteid   = PLANTA1
+revision = 4
+```
+
+pueden servir como contexto o filtros, mientras el retrieval semántico se concentra en conocimiento operativo.
+
+**Importante:** la regla actual `chunk 1` / `Identificación` es una heurística pedagógica del LAB, no una decisión de arquitectura productiva.
+
+---
+
+## 13. Paso 05 — Índice vectorial persistente mínimo
+
+Hasta el Paso 04 los embeddings de los documentos se calculaban en cada ejecución y desaparecían al terminar el proceso.
+
+Ahora queremos separar dos momentos:
+
+```text
+INDEXACIÓN
+Documentos
+   ↓
+chunks recuperables
+   ↓
+embeddings
+   ↓
+guardar vectores + metadata
+
+CONSULTA
+Pregunta
+   ↓
+embedding de la pregunta
+   ↓
+comparar contra vectores ya guardados
+   ↓
+Top-k
+```
+
+Scripts:
+
+```text
+rag/src/step05_build_vector_index.py
+rag/src/step05_query_vector_index.py
+```
+
+Artefactos generados localmente:
+
+```text
+rag/data/vector_index/embeddings.npy
+rag/data/vector_index/metadata.json
+rag/data/vector_index/manifest.json
+```
+
+La carpeta está ignorada por Git porque contiene **artefactos derivados/regenerables**, no documentación fuente ni código.
+
+Este paso utiliza archivos NumPy + JSON como índice pedagógico mínimo. **No es todavía una vector database**. La finalidad es entender persistencia e indexación antes de introducir un producto especializado.
+
+---
+
+## 14. Casos de prueba que debe soportar el primer LAB
 
 ### Caso A — respuesta presente
 
@@ -410,7 +628,7 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 12. Fuentes, formatos y adquisición
+## 15. Fuentes, formatos y adquisición
 
 RAG no depende de un único formato ni de un único repositorio documental.
 
@@ -473,7 +691,7 @@ Esto evita construir un RAG distinto para cada sistema fuente.
 
 ---
 
-## 13. Papel deseable de IBM Maximo
+## 16. Papel deseable de IBM Maximo
 
 IBM Maximo es el **ejemplo EAM deseable para una fase posterior**, no la fuente inicial del LAB.
 
@@ -506,24 +724,25 @@ ruta / URL
 source_system
 ```
 
-Secuencia prevista:
+Secuencia vigente:
 
 ```text
-1. Carpeta local                     ✅
-2. Chunking visible                  ✅
-3. Retrieval léxico baseline         ← AHORA
-4. Embeddings / retrieval semántico
-5. Vector store / evaluación
-6. Simulación de Maximo/doclinks
-7. Combinación de contexto EAM + RAG
-8. Integración real con Maximo       ← solo si procede
+1. Carpeta local                              ✅
+2. Chunking visible                           ✅
+3. Retrieval léxico baseline                  ✅
+4. Embeddings / retrieval semántico           ✅
+5. Índice vectorial persistente mínimo         ← AHORA
+6. Generación fundamentada / evaluación
+7. Simulación de Maximo/doclinks
+8. Combinación de contexto EAM + RAG
+9. Integración real con Maximo                 ← solo si procede
 ```
 
 La simulación Maximo se construirá cuando lleguemos realmente a ese paso.
 
 ---
 
-## 14. Aplicación futura a EAM / IBM Maximo
+## 17. Aplicación futura a EAM / IBM Maximo
 
 Fuentes candidatas de conocimiento:
 
@@ -551,12 +770,12 @@ Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 15. Decisiones todavía NO tomadas
+## 18. Decisiones todavía NO tomadas
 
 Aún no se ha decidido:
 
-- proveedor/modelo de embeddings;
-- vector database;
+- proveedor/modelo de embeddings para una solución futura;
+- vector database dedicada;
 - framework RAG;
 - LLM específico;
 - ejecución local vs API;
@@ -564,22 +783,24 @@ Aún no se ha decidido:
 - tamaño de `top-k` definitivo;
 - framework de evaluación.
 
-Estas decisiones se tomarán durante experimentos concretos y se documentarán con evidencia, no por anticipado.
+El modelo `paraphrase-multilingual-MiniLM-L12-v2` y el índice NumPy/JSON son **baselines de aprendizaje del LAB**, no decisiones de arquitectura de AI-EAM-MAXIMO.
 
 ---
 
-## 16. Siguiente paso
+## 19. Siguiente paso
 
 Sincronizar el repositorio mediante **GitHub Desktop** y ejecutar desde la terminal de **VS Code**:
 
 ```text
-python rag/src/step03_lexical_retrieval.py
+python rag/src/step05_build_vector_index.py
 ```
 
-Después repetir con:
+El objetivo es observar por primera vez la **persistencia** de los embeddings de los documentos.
+
+Después se ejecutará:
 
 ```text
-python rag/src/step03_lexical_retrieval.py "¿Cómo ajusto el transmisor de presión?"
+python rag/src/step05_query_vector_index.py
 ```
 
-Compararemos qué chunks devuelve cada consulta y por qué. Solo después introduciremos embeddings y repetiremos el mismo ejercicio con búsqueda semántica.
+para demostrar que la consulta puede cargar los vectores persistidos y generar únicamente el embedding de la nueva pregunta.
