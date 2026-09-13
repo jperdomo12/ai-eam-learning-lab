@@ -2,14 +2,15 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Paso 01 verificado; Paso 02 chunking visible**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01 y 02 verificados; Paso 03 retrieval mínimo**
 >
-> 🗓️ **Actualizado:** 2026-09-12
+> 🗓️ **Actualizado:** 2026-09-13
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica en el portátil el **Paso 02**: lectura y chunking visible correctos. El manual `PT-201` produjo 9 chunks. Se crea el **Paso 03** con una baseline de retrieval léxico antes de introducir embeddings. |
 | 2026-09-12 | ✅ Se verifica en el portátil el **Paso 01**: descubrimiento correcto de los dos documentos fuente desde `rag/data/source_documents/`. Se crea el **Paso 02** para leer contenido y mostrar chunks de forma explícita antes de introducir embeddings. |
 | 2026-09-12 | Se separan claramente los documentos fuente del código y de la documentación del LAB usando `rag/data/source_documents/`. Se aclara además que la forma de obtener los documentos cambia según la fuente, mientras que el pipeline RAG posterior debe mantenerse lo más estable posible. |
 | 2026-09-12 | Se corrige el alcance del primer experimento: la fuente inicial será una **carpeta local del portátil**. IBM Maximo queda como deseable posterior, primero mediante simulación y más adelante mediante integración real si procede. |
@@ -47,9 +48,7 @@ RAG no sustituye al LLM. Le aporta **contexto recuperado en el momento de la con
 
 ## 🧪 Fuente del primer experimento
 
-Para las primeras prácticas usaremos una **carpeta local del portátil**. Esto permite aprender el pipeline RAG sin añadir todavía la complejidad de conectores, autenticación o APIs externas.
-
-La carpeta reproducible del LAB es:
+Para las primeras prácticas usamos una **carpeta local del portátil**:
 
 ```text
 rag/data/source_documents/
@@ -63,15 +62,14 @@ rag/src/                   → código del laboratorio
 rag/data/source_documents/ → documentos QUE CONSUME el RAG
 ```
 
-Al clonar/sincronizar el repositorio, esa carpeta existe físicamente en el equipo local. El script inicial también acepta como argumento cualquier otra carpeta local del portátil.
-
-Artefactos iniciales:
+Artefactos actuales:
 
 ```text
 rag/data/source_documents/manual_transmisor_PT201.md
 rag/data/source_documents/procedimiento_seguridad_instrumentacion.md
 rag/src/step01_discover_documents.py
 rag/src/step02_read_and_chunk.py
+rag/src/step03_lexical_retrieval.py
 ```
 
 Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
@@ -126,9 +124,9 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 
 1. **Conceptos esenciales** — qué problema resuelve RAG y por qué un LLM por sí solo no basta.
 2. **Fuente local** — ✅ descubrir documentos desde una carpeta del portátil.
-3. **Lectura + chunking visible** — 🟢 dividir los documentos en fragmentos observables y entendibles.
-4. **Primer retrieval mínimo** — una pregunta y recuperación observable.
-5. **Embeddings y búsqueda semántica** — cómo representar y recuperar significado.
+3. **Lectura + chunking visible** — ✅ dividir los documentos en fragmentos observables y entendibles.
+4. **Primer retrieval mínimo** — 🟢 recuperar chunks mediante coincidencia léxica y observar sus limitaciones.
+5. **Embeddings y búsqueda semántica** — representar y recuperar significado, no solo palabras iguales.
 6. **Vector store / índice** — dónde se guarda la representación recuperable.
 7. **Retrieval** — `top-k`, metadatos y relevancia.
 8. **Generación fundamentada** — responder solo con contexto recuperado y citar evidencia.
@@ -169,17 +167,22 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Sincronizar el repositorio con GitHub Desktop y ejecutar:
+Sincronizar con **GitHub Desktop** y ejecutar en la terminal de **VS Code**:
 
 ```text
-python rag/src/step02_read_and_chunk.py
+python rag/src/step03_lexical_retrieval.py
 ```
 
-El objetivo es **ver físicamente cómo los documentos se convierten en chunks**. En esta baseline:
+Primero se prueba una consulta con términos cercanos al documento:
 
 ```text
-Markdown → un chunk por sección/encabezado
-TXT      → un chunk por bloque separado por línea en blanco
+procedimiento calibracion PT-201
 ```
 
-Todavía **no** usamos embeddings ni búsqueda semántica. Primero queremos entender qué estamos dividiendo y por qué.
+Después se repetirá con una formulación equivalente pero distinta:
+
+```text
+¿Cómo ajusto el transmisor de presión?
+```
+
+El objetivo es observar una limitación esencial: **la búsqueda por palabras puede funcionar cuando coinciden los términos, pero no entiende realmente el significado**. Esa comparación prepara el paso siguiente: embeddings + búsqueda semántica.
