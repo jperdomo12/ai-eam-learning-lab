@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | Se crea la nota de estudio **LLM vs. RAG — Cómo se relacionan técnicamente**, como apoyo conceptual vivo para comparar entrenamiento, inferencia, embeddings, retrieval y generación. |
 | 2026-09-13 | ✅ Se verifica en el portátil el **Paso 02**: lectura y chunking visible correctos. El manual `PT-201` produjo 9 chunks. Se crea el **Paso 03** con una baseline de retrieval léxico antes de introducir embeddings. |
 | 2026-09-12 | ✅ Se verifica en el portátil el **Paso 01**: descubrimiento correcto de los dos documentos fuente desde `rag/data/source_documents/`. Se crea el **Paso 02** para leer contenido y mostrar chunks de forma explícita antes de introducir embeddings. |
 | 2026-09-12 | Se separan claramente los documentos fuente del código y de la documentación del LAB usando `rag/data/source_documents/`. Se aclara además que la forma de obtener los documentos cambia según la fuente, mientras que el pipeline RAG posterior debe mantenerse lo más estable posible. |
@@ -141,6 +142,10 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 Documento vivo principal:
 
 [`docs/RAG_LIVING_DOCUMENTATION.md`](docs/RAG_LIVING_DOCUMENTATION.md)
+
+Nota de estudio complementaria:
+
+[`docs/STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md`](docs/STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md) — **LLM vs. RAG — Cómo se relacionan técnicamente**.
 
 ## 🔗 Relación con MCP
 
