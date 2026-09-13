@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01, 02 y 03 verificados; Paso 04 probado; Paso 04b filtro contenido/metadata pendiente de ejecución**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–04 verificados; Paso 05 índice vectorial persistente mínimo**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica el **Paso 04 / 04b**: los embeddings semánticos funcionan y el experimento demuestra que separar estructura/identificación del contenido operativo mejora la utilidad del `Top-k`. Con la misma consulta y el mismo modelo, el `Top-3` queda formado por seguridad antes de calibrar, seguridad previa y procedimiento de calibración. Se abre el **Paso 05** para separar indexación y consulta mediante un índice vectorial local persistente mínimo, sin introducir todavía una vector database. |
 | 2026-09-13 | 🧪 Tras tres consultas del **Paso 04** se observa que el ranking semántico cambia con la formulación de la consulta, pero también que chunks de título/identificación pueden competir con conocimiento operativo. Se crea el **Paso 04b** como experimento controlado: mismo modelo, mismos chunks, misma consulta y `Top-k`, excluyendo únicamente estructura/identificación del conjunto elegible para retrieval. |
 | 2026-09-13 | 🧪 Primera ejecución real del **Paso 04** con embeddings locales (`paraphrase-multilingual-MiniLM-L12-v2`): se evaluaron 14 chunks con vectores de 384 dimensiones. El retrieval semántico funcionó técnicamente, pero el chunk de calibración no apareció en el `Top-3`; se añade ranking completo como diagnóstico antes de cambiar modelo, chunking o estrategia. |
 | 2026-09-13 | ✅ Se verifica el **Paso 03** con dos consultas: el retrieval léxico funciona por coincidencia de términos, pero una formulación semánticamente equivalente puede dejar fuera del `Top-k` el chunk realmente útil. Se crea el **Paso 04** con embeddings y similitud semántica, manteniendo todavía los vectores solo en memoria RAM para aislar el concepto antes del vector store. |
@@ -67,6 +68,7 @@ rag/docs/                  → documentación SOBRE el laboratorio
 rag/docs/study/            → notas pedagógicas para estudiar y repasar
 rag/src/                   → código del laboratorio
 rag/data/source_documents/ → documentos QUE CONSUME el RAG
+rag/data/vector_index/     → índice generado localmente; no versionado en Git
 ```
 
 Artefactos actuales:
@@ -80,6 +82,8 @@ rag/src/step02_read_and_chunk.py
 rag/src/step03_lexical_retrieval.py
 rag/src/step04_semantic_retrieval.py
 rag/src/step04b_semantic_retrieval_content_filter.py
+rag/src/step05_build_vector_index.py
+rag/src/step05_query_vector_index.py
 ```
 
 Los documentos son **sintéticos de laboratorio** y no deben utilizarse para mantenimiento real.
@@ -136,8 +140,8 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 2. **Fuente local** — ✅ descubrir documentos desde una carpeta del portátil.
 3. **Lectura + chunking visible** — ✅ dividir los documentos en fragmentos observables y entendibles.
 4. **Primer retrieval mínimo** — ✅ recuperar chunks mediante coincidencia léxica y comprobar sus limitaciones.
-5. **Embeddings y búsqueda semántica** — 🧪 embeddings funcionando; ya se observó sensibilidad a la consulta y mezcla entre estructura/metadata y contenido. Paso 04b aislará esa variable.
-6. **Vector store / índice** — dónde se guarda de forma persistente la representación recuperable.
+5. **Embeddings y búsqueda semántica** — ✅ representar pregunta y chunks como vectores, comparar similitud y comprobar el impacto de separar estructura/metadata del contenido recuperable.
+6. **Índice vectorial persistente mínimo** — 🟢 separar indexación y consulta guardando vectores + metadata localmente, todavía sin una vector database dedicada.
 7. **Retrieval** — `top-k`, metadatos y relevancia.
 8. **Generación fundamentada** — responder solo con contexto recuperado y citar evidencia.
 9. **Evaluación** — medir recuperación, respuestas correctas y casos sin evidencia.
@@ -182,16 +186,18 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-Sincronizar con **GitHub Desktop** y ejecutar:
+Sincronizar con **GitHub Desktop** y ejecutar primero la fase de **indexación**:
 
 ```text
-python rag/src/step04b_semantic_retrieval_content_filter.py
+python rag/src/step05_build_vector_index.py
 ```
 
-La consulta por defecto será exactamente la última consulta del Paso 04:
+El script generará localmente, dentro de `rag/data/vector_index/`, tres artefactos no versionados:
 
 ```text
-¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?
+embeddings.npy
+metadata.json
+manifest.json
 ```
 
-El experimento conserva el mismo modelo, documentos, chunking, consulta y `Top-k`; únicamente deja fuera del ranking semántico los chunks clasificados como **estructura** (título/aviso inicial) o **metadata** (`Identificación`). El objetivo es observar si separar contexto estructural de contenido operativo mejora la utilidad del `Top-3` antes de introducir vector store o filtros EAM reales.
+Después, en un segundo comando, consultaremos ese índice persistido con `step05_query_vector_index.py`. La finalidad es observar con claridad que **los documentos se embeddizan durante la indexación**, mientras que en tiempo de consulta solo necesitamos generar el embedding de la pregunta y compararlo contra los vectores ya guardados.
