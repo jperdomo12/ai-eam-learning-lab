@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | Se crea `rag/docs/study/` y se trasladan allí las notas `STUDY-*`, separando el material pedagógico de la documentación canónica/viva del laboratorio. |
 | 2026-09-13 | Se crea la nota de estudio **RAG — Conceptos esenciales**, con fundamentos y conceptos intermedios importantes como retrieval híbrido, reranking, reindexación, seguridad y evaluación. |
 | 2026-09-13 | Se crea la nota de estudio **LLM vs. RAG — Cómo se relacionan técnicamente**, como apoyo conceptual vivo para comparar entrenamiento, inferencia, embeddings, retrieval y generación. |
 | 2026-09-13 | ✅ Se verifica en el portátil el **Paso 02**: lectura y chunking visible correctos. El manual `PT-201` produjo 9 chunks. Se crea el **Paso 03** con una baseline de retrieval léxico antes de introducir embeddings. |
@@ -60,6 +61,7 @@ Separación de responsabilidades:
 
 ```text
 rag/docs/                  → documentación SOBRE el laboratorio
+rag/docs/study/            → notas pedagógicas para estudiar y repasar
 rag/src/                   → código del laboratorio
 rag/data/source_documents/ → documentos QUE CONSUME el RAG
 ```
@@ -146,8 +148,8 @@ Documento vivo principal:
 
 Notas de estudio complementarias:
 
-- [`docs/STUDY-RAG_CORE_CONCEPTS.md`](docs/STUDY-RAG_CORE_CONCEPTS.md) — **RAG — Conceptos esenciales**.
-- [`docs/STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md`](docs/STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md) — **LLM vs. RAG — Cómo se relacionan técnicamente**.
+- [`docs/study/STUDY-RAG_CORE_CONCEPTS.md`](docs/study/STUDY-RAG_CORE_CONCEPTS.md) — **RAG — Conceptos esenciales**.
+- [`docs/study/STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md`](docs/study/STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md) — **LLM vs. RAG — Cómo se relacionan técnicamente**.
 
 ## 🔗 Relación con MCP
 
