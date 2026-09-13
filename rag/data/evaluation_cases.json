@@ -7,6 +7,14 @@
     "expected_headings": [
       "5. Criterio de aceptación"
     ],
+    "expected_evidence_groups": [
+      {
+        "name": "criterio de aceptación",
+        "acceptable_headings": [
+          "5. Criterio de aceptación"
+        ]
+      }
+    ],
     "notes": "La respuesta existe explícitamente en el manual sintético."
   },
   {
@@ -16,6 +24,14 @@
     "expected_answerable": true,
     "expected_headings": [
       "4. Procedimiento de calibración"
+    ],
+    "expected_evidence_groups": [
+      {
+        "name": "procedimiento de calibración",
+        "acceptable_headings": [
+          "4. Procedimiento de calibración"
+        ]
+      }
     ],
     "notes": "La pregunta usa 'ajustar' en lugar de depender de coincidencia literal con 'calibración'."
   },
@@ -28,7 +44,28 @@
       "2. Seguridad previa",
       "4. Procedimiento de calibración"
     ],
-    "notes": "La respuesta útil requiere recuperar más de un fragmento."
+    "expected_evidence_groups": [
+      {
+        "name": "inspección previa",
+        "acceptable_headings": [
+          "3. Inspección previa"
+        ]
+      },
+      {
+        "name": "seguridad previa",
+        "acceptable_headings": [
+          "2. Seguridad previa",
+          "3. Antes de calibrar un transmisor de presión"
+        ]
+      },
+      {
+        "name": "procedimiento de calibración",
+        "acceptable_headings": [
+          "4. Procedimiento de calibración"
+        ]
+      }
+    ],
+    "notes": "La respuesta útil requiere cubrir inspección, seguridad previa y procedimiento. Para la evidencia de seguridad se acepta cualquiera de las dos secciones sintéticas que contienen comprobaciones previas equivalentes."
   },
   {
     "id": "D",
@@ -36,6 +73,7 @@
     "question": "¿Cuál es el par de apriete de los bornes eléctricos del PT-201?",
     "expected_answerable": false,
     "expected_headings": [],
+    "expected_evidence_groups": [],
     "notes": "Los documentos sintéticos no contienen ningún valor de par de apriete para bornes eléctricos. El comportamiento correcto es abstenerse de inventar."
   }
 ]
