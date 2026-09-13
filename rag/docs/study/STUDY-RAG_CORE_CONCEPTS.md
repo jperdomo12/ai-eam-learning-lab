@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | Se amplía la sección **Embeddings** con el modelo mental completo texto → vector → similitud semántica → recuperación, aclarando qué representa el vector, qué no representa, cómo se compara con la consulta y por qué el texto original sigue siendo el contexto que recibe el LLM. |
 | 2026-09-13 | Se reorganiza la nota dentro de `rag/docs/study/` para separar claramente el material pedagógico de la documentación canónica del laboratorio. |
 | 2026-09-13 | Creación inicial. Se consolidan los conceptos básicos de RAG y los conceptos intermedios necesarios para comprender el pipeline completo sin entrar todavía en implementaciones avanzadas. |
 
@@ -261,33 +262,185 @@ Es un concepto intermedio importante porque en sistemas reales una combinación 
 
 ## 6. Embeddings
 
-Un **embedding** es una representación numérica de un texto.
+Un **embedding** es una representación numérica de un texto que permite comparar, aproximadamente, su significado con el de otros textos.
+
+Modelo mental:
+
+```text
+TEXTO
+  ↓
+MODELO DE EMBEDDINGS
+  ↓
+VECTOR
+```
+
+Ejemplo conceptual:
+
+```text
+"¿Cómo ajusto el transmisor de presión?"
+        ↓
+modelo de embeddings
+        ↓
+[0.21, -0.54, 0.76, 0.13, ...]
+```
+
+Ese conjunto ordenado de números es un **vector**.
+
+### 6.1 Qué representa el vector
+
+No debemos interpretar cada número de forma aislada:
+
+```text
+0.21  ≠ "transmisor"
+-0.54 ≠ "calibración"
+0.76  ≠ "presión"
+```
+
+Lo importante es la **posición completa del vector respecto a otros vectores**.
+
+Si dos textos tienen significado parecido, sus representaciones deberían quedar relativamente próximas en el espacio vectorial.
 
 Conceptualmente:
 
 ```text
-"procedimiento para calibrar PT-201"
-        ↓
-modelo de embeddings
-        ↓
+A = "calibrar un transmisor de presión"
+B = "ajustar un sensor de presión"
+C = "comprar una bicicleta"
+
+A ●
+  ● B
+
+                         ● C
+```
+
+Aunque las palabras de A y B no sean idénticas, un buen modelo de embeddings puede representarlas como semánticamente cercanas.
+
+### 6.2 Por qué ayuda frente al retrieval léxico
+
+En retrieval léxico podemos tener:
+
+```text
+pregunta:
+"¿Cómo ajusto el transmisor de presión?"
+
+chunk:
+"Procedimiento de calibración ... ajustar ZERO ... ajustar SPAN ..."
+```
+
+La comparación literal puede tener dificultades porque:
+
+```text
+ajusto ≠ ajustar
+ajusto ≠ calibrar
+```
+
+Con embeddings, la comparación cambia de pregunta:
+
+```text
+retrieval léxico
+→ ¿qué palabras coinciden?
+
+retrieval semántico
+→ ¿qué textos tienen significado parecido?
+```
+
+### 6.3 Embedding de los chunks y embedding de la pregunta
+
+Durante la preparación/indexación:
+
+```text
+DOCUMENTO
+   ↓
+CHUNKS
+   ↓
+EMBEDDING DE CADA CHUNK
+   ↓
+VECTORES
+```
+
+Cuando llega una pregunta:
+
+```text
+PREGUNTA
+   ↓
+EMBEDDING DE LA PREGUNTA
+   ↓
+VECTOR DE CONSULTA
+```
+
+Luego se compara el vector de la pregunta con los vectores de los chunks.
+
+Normalmente se utiliza el **mismo modelo de embeddings** para documentos y preguntas, de modo que ambos queden representados dentro del mismo espacio semántico.
+
+### 6.4 Similitud
+
+Una técnica frecuente para comparar vectores es **cosine similarity**.
+
+No es necesario memorizar todavía la fórmula. El modelo mental es:
+
+```text
+VECTOR PREGUNTA
+       ↓
+comparar matemáticamente
+       ↓
+chunk A → similitud 0.42
+chunk B → similitud 0.61
+chunk C → similitud 0.89
+```
+
+Después ordenamos por similitud y recuperamos el `top-k`.
+
+### 6.5 El embedding no contiene la respuesta
+
+Este punto es esencial.
+
+Un vector como:
+
+```text
 [0.21, -0.54, 0.76, ...]
 ```
 
-La pregunta se representa de la misma forma:
+**no es una versión cifrada del texto que luego se decodifica**.
+
+En nuestro uso de RAG sirve principalmente para decidir:
 
 ```text
-"¿cómo ajusto el transmisor?"
-        ↓
-embedding
-        ↓
-[0.19, -0.51, 0.79, ...]
+¿qué chunks son semánticamente más relevantes para esta pregunta?
 ```
 
-Después se calcula qué vectores están más próximos.
+Una vez identificados los chunks correctos, recuperamos **su texto original** y ese texto es el que se entrega al LLM.
 
-La idea para recordar:
+```text
+embedding
+→ localiza el chunk relevante
 
-> **Los embeddings permiten comparar significado matemáticamente.**
+chunk relevante
+→ recuperamos texto original
+
+texto original + pregunta
+→ LLM
+
+LLM
+→ respuesta
+```
+
+Frase de recuerdo:
+
+> **El embedding no responde la pregunta; ayuda a encontrar, por significado, qué fragmentos pueden contener la respuesta.**
+
+### 6.6 Relación con nuestro LAB
+
+La evolución que queremos observar es:
+
+```text
+Paso 03 — retrieval léxico
+palabras → coincidencias exactas → score
+
+Paso 04 — retrieval semántico
+texto → embeddings → vectores → similitud → ranking
+```
+
+En el Paso 04 todavía no necesitamos un vector store. Podemos calcular los embeddings en memoria RAM y compararlos directamente. La persistencia se estudiará después, para no mezclar conceptos antes de tiempo.
 
 ---
 
