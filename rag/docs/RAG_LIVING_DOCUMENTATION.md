@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–05 verificados; Paso 06 construcción de contexto fundamentado**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–06 verificados; siguiente etapa: generación fundamentada**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica el **Paso 06**: el índice persistido recupera el `Top-3`, el sistema vuelve desde los vectores al **texto original** de cada chunk, conserva documento/sección/chunk como procedencia y construye un **prompt fundamentado** con instrucciones explícitas de no inventar, declarar evidencia insuficiente y citar `[FUENTE n]`. Se confirma físicamente que los embeddings sirven para localizar evidencia, mientras que el LLM recibiría **pregunta + instrucciones + texto recuperado**, no los vectores. Se abre la etapa de **generación fundamentada**. |
 | 2026-09-13 | ✅ Se verifica el **Paso 05** completo. La fase de indexación persiste 11 embeddings de 384 dimensiones en `embeddings.npy` junto con `metadata.json` y `manifest.json`; la fase de consulta posterior carga esos vectores y reproduce exactamente el mismo `Top-3` del Paso 04b generando únicamente el embedding de la pregunta. Se confirma experimentalmente la separación entre **INDEXACIÓN** y **CONSULTA**. Se abre el **Paso 06** para hacer visible la construcción del contexto y del prompt fundamentado antes de llamar a un LLM. |
 | 2026-09-13 | ✅ Se verifica el **Paso 04 / 04b**: embeddings locales de 384 dimensiones, similitud semántica y `Top-k` funcionan. Las pruebas muestran que similitud temática no equivale necesariamente a capacidad de responder y que estructura/identificación pueden competir con contenido operativo. Al excluir solo estructura/metadata, el `Top-3` queda formado por seguridad antes de calibrar, seguridad previa y procedimiento de calibración. Se abre el **Paso 05** para persistir vectores + metadata localmente y separar claramente indexación de consulta, todavía sin vector database. |
 | 2026-09-13 | ✅ Se verifica el **Paso 03**: el retrieval léxico funciona por coincidencia de términos, pero una formulación equivalente puede dejar fuera del `Top-k` el chunk realmente útil. |
@@ -649,7 +650,7 @@ Paso 05B
 
 ## 14. Paso 06 — Construcción de contexto fundamentado
 
-Hasta ahora el retrieval termina en una lista de chunks relevantes. Antes de introducir un LLM queremos observar explícitamente cómo esos chunks vuelven a convertirse en **texto de contexto**.
+Hasta el Paso 05 el retrieval termina en una lista de chunks relevantes. El Paso 06 hace explícito cómo esos chunks vuelven a convertirse en **texto de contexto** antes de la generación.
 
 Script:
 
@@ -677,7 +678,7 @@ PROMPT FUNDAMENTADO
 LLM   ← todavía no se llama en este paso
 ```
 
-El prompt pedagógico incluirá reglas explícitas:
+El prompt pedagógico incluye reglas explícitas:
 
 ```text
 - responder únicamente con base en el contexto recuperado;
@@ -686,9 +687,52 @@ El prompt pedagógico incluirá reglas explícitas:
 - citar [FUENTE 1], [FUENTE 2], etc.
 ```
 
-La finalidad es demostrar físicamente una idea ya estudiada:
+### 14.1 Resultado observado
 
-> **los embeddings sirven para localizar; el LLM recibe el texto original recuperado, no los vectores.**
+✅ **VERIFICADO**.
+
+Para la consulta:
+
+```text
+¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?
+```
+
+se recuperó exactamente el mismo `Top-3` del Paso 05:
+
+```text
+#01 | 0.6545 | Antes de calibrar un transmisor de presión
+#02 | 0.5852 | Seguridad previa
+#03 | 0.4643 | Procedimiento de calibración
+```
+
+A continuación el sistema reconstruyó el contexto con el **texto original** de cada chunk y su procedencia:
+
+```text
+[FUENTE 1]
+Documento + sección + chunk + contenido
+
+[FUENTE 2]
+Documento + sección + chunk + contenido
+
+[FUENTE 3]
+Documento + sección + chunk + contenido
+```
+
+Finalmente construyó el prompt:
+
+```text
+INSTRUCCIONES
++
+PREGUNTA
++
+CONTEXTO RECUPERADO
+```
+
+### Aprendizaje de diseño
+
+> **El embedding no viaja al LLM como respuesta ni como contexto. Su función fue localizar la evidencia; el LLM recibe el texto original recuperado, acompañado de instrucciones y procedencia.**
+
+Este paso completa físicamente el puente entre **retrieval** y **generation**.
 
 ---
 
@@ -824,8 +868,8 @@ Secuencia vigente:
 3. Retrieval léxico baseline                  ✅
 4. Embeddings / retrieval semántico           ✅
 5. Índice vectorial persistente mínimo        ✅
-6. Construcción de contexto fundamentado      ← AHORA
-7. Generación fundamentada / evaluación
+6. Construcción de contexto fundamentado      ✅
+7. Generación fundamentada / evaluación       ← AHORA
 8. Simulación de Maximo/doclinks
 9. Combinación de contexto EAM + RAG
 10. Integración real con Maximo                ← solo si procede
@@ -882,22 +926,14 @@ El modelo `paraphrase-multilingual-MiniLM-L12-v2` y el índice NumPy/JSON son **
 
 ## 20. Siguiente paso
 
-Sincronizar el repositorio mediante **GitHub Desktop** y ejecutar desde la terminal de **VS Code**:
+El Paso 06 deja construido y visible el **prompt fundamentado** que recibiría un LLM. La siguiente etapa es probar la **generación** usando exactamente ese prompt como baseline y comprobar:
 
 ```text
-python rag/src/step06_build_grounded_context.py
+¿la respuesta usa solo la evidencia recuperada?
+¿integra correctamente los varios chunks?
+¿mantiene valores y condiciones exactos?
+¿cita [FUENTE 1], [FUENTE 2], [FUENTE 3]?
+¿declara evidencia insuficiente cuando corresponda?
 ```
 
-El objetivo es observar explícitamente:
-
-```text
-Top-k recuperado
-      ↓
-texto original + procedencia
-      ↓
-CONTEXTO RECUPERADO
-      ↓
-PROMPT FUNDAMENTADO
-```
-
-Todavía no se llamará a un LLM. Solo después de verificar qué contexto recibiría el modelo se añadirá la etapa de generación.
+Antes de acoplar una API o un modelo local al código, se realizará una generación controlada con el prompt ya observado. La elección posterior de proveedor/modelo será una decisión explícita del LAB, no una decisión automática de arquitectura de AI-EAM-MAXIMO.
