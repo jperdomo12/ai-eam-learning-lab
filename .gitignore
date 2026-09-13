@@ -9,6 +9,9 @@ venv/
 .env.*
 !.env.example
 
+# Generated RAG artifacts
+rag/data/vector_index/
+
 # OS
 .DS_Store
 Thumbs.db
