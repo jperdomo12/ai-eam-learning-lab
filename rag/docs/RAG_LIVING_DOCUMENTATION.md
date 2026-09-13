@@ -2,14 +2,15 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — etapa conceptual + primer experimento local**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01 y 02 verificados; Paso 03 retrieval léxico**
 >
-> 🗓️ **Actualizado:** 2026-09-12
+> 🗓️ **Actualizado:** 2026-09-13
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica en el portátil el **Paso 02**: lectura y chunking visible. El manual `PT-201` se divide en 9 chunks usando encabezados Markdown. Se abre el **Paso 03** con retrieval léxico mínimo para observar primero búsqueda por palabras y sus limitaciones antes de introducir embeddings. |
 | 2026-09-12 | Se separan los documentos fuente en `rag/data/source_documents/` para no mezclarlos con `docs/` ni `src/`. Se formaliza el principio de que **la adquisición cambia según la fuente**, mientras que extracción, normalización, chunking, indexación y retrieval deben permanecer desacoplados y reutilizables. |
 | 2026-09-12 | Se corrige la secuencia práctica: las primeras pruebas RAG usarán una **carpeta local del portátil** como fuente. IBM Maximo queda como deseable posterior, primero simulado y eventualmente real. Se elimina la simulación Maximo creada prematuramente y se reutilizan únicamente los documentos sintéticos locales. |
 | 2026-09-12 | Creación inicial del documento vivo del RAG Learning Lab. Se define el problema, el modelo mental, la pregunta guía y el plan incremental de aprendizaje. |
@@ -232,9 +233,9 @@ La prioridad es saber **qué está ocurriendo y por qué**, no conseguir rápida
 
 ---
 
-## 8. Fuente del primer experimento: carpeta local
+## 8. Paso 01 — Fuente local y descubrimiento de documentos
 
-Las primeras prácticas usarán una **carpeta local del portátil** como fuente de documentos.
+Las primeras prácticas usan una **carpeta local del portátil** como fuente de documentos.
 
 Razón:
 
@@ -243,21 +244,19 @@ Razón:
 - permite depurar fácilmente;
 - nos deja concentrarnos en RAG, no en integración de sistemas.
 
-Carpeta reproducible del LAB:
+Carpeta reproducible:
 
 ```text
 rag/data/source_documents/
 ```
 
-La separación queda así:
+Separación:
 
 ```text
 rag/docs/                  → documentación SOBRE el laboratorio
 rag/src/                   → código fuente del laboratorio
 rag/data/source_documents/ → documentos QUE CONSUME el RAG
 ```
-
-Después de sincronizar GitHub, esta carpeta existe físicamente dentro del repositorio local del portátil.
 
 Documentos sintéticos iniciales:
 
@@ -266,66 +265,124 @@ manual_transmisor_PT201.md
 procedimiento_seguridad_instrumentacion.md
 ```
 
-El script:
+Script:
 
 ```text
 rag/src/step01_discover_documents.py
 ```
 
-lista archivos soportados desde esa carpeta por defecto y también acepta como argumento otra carpeta local.
+### Resultado
 
-Ejemplo:
+✅ **VERIFICADO en el portátil** el 2026-09-12.
 
-```text
-python rag/src/step01_discover_documents.py
-```
+El script encontró correctamente los dos documentos desde `rag/data/source_documents/` y mostró sus rutas y formatos.
 
-O, apuntando a otra carpeta del portátil:
-
-```text
-python rag/src/step01_discover_documents.py "C:\\ruta\\a\\mis\\manuales"
-```
-
-Este paso todavía **no es RAG completo**. Solo valida el primer eslabón: localizar las fuentes documentales disponibles.
+Este paso todavía no realiza retrieval; valida la adquisición local más simple.
 
 ---
 
-## 9. Primer experimento RAG previsto
+## 9. Paso 02 — Lectura y chunking visible
 
-Objetivo:
-
-> construir un RAG pequeño donde podamos ver claramente qué fragmentos se recuperan antes de que el LLM genere la respuesta.
-
-Queremos observar algo como:
+Script:
 
 ```text
-Carpeta fuente:
-rag/data/source_documents/
-
-Documentos:
-1. manual técnico
-2. procedimiento de seguridad
-
-Pregunta:
-¿Cómo calibro PT-201?
-
-Chunks recuperados:
-1. manual — procedimiento de calibración
-2. manual — criterio de aceptación
-3. procedimiento — seguridad previa
-
-Respuesta:
-...
-
-Fuentes utilizadas:
-...
+rag/src/step02_read_and_chunk.py
 ```
 
-No consideraremos exitoso el experimento solo porque la respuesta “suene bien”. Primero debe recuperarse evidencia apropiada.
+Baseline deliberadamente simple:
+
+```text
+Markdown (.md) → un chunk por sección/encabezado
+Texto (.txt)    → un chunk por bloque separado por línea en blanco
+```
+
+Todavía no intervienen embeddings ni búsqueda semántica.
+
+### Resultado observado
+
+✅ **VERIFICADO en el portátil** el 2026-09-12.
+
+El manual:
+
+```text
+manual_transmisor_PT201.md
+```
+
+produjo:
+
+```text
+9 chunks
+```
+
+Esto permitió observar físicamente la transición:
+
+```text
+DOCUMENTO COMPLETO
+      ↓
+SECCIONES CON SIGNIFICADO
+      ↓
+CHUNKS INDEPENDIENTES
+```
+
+La lección importante es que el retriever futuro no buscará necesariamente sobre “el PDF entero”, sino sobre unidades de contenido recuperables. La forma de dividirlas influirá directamente en la calidad posterior.
 
 ---
 
-## 10. Casos de prueba que debe soportar el primer LAB
+## 10. Paso 03 — Retrieval léxico mínimo
+
+Antes de embeddings introducimos una baseline extremadamente simple de recuperación por palabras.
+
+Script:
+
+```text
+rag/src/step03_lexical_retrieval.py
+```
+
+Funcionamiento:
+
+```text
+pregunta
+  ↓
+normalizar / tokenizar palabras
+  ↓
+comparar con palabras de cada chunk
+  ↓
+score = cantidad de términos coincidentes
+  ↓
+ordenar
+  ↓
+Top-k chunks
+```
+
+Consulta inicial:
+
+```text
+procedimiento calibracion PT-201
+```
+
+La finalidad **no** es considerar esta estrategia suficiente para RAG empresarial. La usamos como baseline observable para entender qué significa retrieval antes de ocultar el mecanismo dentro de embeddings o frameworks.
+
+Luego se probará una formulación conceptualmente equivalente pero con palabras distintas:
+
+```text
+¿Cómo ajusto el transmisor de presión?
+```
+
+La hipótesis de aprendizaje es:
+
+```text
+búsqueda léxica
+→ reconoce principalmente coincidencia de términos
+
+búsqueda semántica con embeddings
+→ debería capturar mejor similitud de significado
+```
+
+Esta comparación será la puerta de entrada a embeddings.
+
+---
+
+## 11. Casos de prueba que debe soportar el primer LAB
 
 ### Caso A — respuesta presente
 
@@ -353,7 +410,7 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 11. Fuentes, formatos y adquisición
+## 12. Fuentes, formatos y adquisición
 
 RAG no depende de un único formato ni de un único repositorio documental.
 
@@ -416,7 +473,7 @@ Esto evita construir un RAG distinto para cada sistema fuente.
 
 ---
 
-## 12. Papel deseable de IBM Maximo
+## 13. Papel deseable de IBM Maximo
 
 IBM Maximo es el **ejemplo EAM deseable para una fase posterior**, no la fuente inicial del LAB.
 
@@ -449,22 +506,24 @@ ruta / URL
 source_system
 ```
 
-### Secuencia prevista
+Secuencia prevista:
 
 ```text
-1. Carpeta local                     ← AHORA
-2. RAG mínimo observable             ← SIGUIENTE
-3. Variaciones de chunking/retrieval
-4. Simulación de Maximo/doclinks
-5. Combinación de contexto EAM + RAG
-6. Integración real con Maximo       ← solo si procede
+1. Carpeta local                     ✅
+2. Chunking visible                  ✅
+3. Retrieval léxico baseline         ← AHORA
+4. Embeddings / retrieval semántico
+5. Vector store / evaluación
+6. Simulación de Maximo/doclinks
+7. Combinación de contexto EAM + RAG
+8. Integración real con Maximo       ← solo si procede
 ```
 
-La simulación Maximo se construirá cuando lleguemos realmente a ese paso; no se mantiene una simulación prematura como parte del primer ejercicio.
+La simulación Maximo se construirá cuando lleguemos realmente a ese paso.
 
 ---
 
-## 13. Aplicación futura a EAM / IBM Maximo
+## 14. Aplicación futura a EAM / IBM Maximo
 
 Fuentes candidatas de conocimiento:
 
@@ -492,7 +551,7 @@ Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 14. Decisiones todavía NO tomadas
+## 15. Decisiones todavía NO tomadas
 
 Aún no se ha decidido:
 
@@ -501,31 +560,26 @@ Aún no se ha decidido:
 - framework RAG;
 - LLM específico;
 - ejecución local vs API;
-- estrategia de chunking;
-- tamaño de `top-k`;
+- estrategia de chunking definitiva;
+- tamaño de `top-k` definitivo;
 - framework de evaluación.
 
 Estas decisiones se tomarán durante experimentos concretos y se documentarán con evidencia, no por anticipado.
 
 ---
 
-## 15. Siguiente paso
+## 16. Siguiente paso
 
-Repetir el **Paso 01 — descubrimiento de documentos desde una carpeta local** después de sincronizar el cambio de estructura:
+Sincronizar el repositorio mediante **GitHub Desktop** y ejecutar desde la terminal de **VS Code**:
 
 ```text
-rag/data/source_documents/
-      ↓
-listar documentos soportados
-      ↓
-confirmar rutas y formatos
+python rag/src/step03_lexical_retrieval.py
 ```
 
-Después construiremos el primer paso propiamente RAG:
+Después repetir con:
 
-1. leer el contenido de los documentos;
-2. dividirlo en chunks visibles;
-3. construir un retrieval mínimo;
-4. mostrar qué chunks recupera cada pregunta;
-5. solo después generar una respuesta fundamentada;
-6. probar deliberadamente una pregunta sin respuesta.
+```text
+python rag/src/step03_lexical_retrieval.py "¿Cómo ajusto el transmisor de presión?"
+```
+
+Compararemos qué chunks devuelve cada consulta y por qué. Solo después introduciremos embeddings y repetiremos el mismo ejercicio con búsqueda semántica.
