@@ -1,0 +1,41 @@
+[
+  {
+    "id": "A",
+    "name": "respuesta presente",
+    "question": "¿Cuál es el criterio de aceptación de la calibración del PT-201?",
+    "expected_answerable": true,
+    "expected_headings": [
+      "5. Criterio de aceptación"
+    ],
+    "notes": "La respuesta existe explícitamente en el manual sintético."
+  },
+  {
+    "id": "B",
+    "name": "formulación distinta",
+    "question": "¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?",
+    "expected_answerable": true,
+    "expected_headings": [
+      "4. Procedimiento de calibración"
+    ],
+    "notes": "La pregunta usa 'ajustar' en lugar de depender de coincidencia literal con 'calibración'."
+  },
+  {
+    "id": "C",
+    "name": "información repartida",
+    "question": "¿Qué debo verificar antes de ajustar el PT-201 y cómo debo calibrarlo?",
+    "expected_answerable": true,
+    "expected_headings": [
+      "2. Seguridad previa",
+      "4. Procedimiento de calibración"
+    ],
+    "notes": "La respuesta útil requiere recuperar más de un fragmento."
+  },
+  {
+    "id": "D",
+    "name": "respuesta inexistente",
+    "question": "¿Cuál es el par de apriete de los bornes eléctricos del PT-201?",
+    "expected_answerable": false,
+    "expected_headings": [],
+    "notes": "Los documentos sintéticos no contienen ningún valor de par de apriete para bornes eléctricos. El comportamiento correcto es abstenerse de inventar."
+  }
+]
