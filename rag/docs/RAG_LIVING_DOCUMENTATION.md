@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–04 verificados; Paso 05 índice vectorial persistente mínimo**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–05 verificados; Paso 06 construcción de contexto fundamentado**
 >
 > 🗓️ **Actualizado:** 2026-09-13
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-13 | ✅ Se verifica el **Paso 05** completo. La fase de indexación persiste 11 embeddings de 384 dimensiones en `embeddings.npy` junto con `metadata.json` y `manifest.json`; la fase de consulta posterior carga esos vectores y reproduce exactamente el mismo `Top-3` del Paso 04b generando únicamente el embedding de la pregunta. Se confirma experimentalmente la separación entre **INDEXACIÓN** y **CONSULTA**. Se abre el **Paso 06** para hacer visible la construcción del contexto y del prompt fundamentado antes de llamar a un LLM. |
 | 2026-09-13 | ✅ Se verifica el **Paso 04 / 04b**: embeddings locales de 384 dimensiones, similitud semántica y `Top-k` funcionan. Las pruebas muestran que similitud temática no equivale necesariamente a capacidad de responder y que estructura/identificación pueden competir con contenido operativo. Al excluir solo estructura/metadata, el `Top-3` queda formado por seguridad antes de calibrar, seguridad previa y procedimiento de calibración. Se abre el **Paso 05** para persistir vectores + metadata localmente y separar claramente indexación de consulta, todavía sin vector database. |
 | 2026-09-13 | ✅ Se verifica el **Paso 03**: el retrieval léxico funciona por coincidencia de términos, pero una formulación equivalente puede dejar fuera del `Top-k` el chunk realmente útil. |
 | 2026-09-13 | ✅ Se verifica en el portátil el **Paso 02**: lectura y chunking visible. El manual `PT-201` se divide en 9 chunks usando encabezados Markdown. Se abre el **Paso 03** con retrieval léxico mínimo para observar primero búsqueda por palabras y sus limitaciones antes de introducir embeddings. |
@@ -557,7 +558,7 @@ pueden servir como contexto o filtros, mientras el retrieval semántico se conce
 
 Hasta el Paso 04 los embeddings de los documentos se calculaban en cada ejecución y desaparecían al terminar el proceso.
 
-Ahora queremos separar dos momentos:
+El Paso 05 separa dos momentos:
 
 ```text
 INDEXACIÓN
@@ -598,9 +599,100 @@ La carpeta está ignorada por Git porque contiene **artefactos derivados/regener
 
 Este paso utiliza archivos NumPy + JSON como índice pedagógico mínimo. **No es todavía una vector database**. La finalidad es entender persistencia e indexación antes de introducir un producto especializado.
 
+### 13.1 Resultado de indexación
+
+✅ **VERIFICADO**.
+
+```text
+chunks indexados: 11
+dimensiones: 384
+```
+
+Los embeddings quedan persistidos en `embeddings.npy`; `metadata.json` mantiene la correspondencia entre cada fila vectorial y el texto/documento/sección originales; `manifest.json` registra el modelo y propiedades básicas del índice.
+
+### 13.2 Resultado de consulta
+
+✅ **VERIFICADO**.
+
+La consulta:
+
+```text
+¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?
+```
+
+produce desde el índice persistido exactamente:
+
+```text
+#01 | 0.6545 | Antes de calibrar un transmisor de presión
+#02 | 0.5852 | Seguridad previa
+#03 | 0.4643 | Procedimiento de calibración
+```
+
+Es el mismo ranking del Paso 04b.
+
+La diferencia no está en el significado ni en el ranking, sino en **cuándo se realiza el trabajo**:
+
+```text
+Paso 04b
+→ embeddings de documentos + embedding de pregunta se calculan en la ejecución
+
+Paso 05B
+→ embeddings de documentos ya existen en disco
+→ solo se calcula el embedding de la pregunta
+```
+
+### Aprendizaje de diseño
+
+> **Persistir el índice no cambia qué significa el contenido; separa y reutiliza el trabajo de indexación para las consultas posteriores.**
+
 ---
 
-## 14. Casos de prueba que debe soportar el primer LAB
+## 14. Paso 06 — Construcción de contexto fundamentado
+
+Hasta ahora el retrieval termina en una lista de chunks relevantes. Antes de introducir un LLM queremos observar explícitamente cómo esos chunks vuelven a convertirse en **texto de contexto**.
+
+Script:
+
+```text
+rag/src/step06_build_grounded_context.py
+```
+
+Flujo:
+
+```text
+PREGUNTA
+   ↓
+embedding de consulta
+   ↓
+índice persistido
+   ↓
+Top-k
+   ↓
+metadata / texto original
+   ↓
+CONTEXTO RECUPERADO
+   ↓
+PROMPT FUNDAMENTADO
+   ↓
+LLM   ← todavía no se llama en este paso
+```
+
+El prompt pedagógico incluirá reglas explícitas:
+
+```text
+- responder únicamente con base en el contexto recuperado;
+- no inventar pasos, valores ni condiciones;
+- declarar evidencia insuficiente cuando corresponda;
+- citar [FUENTE 1], [FUENTE 2], etc.
+```
+
+La finalidad es demostrar físicamente una idea ya estudiada:
+
+> **los embeddings sirven para localizar; el LLM recibe el texto original recuperado, no los vectores.**
+
+---
+
+## 15. Casos de prueba que debe soportar el primer LAB
 
 ### Caso A — respuesta presente
 
@@ -628,7 +720,7 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 15. Fuentes, formatos y adquisición
+## 16. Fuentes, formatos y adquisición
 
 RAG no depende de un único formato ni de un único repositorio documental.
 
@@ -691,7 +783,7 @@ Esto evita construir un RAG distinto para cada sistema fuente.
 
 ---
 
-## 16. Papel deseable de IBM Maximo
+## 17. Papel deseable de IBM Maximo
 
 IBM Maximo es el **ejemplo EAM deseable para una fase posterior**, no la fuente inicial del LAB.
 
@@ -731,18 +823,19 @@ Secuencia vigente:
 2. Chunking visible                           ✅
 3. Retrieval léxico baseline                  ✅
 4. Embeddings / retrieval semántico           ✅
-5. Índice vectorial persistente mínimo         ← AHORA
-6. Generación fundamentada / evaluación
-7. Simulación de Maximo/doclinks
-8. Combinación de contexto EAM + RAG
-9. Integración real con Maximo                 ← solo si procede
+5. Índice vectorial persistente mínimo        ✅
+6. Construcción de contexto fundamentado      ← AHORA
+7. Generación fundamentada / evaluación
+8. Simulación de Maximo/doclinks
+9. Combinación de contexto EAM + RAG
+10. Integración real con Maximo                ← solo si procede
 ```
 
 La simulación Maximo se construirá cuando lleguemos realmente a ese paso.
 
 ---
 
-## 17. Aplicación futura a EAM / IBM Maximo
+## 18. Aplicación futura a EAM / IBM Maximo
 
 Fuentes candidatas de conocimiento:
 
@@ -770,7 +863,7 @@ Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 18. Decisiones todavía NO tomadas
+## 19. Decisiones todavía NO tomadas
 
 Aún no se ha decidido:
 
@@ -787,20 +880,24 @@ El modelo `paraphrase-multilingual-MiniLM-L12-v2` y el índice NumPy/JSON son **
 
 ---
 
-## 19. Siguiente paso
+## 20. Siguiente paso
 
 Sincronizar el repositorio mediante **GitHub Desktop** y ejecutar desde la terminal de **VS Code**:
 
 ```text
-python rag/src/step05_build_vector_index.py
+python rag/src/step06_build_grounded_context.py
 ```
 
-El objetivo es observar por primera vez la **persistencia** de los embeddings de los documentos.
-
-Después se ejecutará:
+El objetivo es observar explícitamente:
 
 ```text
-python rag/src/step05_query_vector_index.py
+Top-k recuperado
+      ↓
+texto original + procedencia
+      ↓
+CONTEXTO RECUPERADO
+      ↓
+PROMPT FUNDAMENTADO
 ```
 
-para demostrar que la consulta puede cargar los vectores persistidos y generar únicamente el embedding de la nueva pregunta.
+Todavía no se llamará a un LLM. Solo después de verificar qué contexto recibiría el modelo se añadirá la etapa de generación.
