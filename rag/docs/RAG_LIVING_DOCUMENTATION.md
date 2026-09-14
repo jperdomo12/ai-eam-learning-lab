@@ -10,9 +10,10 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-14 | Se consolida la distinción entre **RAG documental** y acceso a **datos estructurados/transaccionales** mediante SQL, API o MCP. Se aclara además que una base de datos puede participar en RAG cuando actúa como vector store, sin que toda consulta a una BD sea RAG. |
 | 2026-09-14 | ✅ Se cierra el **Paso 08 — generación fundamentada**. Con Ollama + `llama3:latest`, el Caso D demuestra abstención correcta ante evidencia inexistente. El control reproducible 08C (`temperature=0`, `seed=42`, dos repeticiones por prompt) confirma que el prompt orientado a `completeness` produce una respuesta sustancialmente más completa que el baseline manteniendo fijo retrieval, contexto, modelo y parámetros. Se cierra la fase de RAG básico sin continuar optimizaciones de prompt/modelo en esta etapa. |
 | 2026-09-14 | ♻️ Se reutiliza una instalación previa de **Ollama 0.34.0** con `llama3:latest` (`Llama 3`, `8B`, contexto `8192`, cuantización `Q4_0`) en lugar de instalar otro runtime/modelo. |
-| 2026-09-14 | 🧪 La primera ruta de generación mediante OpenAI Responses API alcanzó al proveedor, pero quedó bloqueada por `credit_balance_exhausted`. Se decidió no realizar pagos adicionales para este LAB; la clave fue eliminada/revocada y la variable `OPENAI_API_KEY` eliminada del entorno local. |
+| 2026-09-14 | 🧪 La primera ruta de generación mediante OpenAI Responses API alcanzó al proveedor, pero quedó bloqueada por `credit_balance_exhausted`. Se decidió no realizar pagos adicionales para este LAB; la clave fue eliminada/revocada y la variable de entorno correspondiente fue eliminada del entorno local. |
 | 2026-09-13 | ✅ Se completa la baseline de evaluación del retrieval (Casos A–D) y sensibilidad a `Top-k`; `k=4` queda como baseline pedagógica mínima para cubrir A–C en este corpus. |
 | 2026-09-13 | ✅ Se verifican embeddings semánticos, índice vectorial persistente mínimo y construcción del contexto fundamentado. |
 | 2026-09-12 | ✅ Se verifican fuente local, lectura, chunking visible y retrieval léxico. |
@@ -90,6 +91,86 @@ recuperación
 contexto
 +
 generación
+```
+
+### 3.1 RAG documental vs. datos estructurados/transaccionales
+
+Para el alcance de este Learning Lab, la forma más útil de recordar **RAG clásico** es:
+
+```text
+RAG "clásico"
+→ recuperar conocimiento no estructurado o semiestructurado
+→ documentos, PDFs, manuales, procedimientos
+→ embeddings / búsqueda semántica
+→ chunks
+→ LLM
+```
+
+En una arquitectura AI-Driven EAM conviene separar dos necesidades:
+
+```text
+DOCUMENTOS / CONOCIMIENTO
+→ RAG
+
+DATOS ESTRUCTURADOS / TRANSACCIONALES
+→ SQL / API / MCP
+
+LLM / agente
+→ combina ambos cuando hace falta
+```
+
+Ejemplos de datos estructurados/transaccionales:
+
+```text
+órdenes de trabajo
+activos
+estados
+prioridades
+inventario
+costes
+fechas
+```
+
+Por ejemplo:
+
+```text
+¿Cuántas OTs de prioridad 1 están abiertas?
+```
+
+se resuelve de forma natural consultando Maximo mediante API/MCP, porque la respuesta depende de datos operativos estructurados y actuales.
+
+En cambio:
+
+```text
+¿Qué indica el manual de la bomba B-201 sobre vibración?
+```
+
+encaja directamente en RAG documental.
+
+Una base de datos también puede participar en RAG cuando almacena y recupera vectores. Por ejemplo:
+
+```text
+PostgreSQL + pgvector
+→ texto del chunk
+→ embedding
+→ metadata
+→ búsqueda vectorial
+```
+
+En ese caso la base de datos funciona también como **vector store** para el retrieval semántico.
+
+Pero:
+
+> **Consultar una base de datos no convierte automáticamente esa consulta en RAG.**
+
+La misma plataforma podría utilizarse simultáneamente para:
+
+```text
+SQL tradicional
+→ datos estructurados exactos
+
+pgvector
+→ retrieval semántico sobre chunks / embeddings
 ```
 
 ---
