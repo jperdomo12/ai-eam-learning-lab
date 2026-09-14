@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; Paso 08 migrado a generación local con Ollama**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; Paso 08 ejecutado con LLM local y Caso C parcialmente satisfactorio**
 >
 > 🗓️ **Actualizado:** 2026-09-14
 
@@ -10,7 +10,9 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-14 | 🧪 Se intenta ejecutar el **Paso 08** con OpenAI Responses API. La clave y la integración llegan correctamente al proveedor, pero la llamada termina con `credit_balance_exhausted`: ChatGPT Plus no aporta saldo de API y continuar exigiría crédito adicional. El usuario decide explícitamente **no realizar pagos adicionales** para completar el LAB. Se conserva este intento como evidencia de aprendizaje y se cambia únicamente la capa de generación a **Ollama + LLM local**, manteniendo retrieval, índice, `Top-k=4`, contexto y prompt. El modelo local baseline será `gemma3:4b`, configurable mediante `OLLAMA_MODEL`. |
+| 2026-09-14 | 🧪 Primera generación real end-to-end del **Paso 08** con `Ollama 0.34.0` y el modelo ya instalado `llama3:latest` (`Llama 3`, `8B`, `Q4_0`, contexto `8192`). El retrieval conserva exactamente el `Top-4` previsto para el Caso C y el LLM responde únicamente con evidencia recuperada y sin inventar valores. Sin embargo, la respuesta es **incompleta**: cubre inspección y seguridad previa, pero omite el procedimiento de calibración y sus criterios pese a que estaban presentes en `[FUENTE 2]` y `[FUENTE 3]`. Se confirma así que **retrieval completo ≠ generación completa**. Antes de modificar prompt/modelo se ejecutará el Caso D sin cambiar ninguna variable para evaluar abstención. |
+| 2026-09-14 | ♻️ Se detecta y reutiliza una instalación previa de **Ollama 0.34.0** y `llama3:latest`, evitando instalar otro runtime o descargar un modelo adicional. `ollama show` confirma arquitectura Llama, `8.0B` parámetros, contexto `8192`, embedding length `4096`, cuantización `Q4_0` y capacidad `completion`. La implementación activa del Paso 08 usa `llama3:latest` por defecto y mantiene `OLLAMA_MODEL` como override opcional. |
+| 2026-09-14 | 🧪 Se intenta ejecutar el **Paso 08** con OpenAI Responses API. La clave y la integración llegan correctamente al proveedor, pero la llamada termina con `credit_balance_exhausted`: ChatGPT Plus no aporta saldo de API y continuar exigiría crédito adicional. El usuario decide explícitamente **no realizar pagos adicionales** para completar el LAB. Se conserva este intento como evidencia de aprendizaje y se cambia únicamente la capa de generación a **Ollama + LLM local**, manteniendo retrieval, índice, `Top-k=4`, contexto y prompt. |
 | 2026-09-13 | 🧪 Se prepara el **Paso 08 — generación fundamentada con LLM externo**. Para aislar el aprendizaje de generación se selecciona inicialmente **OpenAI Responses API** como proveedor del LAB y `gpt-5.6-luna` como modelo por defecto. La ruta fue técnicamente alcanzada, pero no llegó a generar respuesta por ausencia de créditos API; queda como experimento histórico, no como camino activo. |
 | 2026-09-13 | ✅ Se verifica el **Paso 07B — sensibilidad a `Top-k`** manteniendo fijos modelo, embeddings, corpus y consultas. En la baseline actual, el Caso A alcanza cobertura completa desde `k=2`, el Caso B desde `k=3` y el Caso C desde `k=4`; el Caso D sigue sin respuesta documental aunque se amplíe hasta `k=5`. Se adopta **`k=4` únicamente como baseline temporal para la próxima evaluación de generación**, por ser el menor valor probado que cubre toda la evidencia esperada de A–C. No se considera un `Top-k` universal ni una decisión productiva. |
 | 2026-09-13 | 🧪 Diagnóstico completo del **Caso C**: `Inspección previa` queda #1 (`0.6864`), `Procedimiento de calibración` #2 (`0.6438`), `Criterio de aceptación` #3 (`0.4909`), la sección alternativa de seguridad `Antes de calibrar un transmisor de presión` #4 (`0.4400`) y `Seguridad previa` #5 (`0.4209`). Se aprende que evaluar únicamente por heading exacto puede ser demasiado rígido y que aumentar `k` puede mejorar cobertura a costa de más contexto. Se añaden **grupos de evidencia** al dataset y el **Paso 07B** para medir sensibilidad a `k=1..5` sin cambiar modelo, corpus, embeddings ni consultas. |
@@ -157,8 +159,8 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 6. **Índice vectorial persistente mínimo** — ✅ separar indexación y consulta guardando vectores + metadata localmente, todavía sin una vector database dedicada.
 7. **Construcción de contexto fundamentado** — ✅ recuperar `Top-k`, volver al texto original y construir el contexto/prompt que recibiría el LLM.
 8. **Baseline de evaluación y abstención** — ✅ casos A–D reproducibles y sensibilidad a `Top-k` evaluada; `k=4` queda como baseline temporal mínima para cubrir A–C en este corpus, mientras D sigue sin respuesta documental.
-9. **Generación fundamentada** — 🟢 Paso 08 migrado a **Ollama + `gemma3:4b` local**, manteniendo `Top-k=4`; pendiente instalar runtime/modelo y ejecutar Casos C y D.
-10. **Mejoras** — filtros, búsqueda híbrida, reranking, query rewriting, etc., solo cuando aporten valor.
+9. **Generación fundamentada** — 🧪 Paso 08 ejecutado con **Ollama + `llama3:latest`** y `Top-k=4`. Caso C: groundedness buena, completeness insuficiente. Siguiente prueba: Caso D sin cambiar variables.
+10. **Mejoras** — filtros, búsqueda híbrida, reranking, query rewriting, prompt/modelo generativo, etc., solo después de completar la baseline de generación.
 11. **Aplicación EAM** — manuales, procedimientos, troubleshooting, seguridad y mantenimiento.
 12. **Maximo simulado** — usar contexto EAM para descubrir documentos asociados a un activo.
 13. **MCP + RAG / Maximo real** — solo después de entender y validar lo anterior.
@@ -199,31 +201,32 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-La primera generación completada del LAB usará ahora:
+El backend generativo activo del LAB es ahora:
 
 ```text
-Runtime:       Ollama local
-Modelo:        gemma3:4b
+Runtime:       Ollama 0.34.0 local
+Modelo:        llama3:latest (Llama 3 8B, Q4_0)
+Contexto:      8192 tokens
 Top-k:         4
 API key:       no requerida
 Coste API:     0
 Herramientas:  ninguna
 ```
 
-La decisión es deliberadamente de laboratorio: **retrieval, índice, contexto y prompt permanecen iguales; solo cambia el backend generativo**. Esto permite observar que el patrón RAG no depende de un proveedor concreto de LLM.
-
-En Windows, instalar Ollama desde su distribución oficial. Después descargar una sola vez el modelo baseline:
+El **Caso C** ya recorrió el pipeline completo hasta una respuesta real. El retrieval entregó las cuatro fuentes esperadas, incluida la evidencia de calibración, pero el modelo generó solo la parte de inspección y seguridad. Por tanto:
 
 ```text
-ollama pull gemma3:4b
+retrieval suficiente
+≠
+generación necesariamente completa
 ```
 
-El modelo `gemma3:4b` ocupa aproximadamente 3,3 GB en la distribución de Ollama y se elige como equilibrio inicial entre tamaño y capacidad multilingüe. Si el portátil no dispone de recursos suficientes, el LAB permite sustituirlo mediante `OLLAMA_MODEL`, por ejemplo con `gemma3:1b`, sin cambiar el pipeline RAG.
+Antes de cambiar prompt, modelo, `Top-k` o retrieval se mantendrán todas las variables y se ejecutará el **Caso D — respuesta inexistente**. El objetivo es observar la segunda propiedad crítica de la generación: **abstention**.
 
-Después ejecutar:
+Ejecutar:
 
 ```text
-python rag/src/step08_generate_grounded_answer.py
+python rag/src/step08_generate_grounded_answer.py "¿Cuál es el par de apriete de los bornes eléctricos del PT-201?"
 ```
 
-La consulta por defecto sigue siendo el **Caso C** porque requiere integrar inspección, seguridad y procedimiento. Una vez verificada esa generación, se repetirá exactamente el mismo paso con el **Caso D** para comprobar abstención ante evidencia inexistente.
+Después se compararán conjuntamente los resultados de C y D para decidir qué variable conviene experimentar primero en la capa de generación.
