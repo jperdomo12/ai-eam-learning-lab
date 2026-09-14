@@ -1,6 +1,6 @@
 # 🧪 AI-EAM Learning Lab
 
-Hands-on learning and experimentation lab for AI applied to EAM: MCP, RAG, agents and related technologies.
+Hands-on learning and experimentation lab for AI applied to EAM: fundamentos de IA, MCP, RAG, agentes y tecnologías relacionadas.
 
 > **Idea central:** aprender haciendo, registrar lo importante y mantener separados los experimentos del producto oficial.
 
@@ -8,6 +8,8 @@ Hands-on learning and experimentation lab for AI applied to EAM: MCP, RAG, agent
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-14 | Se incorpora la nota transversal [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md), consolidando historia mínima de IA, LLM, tokenización, Transformer/Attention, modelos/runtimes/productos, RAG, MCP y agentes. Se actualiza además la situación 2026 de IBM Maximo: servidor MCP oficial en MAS 9.2, continuidad de OSLC y capacidades RAG/DocSearch documentadas en Maximo Assistant. |
+| 2026-09-14 | Se actualiza el estado del RAG: fundamentos básicos **verificados y cerrados para el nivel actual de aprendizaje** tras los Pasos 01–08. El siguiente bloque práctico será la aplicación EAM mediante simulación Maximo/doclinks. |
 | 2026-09-12 | Se inicia formalmente el **RAG Learning Lab** con pregunta guía, documentación viva y plan incremental de aprendizaje. |
 | 2026-09-12 | Se simplifica la estructura documental: `DOCUMENTATION_STANDARD.md` pasa a la raíz del repositorio y se refuerza la regla de Historial obligatorio en toda documentación Markdown viva. |
 | 2026-09-12 | MCP queda **cerrado/congelado en v1.2** tras la revalidación final de VS Code + Cline: configuración efectiva recuperada, Maximo/Filesystem probados y composición multi-MCP validada. |
@@ -37,7 +39,7 @@ El Learning Lab prioriza:
 
 No busca reproducir el proceso formal de un producto. La documentación y el Git workflow deben ser suficientemente rigurosos para no perder conocimiento, pero suficientemente ligeros para no frenar el aprendizaje.
 
-La documentación se mantiene **viva en GitHub**. Materiales provenientes de chats, Gemini, Claude, Cline u otras etapas son fuentes de reconstrucción; el conocimiento consolidado debe terminar en la documentación vigente del laboratorio.
+La documentación se mantiene **viva en GitHub**. Materiales provenientes de chats, Gemini, Claude, Cline, notas personales u otras etapas son fuentes de reconstrucción; el conocimiento consolidado debe terminar en la documentación vigente del laboratorio.
 
 El estándar documental está en [`DOCUMENTATION_STANDARD.md`](DOCUMENTATION_STANDARD.md).
 
@@ -45,11 +47,35 @@ El estándar documental está en [`DOCUMENTATION_STANDARD.md`](DOCUMENTATION_STA
 
 | Tema | Estado | Entrada |
 |---|---|---|
+| Fundamentos de IA e historia mínima | 📘 Estudio transversal activo | [`docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md) |
 | MCP — Model Context Protocol | ✅ Cerrado / congelado · v1.2 | [`mcp/README.md`](mcp/README.md) |
-| RAG — Retrieval-Augmented Generation | 🟢 En curso | [`rag/README.md`](rag/README.md) |
+| RAG — Retrieval-Augmented Generation | ✅ RAG básico verificado · Pasos 01–08 cerrados | [`rag/README.md`](rag/README.md) |
 | Agentes | ⏳ Futuro | Se creará cuando comience el estudio real. |
 
 > No se crean carpetas ni documentación de un tema hasta que realmente se empiece a trabajar en él.
+
+## 🧠 Fundamentos transversales
+
+La nota de referencia rápida para conectar los conceptos estudiados es:
+
+[`docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md)
+
+Resume y relaciona:
+
+```text
+historia mínima de IA
+→ Machine Learning / Deep Learning
+→ tokenización
+→ Transformer / Attention
+→ LLM
+→ prompting
+→ RAG
+→ Tools / MCP
+→ agentes
+→ aplicación EAM / IBM Maximo
+```
+
+No sustituye la documentación experimental de MCP o RAG; sirve como mapa conceptual común.
 
 ## 🔗 Relación con AI-EAM-MAXIMO
 
@@ -83,10 +109,17 @@ Los ejemplos que requieran configuración sensible deben utilizar variables de e
 
 El laboratorio **MCP** está cerrado y congelado para el alcance actual.
 
-El laboratorio **RAG** está abierto y comienza con la pregunta guía:
+El bloque de **RAG básico** también está cerrado para el nivel de aprendizaje buscado. Se verificó el flujo completo desde documentos locales hasta generación fundamentada y abstención.
+
+El siguiente bloque práctico previsto es:
 
 ```text
-¿Cómo calibro este equipo según su manual?
+IBM Maximo simulado
+→ activo
+→ doclinks / metadata
+→ localizar documentación asociada
+→ aplicar el RAG ya aprendido
+→ respuesta fundamentada
 ```
 
 Entrada RAG:
