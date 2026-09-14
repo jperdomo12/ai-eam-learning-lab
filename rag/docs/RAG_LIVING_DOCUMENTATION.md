@@ -1,8 +1,8 @@
 # 📘 RAG Learning Lab — Documentación viva
 
-> 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
+> 🎯 **Propósito:** conservar el conocimiento vigente, decisiones de laboratorio, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; Paso 08 activo con Ollama + Llama 3; Caso C ejecutado**
+> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO — Pasos 01–08 cerrados; siguiente bloque: simulación Maximo / doclinks**
 >
 > 🗓️ **Actualizado:** 2026-09-14
 
@@ -10,269 +10,120 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-14 | 🧪 Primera ejecución end-to-end del **Paso 08** con `Ollama 0.34.0` y el modelo local preexistente `llama3:latest` (`Llama 3`, `8.0B`, contexto `8192`, cuantización `Q4_0`). El retrieval entrega correctamente el `Top-4` esperado del Caso C. La generación permanece fundamentada y no inventa valores, pero resulta **incompleta**: cubre inspección y seguridad previa, mientras omite el procedimiento de calibración y sus criterios a pesar de estar presentes en `[FUENTE 2]` y `[FUENTE 3]`. Se confirma experimentalmente que **retrieval completo ≠ generación completa**. Antes de modificar prompt, modelo o retrieval se ejecutará el Caso D manteniendo todas las variables para evaluar abstención. |
-| 2026-09-14 | ♻️ Antes de instalar software adicional se detecta una instalación previa utilizable: **Ollama 0.34.0** con `llama3:latest`. `ollama show` confirma arquitectura Llama, `8.0B` parámetros, contexto `8192`, embedding length `4096`, cuantización `Q4_0` y capacidad `completion`. Se decide reutilizarla como baseline local del LAB en lugar de descargar `gemma3:4b`; `OLLAMA_MODEL` permanece como override opcional. |
-| 2026-09-14 | 🧪 Se intenta ejecutar el **Paso 08** mediante OpenAI Responses API. La integración alcanza correctamente al proveedor, pero la generación termina con `429 / credit_balance_exhausted`: continuar exige saldo API adicional e independiente de ChatGPT Plus. El usuario decide explícitamente **no realizar pagos adicionales** para terminar el LAB. Se conserva el intento como evidencia y se cambia únicamente el backend generativo a **Ollama + LLM local**, manteniendo índice, retrieval, `Top-k=4`, contexto y prompt. `rag/requirements.txt` vuelve a contener solo dependencias necesarias para el pipeline local. |
-| 2026-09-14 | 🔐 Durante la preparación de la ruta API se expuso accidentalmente una clave en el chat; fue revocada. Posteriormente se eliminó también la segunda clave creada para la prueba y `OPENAI_API_KEY` se eliminó del entorno local de Windows. No se versionó ninguna clave en GitHub. |
-| 2026-09-13 | ✅ Se completa la baseline de **evaluación del retrieval (Pasos 07A–07B)** con casos A–D. La sensibilidad a `Top-k` muestra cobertura completa desde `k=2` para A, `k=3` para B y `k=4` para C; D sigue sin respuesta documental aunque se amplíe hasta `k=5`. Se adopta **`k=4` solo como baseline temporal de la próxima evaluación de generación**, por ser el menor valor probado que cubre la evidencia esperada de A–C. También se confirma que evaluar únicamente por heading exacto es insuficiente: la cobertura debe considerar grupos de evidencia equivalentes. |
-| 2026-09-13 | ✅ Se verifica el **Paso 06**: el índice persistido recupera el `Top-3`, el sistema vuelve desde los vectores al **texto original** de cada chunk, conserva documento/sección/chunk como procedencia y construye un **prompt fundamentado** con instrucciones explícitas de no inventar, declarar evidencia insuficiente y citar `[FUENTE n]`. Se confirma físicamente que los embeddings sirven para localizar evidencia, mientras que el LLM recibiría **pregunta + instrucciones + texto recuperado**, no los vectores. Se abre la etapa de **generación fundamentada**. |
-| 2026-09-13 | ✅ Se verifica el **Paso 05** completo. La fase de indexación persiste 11 embeddings de 384 dimensiones en `embeddings.npy` junto con `metadata.json` y `manifest.json`; la fase de consulta posterior carga esos vectores y reproduce exactamente el mismo `Top-3` del Paso 04b generando únicamente el embedding de la pregunta. Se confirma experimentalmente la separación entre **INDEXACIÓN** y **CONSULTA**. Se abre el **Paso 06** para hacer visible la construcción del contexto y del prompt fundamentado antes de llamar a un LLM. |
-| 2026-09-13 | ✅ Se verifica el **Paso 04 / 04b**: embeddings locales de 384 dimensiones, similitud semántica y `Top-k` funcionan. Las pruebas muestran que similitud temática no equivale necesariamente a capacidad de responder y que estructura/identificación pueden competir con contenido operativo. Al excluir solo estructura/metadata, el `Top-3` queda formado por seguridad antes de calibrar, seguridad previa y procedimiento de calibración. Se abre el **Paso 05** para persistir vectores + metadata localmente y separar claramente indexación de consulta, todavía sin vector database. |
-| 2026-09-13 | ✅ Se verifica el **Paso 03**: el retrieval léxico funciona por coincidencia de términos, pero una formulación equivalente puede dejar fuera del `Top-k` el chunk realmente útil. |
-| 2026-09-13 | ✅ Se verifica en el portátil el **Paso 02**: lectura y chunking visible. El manual `PT-201` se divide en 9 chunks usando encabezados Markdown. Se abre el **Paso 03** con retrieval léxico mínimo para observar primero búsqueda por palabras y sus limitaciones antes de introducir embeddings. |
-| 2026-09-12 | Se separan los documentos fuente en `rag/data/source_documents/` para no mezclarlos con `docs/` ni `src/`. Se formaliza el principio de que **la adquisición cambia según la fuente**, mientras que extracción, normalización, chunking, indexación y retrieval deben permanecer desacoplados y reutilizables. |
-| 2026-09-12 | Se corrige la secuencia práctica: las primeras pruebas RAG usarán una **carpeta local del portátil** como fuente. IBM Maximo queda como deseable posterior, primero simulado y eventualmente real. Se elimina la simulación Maximo creada prematuramente y se reutilizan únicamente los documentos sintéticos locales. |
-| 2026-09-12 | Creación inicial del documento vivo del RAG Learning Lab. Se define el problema, el modelo mental, la pregunta guía y el plan incremental de aprendizaje. |
+| 2026-09-14 | ✅ Se cierra el **Paso 08 — generación fundamentada**. Con Ollama + `llama3:latest`, el Caso D demuestra abstención correcta ante evidencia inexistente. El control reproducible 08C (`temperature=0`, `seed=42`, dos repeticiones por prompt) confirma que el prompt orientado a `completeness` produce una respuesta sustancialmente más completa que el baseline manteniendo fijo retrieval, contexto, modelo y parámetros. Se cierra la fase de RAG básico sin continuar optimizaciones de prompt/modelo en esta etapa. |
+| 2026-09-14 | ♻️ Se reutiliza una instalación previa de **Ollama 0.34.0** con `llama3:latest` (`Llama 3`, `8B`, contexto `8192`, cuantización `Q4_0`) en lugar de instalar otro runtime/modelo. |
+| 2026-09-14 | 🧪 La primera ruta de generación mediante OpenAI Responses API alcanzó al proveedor, pero quedó bloqueada por `credit_balance_exhausted`. Se decidió no realizar pagos adicionales para este LAB; la clave fue eliminada/revocada y la variable `OPENAI_API_KEY` eliminada del entorno local. |
+| 2026-09-13 | ✅ Se completa la baseline de evaluación del retrieval (Casos A–D) y sensibilidad a `Top-k`; `k=4` queda como baseline pedagógica mínima para cubrir A–C en este corpus. |
+| 2026-09-13 | ✅ Se verifican embeddings semánticos, índice vectorial persistente mínimo y construcción del contexto fundamentado. |
+| 2026-09-12 | ✅ Se verifican fuente local, lectura, chunking visible y retrieval léxico. |
+| 2026-09-12 | Creación inicial del RAG Learning Lab y definición de la ruta incremental de aprendizaje. |
 
 ---
 
 ## 1. Problema que queremos resolver
 
-Un LLM puede responder usando conocimiento aprendido durante su entrenamiento y el contexto que recibe en la conversación, pero no debe asumirse que conoce de forma fiable:
+Un LLM puede manejar conocimiento general, pero no debe asumirse que conoce de forma fiable:
 
-- el manual concreto de un equipo;
-- la última versión de un procedimiento;
+- el manual exacto de un equipo;
+- la última revisión de un procedimiento;
 - instrucciones internas de mantenimiento;
-- límites, tolerancias o advertencias específicas de un fabricante;
-- documentación privada o no incluida en su entrenamiento.
+- documentación privada o específica de una organización.
 
-Para este laboratorio queremos responder preguntas como:
+Pregunta guía del LAB:
 
 ```text
 ¿Cómo calibro este equipo según su manual?
 ```
 
-La respuesta correcta debe depender del contenido recuperado desde el documento, no de memoria genérica del modelo.
+La respuesta debe depender de evidencia documental recuperada, no de memoria genérica del modelo.
 
 ---
 
-## 2. Qué es RAG
-
-**Retrieval-Augmented Generation** combina dos pasos:
+## 2. Modelo mental de RAG
 
 ```text
+DOCUMENTOS
+   ↓
+lectura / normalización
+   ↓
+CHUNKING
+   ↓
+EMBEDDINGS / ÍNDICE
+   ↓
+PREGUNTA
+   ↓
 RETRIEVAL
-buscar y recuperar conocimiento relevante
-
-        +
-
-GENERATION
-usar ese conocimiento como contexto para que el LLM responda
-```
-
-Modelo mental:
-
-```text
-Documentos
    ↓
-preparar / dividir
+TOP-K
    ↓
-indexar para búsqueda
+TEXTO ORIGINAL + PROCEDENCIA
    ↓
-Pregunta del usuario
-   ↓
-recuperar fragmentos relevantes
-   ↓
-Pregunta + contexto recuperado
+PROMPT FUNDAMENTADO
    ↓
 LLM
    ↓
-Respuesta fundamentada
+RESPUESTA
 ```
 
-La idea esencial es:
+Idea esencial:
 
-> **el modelo no necesita “memorizar” el manual; necesita recibir en el momento adecuado los fragmentos relevantes del manual.**
+> **El LLM no necesita memorizar los documentos; necesita recibir la evidencia correcta cuando responde.**
 
 ---
 
 ## 3. Qué NO es RAG
 
-RAG no significa:
+RAG no implica necesariamente:
 
-- entrenar de nuevo el LLM;
-- fine-tuning del modelo;
-- cargar un PDF completo en cada prompt necesariamente;
-- garantizar por sí solo ausencia de alucinaciones;
-- sustituir la necesidad de evaluar la calidad de los documentos;
-- convertir automáticamente al sistema en un agente.
+- reentrenar el LLM;
+- fine-tuning;
+- cargar documentos completos en cada consulta;
+- usar una vector database dedicada;
+- eliminar automáticamente las alucinaciones;
+- convertir el sistema en un agente.
 
-RAG es principalmente un patrón de **recuperación + contexto + generación**.
-
----
-
-## 4. Por qué un LLM solo no basta para este caso
-
-Supongamos que preguntamos:
+RAG es principalmente un patrón de:
 
 ```text
-¿Cuál es el procedimiento exacto de calibración del activo PT-201?
-```
-
-Sin el manual correcto, el LLM podría:
-
-- dar una respuesta genérica;
-- mezclar conocimiento de equipos distintos;
-- inventar valores o pasos plausibles;
-- no conocer una revisión reciente del procedimiento.
-
-Con RAG buscamos este flujo:
-
-```text
-Pregunta
-   ↓
-recuperar sección correcta del manual
-   ↓
-entregar esa evidencia al LLM
-   ↓
-responder usando solo la evidencia disponible
-   ↓
-mostrar fuente / sección utilizada
+recuperación
++
+contexto
++
+generación
 ```
 
 ---
 
-## 5. Componentes que estudiaremos
+## 4. Fuente inicial del laboratorio
 
-### 5.1 Documento fuente
-
-Manual, procedimiento, instructivo, boletín técnico u otra fuente de conocimiento.
-
-### 5.2 Adquisición / acceso
-
-Mecanismo utilizado para obtener el documento desde su fuente. Esta capa cambia según el origen: filesystem, API, conector, SDK, URL, repositorio documental, etc.
-
-### 5.3 Extracción
-
-Conversión del documento a contenido utilizable por el sistema.
-
-### 5.4 Chunking
-
-División del documento en fragmentos manejables llamados **chunks**.
-
-### 5.5 Embeddings
-
-Representaciones numéricas que permiten comparar similitud semántica entre textos.
-
-### 5.6 Índice / vector store
-
-Estructura donde se almacenan representaciones y metadatos para recuperar información.
-
-### 5.7 Retriever
-
-Componente que recibe una consulta y devuelve los fragmentos considerados más relevantes.
-
-### 5.8 Contexto
-
-Fragmentos recuperados que se incorporan a la petición enviada al LLM.
-
-### 5.9 Generación
-
-El LLM utiliza pregunta + contexto para producir la respuesta.
-
-### 5.10 Grounding / citas
-
-Capacidad de vincular la respuesta con la evidencia utilizada.
-
-### 5.11 Evaluación
-
-Comprobación de que:
-
-- se recuperó el fragmento correcto;
-- la respuesta está respaldada por la fuente;
-- el sistema reconoce cuándo no tiene evidencia suficiente.
-
----
-
-## 6. Pipeline inicial de referencia
-
-```text
-FUENTE
-  ↓ acceso específico
-DOCUMENTO + METADATOS
-  ↓
-extraer / normalizar
-  ↓
-crear chunks
-  ↓
-generar embeddings
-  ↓
-guardar/indexar
-  ↓
-
-PREGUNTA
-  ↓
-generar representación de consulta
-  ↓
-buscar chunks similares
-  ↓
-seleccionar top-k
-  ↓
-construir contexto
-  ↓
-LLM
-  ↓
-RESPUESTA + EVIDENCIA
-```
-
-Este es el pipeline típico que iremos desmontando y probando pieza por pieza.
-
-**Principio de diseño:** la capa de acceso a la fuente puede cambiar; las etapas posteriores deberían depender de una representación común de documento + metadatos, no del sistema de origen.
-
----
-
-## 7. Enfoque metodológico del laboratorio
-
-No empezaremos con frameworks complejos ni con “Agentic RAG”.
-
-Secuencia acordada:
-
-```text
-entender
-→ observar manualmente
-→ construir mínimo
-→ probar
-→ medir
-→ cambiar una variable
-→ volver a probar
-→ documentar
-```
-
-La prioridad es saber **qué está ocurriendo y por qué**, no conseguir rápidamente una demo sofisticada difícil de explicar.
-
----
-
-## 8. Paso 01 — Fuente local y descubrimiento de documentos
-
-Las primeras prácticas usan una **carpeta local del portátil** como fuente de documentos.
-
-Razón:
-
-- elimina inicialmente conectores y autenticación;
-- hace visible cada paso del pipeline;
-- permite depurar fácilmente;
-- nos deja concentrarnos en RAG, no en integración de sistemas.
-
-Carpeta reproducible:
+Las primeras prácticas usan:
 
 ```text
 rag/data/source_documents/
 ```
 
-Separación:
-
-```text
-rag/docs/                  → documentación SOBRE el laboratorio
-rag/src/                   → código fuente del laboratorio
-rag/data/source_documents/ → documentos QUE CONSUME el RAG
-```
-
-Documentos sintéticos iniciales:
+Documentos sintéticos:
 
 ```text
 manual_transmisor_PT201.md
 procedimiento_seguridad_instrumentacion.md
 ```
+
+Separación:
+
+```text
+rag/docs/                  → documentación del LAB
+rag/docs/study/            → notas pedagógicas
+rag/src/                   → código
+rag/data/source_documents/ → documentos consumidos por RAG
+rag/data/vector_index/     → artefactos generados localmente; no versionados
+```
+
+Los documentos son sintéticos y **no deben utilizarse como instrucciones reales de mantenimiento**.
+
+---
+
+## 5. Paso 01 — descubrimiento de documentos
 
 Script:
 
@@ -280,17 +131,19 @@ Script:
 rag/src/step01_discover_documents.py
 ```
 
-### Resultado
+✅ Verificado.
 
-✅ **VERIFICADO en el portátil** el 2026-09-12.
+Aprendizaje:
 
-El script encontró correctamente los dos documentos desde `rag/data/source_documents/` y mostró sus rutas y formatos.
-
-Este paso todavía no realiza retrieval; valida la adquisición local más simple.
+```text
+fuente local
+→ localizar archivos candidatos
+→ todavía no hay retrieval
+```
 
 ---
 
-## 9. Paso 02 — Lectura y chunking visible
+## 6. Paso 02 — lectura y chunking visible
 
 Script:
 
@@ -298,48 +151,22 @@ Script:
 rag/src/step02_read_and_chunk.py
 ```
 
-Baseline deliberadamente simple:
+Baseline:
 
 ```text
-Markdown (.md) → un chunk por sección/encabezado
-Texto (.txt)    → un chunk por bloque separado por línea en blanco
+Markdown → un chunk por sección/encabezado
+TXT      → un chunk por bloque
 ```
 
-Todavía no intervienen embeddings ni búsqueda semántica.
+El manual `PT-201` produjo 9 chunks.
 
-### Resultado observado
+Aprendizaje:
 
-✅ **VERIFICADO en el portátil** el 2026-09-12.
-
-El manual:
-
-```text
-manual_transmisor_PT201.md
-```
-
-produjo:
-
-```text
-9 chunks
-```
-
-Esto permitió observar físicamente la transición:
-
-```text
-DOCUMENTO COMPLETO
-      ↓
-SECCIONES CON SIGNIFICADO
-      ↓
-CHUNKS INDEPENDIENTES
-```
-
-La lección importante es que el retriever futuro no buscará necesariamente sobre “el PDF entero”, sino sobre unidades de contenido recuperables. La forma de dividirlas influirá directamente en la calidad posterior.
+> **El retriever busca sobre unidades recuperables, no necesariamente sobre el documento completo.**
 
 ---
 
-## 10. Paso 03 — Retrieval léxico mínimo
-
-Antes de embeddings introducimos una baseline extremadamente simple de recuperación por palabras.
+## 7. Paso 03 — retrieval léxico
 
 Script:
 
@@ -347,54 +174,23 @@ Script:
 rag/src/step03_lexical_retrieval.py
 ```
 
-Funcionamiento:
+✅ Verificado.
+
+Mostró que coincidencia de palabras puede fallar cuando pregunta y documento usan expresiones equivalentes:
 
 ```text
-pregunta
-  ↓
-normalizar / tokenizar palabras
-  ↓
-comparar con palabras de cada chunk
-  ↓
-score = cantidad de términos coincidentes
-  ↓
-ordenar
-  ↓
-Top-k chunks
+ajustar
+≈
+calibrar
 ```
 
-### Resultado observado
+Aprendizaje:
 
-✅ **VERIFICADO**.
-
-La consulta:
-
-```text
-procedimiento calibracion PT-201
-```
-
-funciona razonablemente porque existen coincidencias literales.
-
-Al usar:
-
-```text
-¿Cómo ajusto el transmisor de presión?
-```
-
-se observa que el algoritmo reconoce `transmisor` y `presión`, pero no entiende equivalencias como:
-
-```text
-ajusto ≈ ajustar
-ajustar ≈ calibrar
-```
-
-El chunk de calibración puede quedar fuera del `Top-3` aunque contenga la respuesta.
-
-**Lección:** que la información exista en los documentos no significa que el LLM vaya a recibirla; el retrieval debe encontrar primero la evidencia correcta.
+> **BUEN LLM + BUEN DOCUMENTO + MAL RETRIEVAL = MALA RESPUESTA RAG**
 
 ---
 
-## 11. Paso 04 — Embeddings y retrieval semántico
+## 8. Paso 04 — retrieval semántico
 
 Scripts:
 
@@ -403,188 +199,43 @@ rag/src/step04_semantic_retrieval.py
 rag/src/step04b_semantic_retrieval_content_filter.py
 ```
 
-Modelo de laboratorio:
+Modelo pedagógico:
 
 ```text
 sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 ```
 
-Características observadas:
+Características:
 
 ```text
-14 chunks evaluados inicialmente
-384 dimensiones por embedding
-cosine similarity mediante vectores normalizados
-Top-k = 3
-embeddings calculados todavía en RAM
+384 dimensiones
+vectores normalizados
+cosine similarity mediante producto punto
 ```
 
-### 11.1 Primera consulta
+Aprendizajes:
 
 ```text
-¿Cómo ajusto el transmisor de presión?
+formulación de la pregunta → cambia ranking
+similarity alta            → no garantiza respuesta
+score                       → no es probabilidad/confianza
 ```
 
-El chunk **4. Procedimiento de calibración** quedó en:
+Paso 04b mostró que separar estructura/metadata de contenido operativo puede mejorar la utilidad del ranking.
+
+Ejemplo conceptual EAM:
 
 ```text
-#06 | similarity=0.3804
-```
-
-mientras chunks de título, identificación y seguridad quedaron por encima.
-
-### 11.2 Consulta con intención procedural explícita
-
-```text
-¿Qué pasos debo seguir para ajustar correctamente el transmisor de presión PT-201?
-```
-
-El chunk de calibración subió a:
-
-```text
-#04 | similarity=0.5694
-```
-
-Esto demuestra que la formulación de la consulta afecta el ranking.
-
-### 11.3 Consulta sin identificador del activo
-
-```text
-¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?
-```
-
-El chunk de calibración quedó en:
-
-```text
-#05 | similarity=0.4643
-```
-
-La hipótesis de que quitar `PT-201` mejoraría automáticamente el ranking **no se confirmó**. En cambio, quedaron arriba contenidos de seguridad relacionados con la intervención/calibración.
-
-### 11.4 Lección sobre similarity
-
-Un valor como:
-
-```text
-similarity = 0.6545
-```
-
-**no significa 65,45 % de probabilidad de ser la respuesta correcta**. Es una medida de proximidad relativa en el espacio vectorial del modelo.
-
-También se confirma:
-
-```text
-similitud semántica
-≠
-capacidad garantizada de responder
-```
-
-El embedding puede identificar muy bien el **tema** sin priorizar exactamente el fragmento que un humano considera más útil para responder.
-
----
-
-## 12. Paso 04b — Separar estructura/metadata de contenido recuperable
-
-Se mantiene deliberadamente:
-
-```text
-mismo modelo
-mismos documentos
-mismo chunking
-misma consulta
-mismo Top-k
-```
-
-Solo cambia el conjunto elegible para retrieval.
-
-En este experimento se excluyen:
-
-```text
-chunk 1 de cada documento → estructura/título/aviso
-sección Identificación    → metadata
-```
-
-No se eliminan del documento. Simplemente no compiten en el ranking semántico de contenido operativo.
-
-Resultado observado:
-
-```text
-#01 | 0.6545 | Antes de calibrar un transmisor de presión
-#02 | 0.5852 | Seguridad previa
-#03 | 0.4643 | Procedimiento de calibración
-```
-
-✅ **VERIFICADO**.
-
-La respuesta potencial ya recibe un conjunto mucho más útil de candidatos:
-
-```text
-seguridad
-+
-seguridad específica previa
-+
-procedimiento operativo
-```
-
-### Aprendizaje de diseño
-
-El experimento muestra la utilidad de distinguir:
-
-```text
-ESTRUCTURA / METADATA
-→ título
-→ activo
-→ sitio
-→ revisión
-→ tipo
+METADATA
+assetnum / siteid / revision
 
 CONTENIDO RECUPERABLE
-→ seguridad
-→ inspección
-→ calibración
-→ criterio de aceptación
-→ troubleshooting
+seguridad / inspección / calibración / troubleshooting
 ```
-
-En EAM, datos como:
-
-```text
-assetnum = PT-201
-siteid   = PLANTA1
-revision = 4
-```
-
-pueden servir como contexto o filtros, mientras el retrieval semántico se concentra en conocimiento operativo.
-
-**Importante:** la regla actual `chunk 1` / `Identificación` es una heurística pedagógica del LAB, no una decisión de arquitectura productiva.
 
 ---
 
-## 13. Paso 05 — Índice vectorial persistente mínimo
-
-Hasta el Paso 04 los embeddings de los documentos se calculaban en cada ejecución y desaparecían al terminar el proceso.
-
-El Paso 05 separa dos momentos:
-
-```text
-INDEXACIÓN
-Documentos
-   ↓
-chunks recuperables
-   ↓
-embeddings
-   ↓
-guardar vectores + metadata
-
-CONSULTA
-Pregunta
-   ↓
-embedding de la pregunta
-   ↓
-comparar contra vectores ya guardados
-   ↓
-Top-k
-```
+## 9. Paso 05 — índice vectorial persistente mínimo
 
 Scripts:
 
@@ -593,69 +244,34 @@ rag/src/step05_build_vector_index.py
 rag/src/step05_query_vector_index.py
 ```
 
-Artefactos generados localmente:
+Artefactos locales:
 
 ```text
-rag/data/vector_index/embeddings.npy
-rag/data/vector_index/metadata.json
-rag/data/vector_index/manifest.json
+embeddings.npy
+metadata.json
+manifest.json
 ```
 
-La carpeta está ignorada por Git porque contiene **artefactos derivados/regenerables**, no documentación fuente ni código.
-
-Este paso utiliza archivos NumPy + JSON como índice pedagógico mínimo. **No es todavía una vector database**. La finalidad es entender persistencia e indexación antes de introducir un producto especializado.
-
-### 13.1 Resultado de indexación
-
-✅ **VERIFICADO**.
+Resultado:
 
 ```text
-chunks indexados: 11
-dimensiones: 384
+11 chunks indexados
+384 dimensiones
 ```
 
-Los embeddings quedan persistidos en `embeddings.npy`; `metadata.json` mantiene la correspondencia entre cada fila vectorial y el texto/documento/sección originales; `manifest.json` registra el modelo y propiedades básicas del índice.
-
-### 13.2 Resultado de consulta
-
-✅ **VERIFICADO**.
-
-La consulta:
+Aprendizaje:
 
 ```text
-¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?
+INDEXACIÓN
+≠
+CONSULTA
 ```
 
-produce desde el índice persistido exactamente:
-
-```text
-#01 | 0.6545 | Antes de calibrar un transmisor de presión
-#02 | 0.5852 | Seguridad previa
-#03 | 0.4643 | Procedimiento de calibración
-```
-
-Es el mismo ranking del Paso 04b.
-
-La diferencia no está en el significado ni en el ranking, sino en **cuándo se realiza el trabajo**:
-
-```text
-Paso 04b
-→ embeddings de documentos + embedding de pregunta se calculan en la ejecución
-
-Paso 05B
-→ embeddings de documentos ya existen en disco
-→ solo se calcula el embedding de la pregunta
-```
-
-### Aprendizaje de diseño
-
-> **Persistir el índice no cambia qué significa el contenido; separa y reutiliza el trabajo de indexación para las consultas posteriores.**
+Persistir el índice evita recalcular embeddings de documentos en cada consulta, pero no cambia el significado ni mejora por sí solo el retrieval.
 
 ---
 
-## 14. Paso 06 — Construcción de contexto fundamentado
-
-Hasta el Paso 05 el retrieval termina en una lista de chunks relevantes. El Paso 06 hace explícito cómo esos chunks vuelven a convertirse en **texto de contexto** antes de la generación.
+## 10. Paso 06 — contexto fundamentado
 
 Script:
 
@@ -663,94 +279,33 @@ Script:
 rag/src/step06_build_grounded_context.py
 ```
 
-Flujo:
+Flujo verificado:
 
 ```text
-PREGUNTA
-   ↓
-embedding de consulta
-   ↓
-índice persistido
-   ↓
-Top-k
-   ↓
-metadata / texto original
-   ↓
-CONTEXTO RECUPERADO
-   ↓
-PROMPT FUNDAMENTADO
-   ↓
-LLM   ← todavía no se llama en este paso
+vector de consulta
+→ localizar chunks
+→ volver al texto original
+→ conservar procedencia
+→ construir contexto
+→ construir prompt
 ```
 
-El prompt pedagógico incluye reglas explícitas:
+Reglas del prompt:
 
 ```text
-- responder únicamente con base en el contexto recuperado;
-- no inventar pasos, valores ni condiciones;
-- declarar evidencia insuficiente cuando corresponda;
-- citar [FUENTE 1], [FUENTE 2], etc.
+- responder solo con el contexto recuperado;
+- no inventar valores o condiciones;
+- declarar evidencia insuficiente;
+- citar fuentes.
 ```
 
-### 14.1 Resultado observado
+Aprendizaje clave:
 
-✅ **VERIFICADO**.
-
-Para la consulta:
-
-```text
-¿Qué pasos debo seguir para ajustar correctamente un transmisor de presión?
-```
-
-se recuperó exactamente el mismo `Top-3` del Paso 05:
-
-```text
-#01 | 0.6545 | Antes de calibrar un transmisor de presión
-#02 | 0.5852 | Seguridad previa
-#03 | 0.4643 | Procedimiento de calibración
-```
-
-A continuación el sistema reconstruyó el contexto con el **texto original** de cada chunk y su procedencia:
-
-```text
-[FUENTE 1]
-Documento + sección + chunk + contenido
-
-[FUENTE 2]
-Documento + sección + chunk + contenido
-
-[FUENTE 3]
-Documento + sección + chunk + contenido
-```
-
-Finalmente construyó el prompt:
-
-```text
-INSTRUCCIONES
-+
-PREGUNTA
-+
-CONTEXTO RECUPERADO
-```
-
-### Aprendizaje de diseño
-
-> **El embedding no viaja al LLM como respuesta ni como contexto. Su función fue localizar la evidencia; el LLM recibe el texto original recuperado, acompañado de instrucciones y procedencia.**
-
-Este paso completa físicamente el puente entre **retrieval** y **generation**.
+> **El embedding localiza evidencia; el LLM recibe texto original, no vectores.**
 
 ---
 
-## 15. Paso 07 — Baseline de evaluación del retrieval
-
-Antes de conectar un LLM se creó una pequeña baseline reproducible con cuatro tipos de caso:
-
-```text
-A. respuesta presente
-B. formulación distinta
-C. información repartida
-D. respuesta inexistente
-```
+## 11. Paso 07 — evaluación del retrieval
 
 Artefactos:
 
@@ -760,187 +315,94 @@ rag/src/step07_evaluate_retrieval_cases.py
 rag/src/step07b_evaluate_topk_sensitivity.py
 ```
 
-### 15.1 Paso 07A — casos A–D
-
-Resultados iniciales con `Top-k = 3`:
+Casos:
 
 ```text
-Caso A → evidencia esperada recuperada
-Caso B → evidencia esperada recuperada
-Caso C → recuperación parcial; seguridad previa fuera del Top-3
-Caso D → existe Top-k aunque la respuesta no está documentada
+A. respuesta presente
+B. formulación distinta
+C. información repartida
+D. respuesta inexistente
 ```
 
-El Caso D confirma:
-
-```text
-Top-k encontrado
-≠
-respuesta encontrada
-```
-
-Además, una similarity relativamente alta no demuestra suficiencia de evidencia: el Caso D obtuvo un primer candidato de `0.5414` sin contener el dato solicitado.
-
-### 15.2 Diagnóstico del Caso C
-
-Ranking relevante:
-
-```text
-#1 | 0.6864 | Inspección previa
-#2 | 0.6438 | Procedimiento de calibración
-#3 | 0.4909 | Criterio de aceptación
-#4 | 0.4400 | Antes de calibrar un transmisor de presión
-#5 | 0.4209 | Seguridad previa
-```
-
-Esto muestra que evaluar únicamente por un heading exacto puede ser demasiado rígido. Se introducen **grupos de evidencia**, donde distintas secciones pueden aportar evidencia equivalente para una necesidad concreta.
-
-Para el Caso C se evalúan tres grupos:
-
-```text
-1. inspección previa
-2. seguridad previa
-3. procedimiento de calibración
-```
-
-### 15.3 Paso 07B — sensibilidad a Top-k
-
-Se mantiene fijo:
-
-```text
-modelo
-embeddings
-corpus
-consultas
-```
-
-y solo se varía:
-
-```text
-k = 1, 2, 3, 4, 5
-```
-
-Resultado:
+Resultados de sensibilidad:
 
 ```text
 Caso A → cobertura completa desde k=2
 Caso B → cobertura completa desde k=3
 Caso C → cobertura completa desde k=4
-Caso D → sigue sin respuesta documental; aumentar k no crea evidencia inexistente
+Caso D → sigue sin respuesta aunque k aumente
 ```
 
-Por tanto, para la próxima evaluación de generación se adopta temporalmente:
+Por ello se adopta para generación:
 
 ```text
 Top-k = 4
 ```
 
-porque es el menor valor probado que cubre toda la evidencia esperada de A–C en este corpus.
-
-**Importante:** `k=4` es solo una baseline pedagógica del LAB. No existe un `Top-k` universalmente correcto; aumentar `k` puede mejorar recall/cobertura, pero también añade ruido, tokens y coste.
-
----
-
-## 16. Paso 08 — Generación fundamentada
-
-Objetivo: cerrar el circuito RAG añadiendo un LLM real **sin cambiar lo que ya fue verificado** en retrieval.
-
-Contrato del paso:
-
-```text
-índice persistido
-   ↓
-retrieval semántico
-   ↓
-Top-k = 4
-   ↓
-texto original + procedencia
-   ↓
-prompt fundamentado
-   ↓
-LLM
-   ↓
-respuesta + citas / abstención
-```
-
-Script activo:
-
-```text
-rag/src/step08_generate_grounded_answer.py
-```
-
-### 16.1 Primer intento — API externa
-
-Se preparó inicialmente OpenAI Responses API para aislar la generación sin añadir infraestructura local. La configuración llegó correctamente hasta la llamada al proveedor, pero la ejecución devolvió:
-
-```text
-429
-credit_balance_exhausted
-```
+solo como baseline pedagógica del LAB.
 
 Aprendizajes:
 
 ```text
-ChatGPT Plus
-≠
-saldo de OpenAI API
+TOP-K ENCONTRADO ≠ RESPUESTA ENCONTRADA
+similarity alta       ≠ evidencia suficiente
+más k                 ≠ crear evidencia inexistente
 ```
 
-La API se factura por separado. Como el objetivo del LAB no justifica realizar pagos adicionales, se decide **no añadir crédito** y abandonar esta ruta como camino activo.
+---
 
-El intento sigue siendo útil porque demostró que:
+## 12. Paso 08 — generación fundamentada
+
+Scripts:
 
 ```text
-retrieval + contexto + prompt
+rag/src/step08_generate_grounded_answer.py
+rag/src/step08b_generate_grounded_answer_prompt_completeness.py
+rag/src/step08c_compare_prompts_deterministic.py
 ```
 
-estaban construidos correctamente antes de la llamada generativa; el fallo estaba exclusivamente en la capa de facturación/API.
+### 12.1 Backend generativo
 
-### 16.2 Decisión — generación local y reutilización
-
-Se cambia una sola variable conceptual:
+Ruta inicial:
 
 ```text
-ANTES
-backend generativo = API externa
-
-AHORA
-backend generativo = LLM local mediante Ollama
+OpenAI Responses API
 ```
 
-Antes de instalar nada nuevo se revisó el portátil y se encontró una instalación previa válida:
+Llegó al proveedor, pero terminó en:
 
 ```text
-runtime: Ollama 0.34.0
-modelo:  llama3:latest
-arquitectura: Llama
-parámetros: 8.0B
-context length: 8192
-quantization: Q4_0
-capability: completion
+429 / credit_balance_exhausted
 ```
 
-Se decide reutilizarla por simplicidad y para evitar descargas/instalaciones innecesarias. Se mantienen:
+Decisión:
 
 ```text
-mismo índice
-mismo embedding model
-mismo retrieval
-mismo Top-k = 4
-mismo contexto
-mismo prompt fundamentado
-mismos casos A–D
+no añadir crédito API
+→ usar generación local
 ```
 
-El modelo puede sustituirse mediante:
+Ruta activa del LAB:
 
 ```text
-OLLAMA_MODEL
+Ollama 0.34.0
++
+llama3:latest
 ```
 
-sin cambiar el pipeline RAG. La implementación usa el comando local `ollama run`, por lo que no requiere SDK generativo adicional, API key ni coste por consulta.
+Configuración observada:
 
-### 16.3 Primera generación real — Caso C
+```text
+Llama 3
+8.0B parámetros
+8192 contexto
+Q4_0
+completion
+```
+
+La elección es del LAB, no del producto AI-EAM-MAXIMO.
+
+### 12.2 Caso C — información repartida
 
 Pregunta:
 
@@ -948,59 +410,26 @@ Pregunta:
 ¿Qué debo verificar antes de ajustar el PT-201 y cómo debo calibrarlo?
 ```
 
-El retrieval entregó correctamente:
+Retrieval con `Top-k=4` recuperó correctamente:
 
 ```text
-#1 | Inspección previa
-#2 | Procedimiento de calibración
-#3 | Criterio de aceptación
-#4 | Antes de calibrar un transmisor de presión
+1. Inspección previa
+2. Procedimiento de calibración
+3. Criterio de aceptación
+4. Seguridad antes de calibrar
 ```
 
-Por tanto, el contexto sí contenía las tres necesidades del Caso C:
+La primera generación fue fundamentada pero incompleta.
 
-```text
-inspección
-+
-seguridad
-+
-calibración
-```
-
-La respuesta generada por `llama3:latest` fue conservadora y fundamentada: utilizó únicamente información de `[FUENTE 1]` y `[FUENTE 4]`, sin introducir valores externos ni inventados. Sin embargo, terminó después de inspección y seguridad, omitiendo por completo el procedimiento de calibración de `[FUENTE 2]` y los criterios de `[FUENTE 3]`.
-
-Evaluación inicial:
-
-```text
-groundedness         → BUENA: no se observan afirmaciones externas al contexto
-completeness         → INSUFICIENTE: omite calibración aunque la evidencia fue recuperada
-citation correctness → PARCIAL: las citas usadas corresponden a la evidencia, pero no se utilizaron las fuentes necesarias para cubrir toda la pregunta
-abstention           → pendiente de Caso D
-```
-
-Aprendizaje crítico:
+Aprendizaje:
 
 ```text
 RETRIEVAL COMPLETO
-+
-CONTEXTO SUFICIENTE
 ≠
-RESPUESTA COMPLETA
+GENERACIÓN COMPLETA
 ```
 
-Esto separa por primera vez dos fallos posibles del RAG:
-
-```text
-retrieval failure
-→ la evidencia no llegó al LLM
-
-generation failure / incompleteness
-→ la evidencia sí llegó, pero el LLM no la utilizó completamente
-```
-
-No se modifica todavía el prompt ni el modelo. Para conservar el experimento controlado se ejecutará primero el **Caso D** exactamente con el mismo backend, prompt, `Top-k` y retrieval.
-
-### 16.4 Siguiente evaluación — Caso D
+### 12.3 Caso D — respuesta inexistente
 
 Pregunta:
 
@@ -1008,138 +437,196 @@ Pregunta:
 ¿Cuál es el par de apriete de los bornes eléctricos del PT-201?
 ```
 
-Los documentos no contienen ese valor. El objetivo es observar si `llama3:latest` respeta la instrucción:
+Los documentos no contienen ese dato.
+
+Resultado:
 
 ```text
-Si el contexto no contiene evidencia suficiente, indícalo explícitamente.
+llama3:latest
+→ declara evidencia insuficiente
+→ no inventa un valor
 ```
 
-El comportamiento correcto es abstenerse de inventar un par de apriete.
+✅ Abstención verificada en el caso probado.
+
+### 12.4 Prompt orientado a completeness
+
+El Paso 08B modifica únicamente las instrucciones del prompt para exigir:
+
+```text
+- identificar todas las partes de la pregunta;
+- revisar todas las fuentes;
+- responder cada parte respaldada;
+- declarar partes sin evidencia;
+- verificar que no se omitió evidencia aplicable.
+```
+
+Las primeras ejecuciones mostraron mejora, pero todavía existía variabilidad de generación.
+
+### 12.5 Control reproducible 08C
+
+Se fijan:
+
+```text
+temperature = 0
+seed        = 42
+2 repeticiones por prompt
+```
+
+Se comparan:
+
+```text
+Prompt A → baseline
+Prompt B → completeness
+```
+
+manteniendo fijo:
+
+```text
+retrieval
+Top-k
+contexto
+modelo
+parámetros de generación
+pregunta
+```
+
+Resultado:
+
+```text
+Prompt A → dos salidas idénticas
+Prompt B → dos salidas idénticas
+```
+
+Prompt A continúa resumiendo demasiado la calibración.
+
+Prompt B cubre de forma reproducible:
+
+```text
+inspección
+seguridad
+procedimiento completo
+ZERO / SPAN
+0 / 5 / 10 bar
+±0,05 bar
+as-left
+criterios de aceptación
+evaluación adicional
+```
+
+sin introducir valores técnicos externos al contexto.
+
+Conclusión:
+
+> **En este experimento, mejorar el prompt aumentó `completeness` sin modificar el retrieval.**
+
+El formato exacto de citas no siempre se respeta literalmente: el modelo usa formas como `(FUENTE 2)` en lugar de `[FUENTE 2]`. Se considera una limitación menor para el objetivo de aprendizaje actual y no se optimiza más en esta fase.
+
+Detalles completos:
+
+```text
+rag/docs/LAB-STEP08_GENERATION_EVALUATION.md
+```
 
 ---
 
-## 17. Casos de prueba que debe soportar el primer LAB
-
-### Caso A — respuesta presente
-
-La respuesta aparece explícitamente en el documento.
-
-### Caso B — formulación distinta
-
-La pregunta usa palabras diferentes a las del manual, para comprobar recuperación semántica.
-
-### Caso C — información repartida
-
-La respuesta requiere combinar más de un fragmento o más de un documento.
-
-### Caso D — respuesta inexistente
-
-La documentación disponible no contiene la respuesta.
-
-Resultado esperado:
+## 13. Resultado consolidado de RAG básico
 
 ```text
-No existe evidencia suficiente en la documentación disponible.
+Fuente local / adquisición      → ✅
+Chunking visible                → ✅
+Retrieval léxico                → ✅
+Embeddings / retrieval semántico→ ✅
+Índice persistente              → ✅
+Contexto fundamentado           → ✅
+Evaluación retrieval A–D        → ✅
+Generación fundamentada         → ✅
+Abstención                      → ✅ caso probado
+Reproducibilidad control 08C    → ✅
 ```
 
-Este caso será especialmente importante para controlar alucinaciones.
+Aprendizajes principales:
+
+```text
+1. RAG no entrena al LLM; recupera evidencia en tiempo de consulta.
+2. Embeddings ayudan a localizar chunks; no contienen la respuesta decodificable.
+3. El LLM recibe texto original recuperado.
+4. Similarity no equivale a confianza ni answerability.
+5. Top-k encontrado no significa respuesta encontrada.
+6. Retrieval correcto no garantiza generación completa.
+7. Prompt y generación deben evaluarse como capas propias.
+8. Un sistema correcto debe poder abstenerse cuando falta evidencia.
+9. Retrieval y backend generativo están desacoplados.
+10. Para comparar generación conviene controlar también parámetros de muestreo.
+```
 
 ---
 
-## 18. Fuentes, formatos y adquisición
+## 14. Fuentes futuras y arquitectura general
 
-RAG no depende de un único formato ni de un único repositorio documental.
+RAG no depende de una fuente concreta.
 
-Fuentes posibles:
+Ejemplos:
 
 ```text
-Windows / Linux filesystem
-Documentum
+filesystem
 SharePoint
-web interna
+Documentum
 object storage
-IBM Maximo / Maximo Manage
-otros repositorios documentales
+web interna
+IBM Maximo / doclinks
 ```
 
-Formatos posibles, según el parser disponible:
+Arquitectura general:
 
 ```text
-PDF
-DOCX
-TXT
-Markdown
-HTML
-CSV
-imágenes escaneadas + OCR
-otros formatos convertibles a contenido utilizable
+SOURCE
+  ↓
+CONNECTOR / ACCESS
+  ↓
+EXTRACTION / PARSING
+  ↓
+NORMALIZATION
+  ↓
+CHUNKING + METADATA
+  ↓
+EMBEDDINGS / INDEX
+  ↓
+RETRIEVAL
+  ↓
+LLM
 ```
 
-La **forma de adquirir** el documento sí depende del origen:
+Metadatos EAM potenciales:
 
 ```text
-Windows / Linux → filesystem
-Documentum      → API / conector
-SharePoint      → API / conector
-Object storage  → SDK / API
-IBM Maximo      → metadata/doclinks + recuperación del archivo o URL
-```
-
-Después buscamos normalizar todas esas entradas hacia un contrato común:
-
-```text
-DOCUMENTO
-+ contenido extraído
-+ metadatos
-+ identificación de fuente
-```
-
-A partir de ahí, el resto del pipeline puede ser compartido:
-
-```text
-normalización
-→ chunking
-→ embeddings
-→ índice
-→ retrieval
-→ generación
-```
-
-Esto evita construir un RAG distinto para cada sistema fuente.
-
----
-
-## 19. Papel deseable de IBM Maximo
-
-IBM Maximo es el **ejemplo EAM deseable para una fase posterior**, no la fuente inicial del LAB.
-
-Conceptualmente:
-
-```text
-Activo en Maximo
-      ↓
-documentos enlazados / metadata
-      ↓
-localizar documento físico o URL
-      ↓
-extraer contenido
-      ↓
-RAG
-```
-
-Maximo puede actuar como **catálogo/contexto EAM** del documento, aunque el archivo físico pueda residir en filesystem, object storage u otro repositorio.
-
-Metadatos potencialmente útiles:
-
-```text
+source_system
+document_id
+document_name
+revision
 assetnum
 siteid
-document_id
-tipo_documento
-revision
-vigencia
-ruta / URL
-source_system
+document_type
+url / path
+permissions
+```
+
+---
+
+## 15. Relación futura con IBM Maximo
+
+Siguiente bloque del LAB:
+
+```text
+Activo / contexto Maximo simulado
+      ↓
+doclinks / metadata
+      ↓
+localizar documento
+      ↓
+RAG
+      ↓
+respuesta fundamentada
 ```
 
 Secuencia vigente:
@@ -1147,98 +634,76 @@ Secuencia vigente:
 ```text
 1. Carpeta local                              ✅
 2. Chunking visible                           ✅
-3. Retrieval léxico baseline                  ✅
-4. Embeddings / retrieval semántico           ✅
-5. Índice vectorial persistente mínimo        ✅
-6. Construcción de contexto fundamentado      ✅
-7. Baseline de evaluación del retrieval       ✅
-8. Generación fundamentada local              🧪 Caso C ejecutado; Caso D pendiente
-9. Simulación de Maximo/doclinks
-10. Combinación de contexto EAM + RAG
-11. Integración real con Maximo                ← solo si procede
+3. Retrieval léxico                          ✅
+4. Retrieval semántico                       ✅
+5. Índice persistente                        ✅
+6. Contexto fundamentado                     ✅
+7. Evaluación retrieval                      ✅
+8. Generación fundamentada                   ✅
+9. Simulación Maximo / doclinks              ← SIGUIENTE
+10. Combinación contexto EAM + RAG
+11. Integración real con Maximo               ← solo si procede
 ```
 
-La simulación Maximo se construirá cuando lleguemos realmente a ese paso.
-
----
-
-## 20. Aplicación futura a EAM / IBM Maximo
-
-Fuentes candidatas de conocimiento:
-
-- manuales de equipos;
-- procedimientos de mantenimiento;
-- instrucciones de calibración;
-- troubleshooting;
-- normas internas;
-- boletines técnicos;
-- documentación de seguridad;
-- estándares de mantenimiento.
-
-Ejemplo futuro combinado:
+Ejemplo futuro:
 
 ```text
 “La bomba B-201 presenta alta temperatura.
 ¿Tiene OTs abiertas y qué indica su manual que debo revisar?”
 
-MCP → activo / OTs / historial desde Maximo
-RAG → manual / procedimiento
-LLM → integra la evidencia
+MCP → datos transaccionales / actuales de Maximo
+RAG → manuales / procedimientos
+LLM → respuesta integrada
 ```
-
-Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 21. Decisiones todavía NO tomadas
+## 16. Decisiones todavía NO tomadas
 
-Para **este LAB** sí se ha decidido temporalmente:
-
-```text
-generación → local mediante Ollama 0.34.0
-modelo baseline → llama3:latest (Llama 3 8B Q4_0)
-Top-k de evaluación → 4
-```
-
-Aún no se ha decidido para una solución futura/productiva:
+No se ha decidido para AI-EAM-MAXIMO:
 
 - proveedor/modelo de embeddings;
-- vector database dedicada;
+- vector database;
 - framework RAG;
-- LLM específico de producción;
-- ejecución local vs API en producción;
-- estrategia de chunking definitiva;
-- tamaño de `top-k` definitivo;
-- framework de evaluación definitivo.
+- LLM productivo;
+- ejecución local vs API;
+- chunking definitivo;
+- `Top-k` definitivo;
+- threshold de relevancia/answerability;
+- framework de evaluación productivo.
 
-El modelo `paraphrase-multilingual-MiniLM-L12-v2`, el índice NumPy/JSON, `Top-k = 4`, Ollama y `llama3:latest` son **baselines de aprendizaje del LAB**, no decisiones de arquitectura de AI-EAM-MAXIMO.
+Las tecnologías usadas aquí son únicamente **baselines pedagógicas**:
+
+```text
+MiniLM multilingual
+NumPy + JSON
+Top-k = 4
+Ollama
+Llama 3 8B Q4_0
+```
+
+Nada de ello se convierte automáticamente en arquitectura del producto.
 
 ---
 
-## 22. Siguiente paso
+## 17. Cierre de esta etapa
 
-La ruta API quedó cerrada:
+La fase de **RAG básico** se considera suficientemente comprendida y verificada para el objetivo de aprendizaje actual.
 
-```text
-API key revocada/eliminada
-OPENAI_API_KEY eliminada del entorno local
-sin crédito API añadido
-```
-
-La primera generación local del Caso C ya fue ejecutada y mostró buena fundamentación pero **completeness insuficiente**.
-
-Antes de cambiar cualquier variable, ejecutar exactamente el Caso D con el mismo pipeline:
+No se continuará ahora con:
 
 ```text
-python rag/src/step08_generate_grounded_answer.py "¿Cuál es el par de apriete de los bornes eléctricos del PT-201?"
+más prompt tuning
+más modelos locales
+reranking
+retrieval híbrido
+threshold tuning
+LLM-as-judge
+evaluación automática avanzada
 ```
 
-Evaluaremos:
+salvo que una necesidad posterior del proyecto justifique profundizar.
 
-```text
-¿reconoce que el dato no existe en el contexto?
-¿se abstiene de inventar un valor?
-¿mantiene citas coherentes si explica por qué no puede responder?
-```
+Próximo objetivo:
 
-Solo después de tener juntos los resultados de C y D se decidirá el siguiente experimento controlado en la capa de generación.
+> **entender cómo entra el contexto EAM / IBM Maximo en el proceso de descubrimiento documental y cómo ese contexto alimenta el RAG ya comprendido.**
