@@ -12,6 +12,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-14 | Se incorpora la distinción práctica entre RAG documental y acceso a datos estructurados/transaccionales mediante SQL, API o MCP, incluyendo el matiz de bases de datos con soporte vectorial. |
 | 2026-09-14 | Creación del resumen de recuperación rápida al cierre de los Pasos 01–08 del RAG Learning Lab. |
 
 ## 1. En una frase
@@ -259,20 +260,91 @@ RAG conserva especial valor para información exacta, actualizable, privada, cit
 
 ---
 
-## 14. Relación con MCP y EAM
+## 14. Relación con MCP, bases de datos y EAM
+
+### 14.1 Regla mental práctica
+
+Para el alcance de este Learning Lab, la forma más útil de pensar en **RAG clásico** es:
 
 ```text
-MCP
-→ sistemas, datos y acciones
-
-RAG
-→ conocimiento documental
-
-LLM / agente
-→ integra ambos
+RAG "clásico"
+→ recuperar conocimiento no estructurado o semiestructurado
+→ documentos, PDFs, manuales, procedimientos
+→ embeddings / búsqueda semántica
+→ chunks
+→ LLM
 ```
 
-Ejemplo futuro:
+Y para una arquitectura AI-Driven EAM:
+
+```text
+DOCUMENTOS / CONOCIMIENTO
+→ RAG
+
+DATOS ESTRUCTURADOS / TRANSACCIONALES
+→ SQL / API / MCP
+
+LLM / agente
+→ combina ambos cuando hace falta
+```
+
+Ejemplos de datos estructurados/transaccionales en un EAM:
+
+```text
+OTs
+activos
+estados
+prioridades
+inventario
+costes
+fechas
+```
+
+Una pregunta como:
+
+```text
+¿Cuántas OTs de prioridad 1 están abiertas?
+```
+
+se resuelve de forma natural consultando Maximo mediante API/MCP, no buscando chunks documentales.
+
+En cambio:
+
+```text
+¿Qué indica el manual de la bomba B-201 sobre vibración?
+```
+
+encaja directamente en RAG documental.
+
+### 14.2 Una base de datos también puede participar en RAG
+
+Una base de datos puede almacenar y buscar vectores. Por ejemplo:
+
+```text
+PostgreSQL + pgvector
+→ texto del chunk
+→ embedding
+→ metadata
+→ búsqueda vectorial
+```
+
+En ese caso la base de datos participa en el **retrieval semántico** y funciona también como vector store.
+
+Pero:
+
+> **Que una aplicación consulte una base de datos no convierte automáticamente esa consulta en RAG.**
+
+La misma plataforma PostgreSQL podría utilizarse simultáneamente para:
+
+```text
+SQL tradicional
+→ datos estructurados exactos
+
+pgvector
+→ retrieval semántico sobre chunks / embeddings
+```
+
+### 14.3 Ejemplo combinado EAM
 
 ```text
 “La bomba B-201 presenta alta temperatura.
