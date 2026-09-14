@@ -2,15 +2,16 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo, entendiendo primero el mecanismo básico y evolucionando después hacia casos técnicos reales basados en manuales, procedimientos y conocimiento de mantenimiento.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; Paso 08 generación fundamentada preparado**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; Paso 08 migrado a generación local con Ollama**
 >
-> 🗓️ **Actualizado:** 2026-09-13
+> 🗓️ **Actualizado:** 2026-09-14
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-13 | 🧪 Se prepara el **Paso 08 — generación fundamentada con LLM externo**. Para aislar el aprendizaje de generación se selecciona **OpenAI Responses API** como proveedor inicial del LAB y `gpt-5.6-luna` como modelo por defecto orientado a coste, configurable mediante `OPENAI_MODEL`. Se mantiene `Top-k=4` como baseline temporal ya evaluada, el LLM no recibe herramientas externas y la clave se lee exclusivamente desde `OPENAI_API_KEY`; nunca se almacena en código ni GitHub. Esta elección es solo del LAB y no constituye arquitectura de AI-EAM-MAXIMO. |
+| 2026-09-14 | 🧪 Se intenta ejecutar el **Paso 08** con OpenAI Responses API. La clave y la integración llegan correctamente al proveedor, pero la llamada termina con `credit_balance_exhausted`: ChatGPT Plus no aporta saldo de API y continuar exigiría crédito adicional. El usuario decide explícitamente **no realizar pagos adicionales** para completar el LAB. Se conserva este intento como evidencia de aprendizaje y se cambia únicamente la capa de generación a **Ollama + LLM local**, manteniendo retrieval, índice, `Top-k=4`, contexto y prompt. El modelo local baseline será `gemma3:4b`, configurable mediante `OLLAMA_MODEL`. |
+| 2026-09-13 | 🧪 Se prepara el **Paso 08 — generación fundamentada con LLM externo**. Para aislar el aprendizaje de generación se selecciona inicialmente **OpenAI Responses API** como proveedor del LAB y `gpt-5.6-luna` como modelo por defecto. La ruta fue técnicamente alcanzada, pero no llegó a generar respuesta por ausencia de créditos API; queda como experimento histórico, no como camino activo. |
 | 2026-09-13 | ✅ Se verifica el **Paso 07B — sensibilidad a `Top-k`** manteniendo fijos modelo, embeddings, corpus y consultas. En la baseline actual, el Caso A alcanza cobertura completa desde `k=2`, el Caso B desde `k=3` y el Caso C desde `k=4`; el Caso D sigue sin respuesta documental aunque se amplíe hasta `k=5`. Se adopta **`k=4` únicamente como baseline temporal para la próxima evaluación de generación**, por ser el menor valor probado que cubre toda la evidencia esperada de A–C. No se considera un `Top-k` universal ni una decisión productiva. |
 | 2026-09-13 | 🧪 Diagnóstico completo del **Caso C**: `Inspección previa` queda #1 (`0.6864`), `Procedimiento de calibración` #2 (`0.6438`), `Criterio de aceptación` #3 (`0.4909`), la sección alternativa de seguridad `Antes de calibrar un transmisor de presión` #4 (`0.4400`) y `Seguridad previa` #5 (`0.4209`). Se aprende que evaluar únicamente por heading exacto puede ser demasiado rígido y que aumentar `k` puede mejorar cobertura a costa de más contexto. Se añaden **grupos de evidencia** al dataset y el **Paso 07B** para medir sensibilidad a `k=1..5` sin cambiar modelo, corpus, embeddings ni consultas. |
 | 2026-09-13 | 🧪 Se ejecuta el **Paso 07A — baseline A–D**. Casos A y B recuperan toda la evidencia esperada dentro del `Top-3`; el Caso C recupera `Inspección previa` y `Procedimiento de calibración`, pero deja fuera `Seguridad previa` (`1/2` headings esperados); el Caso D confirma que existe `Top-k` aun sin respuesta documental. Antes de cambiar `top-k`, modelo, query o chunking, se diagnosticará la posición exacta de `Seguridad previa` en el ranking completo del Caso C. |
@@ -156,7 +157,7 @@ Primero se simulará esa capa de descubrimiento documental. Solo después, si ap
 6. **Índice vectorial persistente mínimo** — ✅ separar indexación y consulta guardando vectores + metadata localmente, todavía sin una vector database dedicada.
 7. **Construcción de contexto fundamentado** — ✅ recuperar `Top-k`, volver al texto original y construir el contexto/prompt que recibiría el LLM.
 8. **Baseline de evaluación y abstención** — ✅ casos A–D reproducibles y sensibilidad a `Top-k` evaluada; `k=4` queda como baseline temporal mínima para cubrir A–C en este corpus, mientras D sigue sin respuesta documental.
-9. **Generación fundamentada** — 🧪 Paso 08 preparado con OpenAI Responses API, `gpt-5.6-luna` por defecto y `Top-k=4`; pendiente de ejecución y evaluación real.
+9. **Generación fundamentada** — 🟢 Paso 08 migrado a **Ollama + `gemma3:4b` local**, manteniendo `Top-k=4`; pendiente instalar runtime/modelo y ejecutar Casos C y D.
 10. **Mejoras** — filtros, búsqueda híbrida, reranking, query rewriting, etc., solo cuando aporten valor.
 11. **Aplicación EAM** — manuales, procedimientos, troubleshooting, seguridad y mantenimiento.
 12. **Maximo simulado** — usar contexto EAM para descubrir documentos asociados a un activo.
@@ -198,30 +199,26 @@ AI-EAM-MAXIMO
 
 ## 🚀 Siguiente paso
 
-La primera generación real del LAB usará temporalmente:
+La primera generación completada del LAB usará ahora:
 
 ```text
-Proveedor/API: OpenAI Responses API
-Modelo:        gpt-5.6-luna
+Runtime:       Ollama local
+Modelo:        gemma3:4b
 Top-k:         4
+API key:       no requerida
+Coste API:     0
 Herramientas:  ninguna
 ```
 
-`gpt-5.6-luna` es una elección **de laboratorio orientada a coste** y puede sustituirse sin cambiar el pipeline mediante la variable `OPENAI_MODEL`. No es una decisión de arquitectura del producto.
+La decisión es deliberadamente de laboratorio: **retrieval, índice, contexto y prompt permanecen iguales; solo cambia el backend generativo**. Esto permite observar que el patrón RAG no depende de un proveedor concreto de LLM.
 
-Instalar dependencias actualizadas:
-
-```text
-python -m pip install -r rag/requirements.txt
-```
-
-La credencial se obtiene fuera del repositorio y debe exponerse al proceso únicamente mediante:
+En Windows, instalar Ollama desde su distribución oficial. Después descargar una sola vez el modelo baseline:
 
 ```text
-OPENAI_API_KEY
+ollama pull gemma3:4b
 ```
 
-Nunca debe escribirse la clave en el código, documentación, commits o chat. `.gitignore` ya excluye archivos `.env`, aunque el Paso 08 no depende de un archivo `.env` y usa directamente la variable de entorno.
+El modelo `gemma3:4b` ocupa aproximadamente 3,3 GB en la distribución de Ollama y se elige como equilibrio inicial entre tamaño y capacidad multilingüe. Si el portátil no dispone de recursos suficientes, el LAB permite sustituirlo mediante `OLLAMA_MODEL`, por ejemplo con `gemma3:1b`, sin cambiar el pipeline RAG.
 
 Después ejecutar:
 
@@ -229,4 +226,4 @@ Después ejecutar:
 python rag/src/step08_generate_grounded_answer.py
 ```
 
-La consulta por defecto es el **Caso C** porque requiere integrar inspección, seguridad y procedimiento. El script mostrará primero el `Top-4` y el prompt exacto enviado al LLM, y después la respuesta. Una vez verificada esa ejecución, se repetirá con el **Caso D** para comprobar abstención ante evidencia inexistente.
+La consulta por defecto sigue siendo el **Caso C** porque requiere integrar inspección, seguridad y procedimiento. Una vez verificada esa generación, se repetirá exactamente el mismo paso con el **Caso D** para comprobar abstención ante evidencia inexistente.
