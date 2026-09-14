@@ -13,7 +13,7 @@ from step06_build_grounded_context import build_context, build_prompt
 
 DEFAULT_QUERY = "¿Qué debo verificar antes de ajustar el PT-201 y cómo debo calibrarlo?"
 GENERATION_TOP_K = 4
-DEFAULT_GENERATION_MODEL = "gemma3:4b"
+DEFAULT_GENERATION_MODEL = "llama3:latest"
 
 
 def retrieve_top_k(query: str, top_k: int = GENERATION_TOP_K) -> list[dict]:
@@ -71,13 +71,14 @@ def main() -> None:
     print("RAG LAB — Paso 08: generación fundamentada con LLM local")
     print(f"Pregunta: {query}")
     print(f"Top-k baseline temporal: {GENERATION_TOP_K}")
-    print(f"Runtime generativo: Ollama")
+    print("Runtime generativo: Ollama")
     print(f"Modelo generativo local: {model_name}\n")
 
     print("Objetivo de aprendizaje:")
     print("- reutilizar el índice persistido y el retrieval ya verificado")
     print("- construir el mismo contexto fundamentado observado en el Paso 06")
     print("- sustituir únicamente la capa de generación por un LLM local")
+    print("- reutilizar el modelo local ya disponible antes de instalar otro")
     print("- no usar API keys ni generar coste por consulta")
     print("- comprobar respuesta, citas y abstención")
     print("- demostrar que retrieval y backend generativo son capas desacoplables\n")
