@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO**
+> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · 🟨 **Aplicación EAM en curso: Maximo simulado + Doclinks + RAG**
 >
 > 🗓️ **Actualizado:** 2026-09-14
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-14 | Se inicia el bloque de aplicación EAM documentando cómo Maximo representa attachments mediante `DOCINFO` + `DOCLINKS`; se añade `STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`. |
 | 2026-09-14 | Se completa el cierre documental con `RAG_LAB_FAST_READING.md` y `RAG_LAB_HANDOFF.md`. |
 | 2026-09-14 | Se cierran los Pasos 01–08: retrieval, contexto, generación fundamentada, abstención y control reproducible de prompts. |
 | 2026-09-12 | Inicio formal del RAG Learning Lab. |
@@ -19,8 +20,9 @@
 1. [`docs/RAG_LAB_FAST_READING.md`](docs/RAG_LAB_FAST_READING.md) — resumen final de lectura rápida.
 2. [`docs/RAG_LIVING_DOCUMENTATION.md`](docs/RAG_LIVING_DOCUMENTATION.md) — documentación canónica y evolutiva.
 3. [`docs/RAG_LAB_HANDOFF.md`](docs/RAG_LAB_HANDOFF.md) — cierre y continuidad hacia Maximo simulado / doclinks.
-4. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
-5. [`docs/study/`](docs/study/) — notas pedagógicas.
+4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual del nuevo bloque Maximo simulado + Doclinks + RAG.
+5. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
+6. [`docs/study/`](docs/study/) — otras notas pedagógicas.
 
 ## 🧠 Pipeline probado
 
@@ -82,11 +84,25 @@ MCP → sistemas, datos y acciones
 RAG → conocimiento documental
 ```
 
-## 🚀 Siguiente bloque
+## 🚀 Bloque actual — Maximo simulado + Doclinks + RAG
+
+Primero se estudia cómo Maximo representa la asociación documental:
 
 ```text
-Maximo simulado / doclinks
-→ contexto EAM identifica documentos asociados
+ASSET / WORKORDER / ...
+        ↓
+     DOCLINKS
+        ↓
+      DOCINFO
+        ↓
+archivo / storage / URL
+```
+
+Después construiremos una simulación mínima que permita:
+
+```text
+contexto EAM
+→ localizar documento asociado
 → RAG recupera conocimiento documental
 → respuesta fundamentada
 ```
