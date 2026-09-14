@@ -2,14 +2,16 @@
 
 > 🎯 **Propósito:** conservar el conocimiento, decisiones de laboratorio, instalación, pruebas, resultados y aprendizajes del frente **Retrieval-Augmented Generation (RAG)** aplicado a EAM / IBM Maximo.
 >
-> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; siguiente etapa: generación fundamentada**
+> 📍 **Estado:** 🟢 **EN CURSO — Pasos 01–07B verificados; Paso 08 migrado a generación local con Ollama**
 >
-> 🗓️ **Actualizado:** 2026-09-13
+> 🗓️ **Actualizado:** 2026-09-14
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-14 | 🧪 Se intenta ejecutar el **Paso 08** mediante OpenAI Responses API. La integración alcanza correctamente al proveedor, pero la generación termina con `429 / credit_balance_exhausted`: continuar exige saldo API adicional e independiente de ChatGPT Plus. El usuario decide explícitamente **no realizar pagos adicionales** para terminar el LAB. Se conserva el intento como evidencia y se cambia únicamente el backend generativo a **Ollama + `gemma3:4b` local**, manteniendo índice, retrieval, `Top-k=4`, contexto y prompt. La implementación activa de `step08_generate_grounded_answer.py` pasa a generación local y `rag/requirements.txt` vuelve a contener solo dependencias necesarias para el pipeline local. |
+| 2026-09-14 | 🔐 Durante la preparación de la ruta API se expuso accidentalmente una clave en el chat; se revocó y se creó una nueva. No se versionó ninguna clave en GitHub. Como la ruta API queda abandonada para este LAB, la credencial remanente debe eliminarse también del entorno local y revocarse si ya no se usará. |
 | 2026-09-13 | ✅ Se completa la baseline de **evaluación del retrieval (Pasos 07A–07B)** con casos A–D. La sensibilidad a `Top-k` muestra cobertura completa desde `k=2` para A, `k=3` para B y `k=4` para C; D sigue sin respuesta documental aunque se amplíe hasta `k=5`. Se adopta **`k=4` solo como baseline temporal de la próxima evaluación de generación**, por ser el menor valor probado que cubre la evidencia esperada de A–C. También se confirma que evaluar únicamente por heading exacto es insuficiente: la cobertura debe considerar grupos de evidencia equivalentes. |
 | 2026-09-13 | ✅ Se verifica el **Paso 06**: el índice persistido recupera el `Top-3`, el sistema vuelve desde los vectores al **texto original** de cada chunk, conserva documento/sección/chunk como procedencia y construye un **prompt fundamentado** con instrucciones explícitas de no inventar, declarar evidencia insuficiente y citar `[FUENTE n]`. Se confirma físicamente que los embeddings sirven para localizar evidencia, mientras que el LLM recibiría **pregunta + instrucciones + texto recuperado**, no los vectores. Se abre la etapa de **generación fundamentada**. |
 | 2026-09-13 | ✅ Se verifica el **Paso 05** completo. La fase de indexación persiste 11 embeddings de 384 dimensiones en `embeddings.npy` junto con `metadata.json` y `manifest.json`; la fase de consulta posterior carga esos vectores y reproduce exactamente el mismo `Top-3` del Paso 04b generando únicamente el embedding de la pregunta. Se confirma experimentalmente la separación entre **INDEXACIÓN** y **CONSULTA**. Se abre el **Paso 06** para hacer visible la construcción del contexto y del prompt fundamentado antes de llamar a un LLM. |
@@ -837,7 +839,122 @@ porque es el menor valor probado que cubre toda la evidencia esperada de A–C e
 
 ---
 
-## 16. Casos de prueba que debe soportar el primer LAB
+## 16. Paso 08 — Generación fundamentada
+
+Objetivo: cerrar el circuito RAG añadiendo un LLM real **sin cambiar lo que ya fue verificado** en retrieval.
+
+Contrato del paso:
+
+```text
+índice persistido
+   ↓
+retrieval semántico
+   ↓
+Top-k = 4
+   ↓
+texto original + procedencia
+   ↓
+prompt fundamentado
+   ↓
+LLM
+   ↓
+respuesta + citas / abstención
+```
+
+Script activo:
+
+```text
+rag/src/step08_generate_grounded_answer.py
+```
+
+### 16.1 Primer intento — API externa
+
+Se preparó inicialmente OpenAI Responses API para aislar la generación sin añadir infraestructura local. La configuración llegó correctamente hasta la llamada al proveedor, pero la ejecución devolvió:
+
+```text
+429
+credit_balance_exhausted
+```
+
+Aprendizajes:
+
+```text
+ChatGPT Plus
+≠
+saldo de OpenAI API
+```
+
+La API se factura por separado. Como el objetivo del LAB no justifica realizar pagos adicionales, se decide **no añadir crédito** y abandonar esta ruta como camino activo.
+
+El intento sigue siendo útil porque demostró que:
+
+```text
+retrieval + contexto + prompt
+```
+
+estaban construidos correctamente antes de la llamada generativa; el fallo estaba exclusivamente en la capa de facturación/API.
+
+### 16.2 Decisión — generación local
+
+Se cambia una sola variable conceptual:
+
+```text
+ANTES
+backend generativo = API externa
+
+AHORA
+backend generativo = LLM local mediante Ollama
+```
+
+Se mantienen:
+
+```text
+mismo índice
+mismo embedding model
+mismo retrieval
+mismo Top-k = 4
+mismo contexto
+mismo prompt fundamentado
+mismos casos A–D
+```
+
+Baseline local:
+
+```text
+runtime: Ollama
+modelo:  gemma3:4b
+```
+
+`gemma3:4b` es una **baseline de laboratorio**, no una decisión de arquitectura de AI-EAM-MAXIMO. El modelo puede sustituirse mediante:
+
+```text
+OLLAMA_MODEL
+```
+
+sin cambiar el pipeline RAG.
+
+La implementación usa el comando local `ollama run`, por lo que no requiere SDK generativo adicional, API key ni coste por consulta.
+
+### 16.3 Qué evaluaremos
+
+Primero se ejecutará el **Caso C**, porque exige combinar inspección, seguridad y procedimiento. Después se ejecutará el **Caso D**, donde el comportamiento correcto es abstenerse de inventar.
+
+Criterios:
+
+```text
+groundedness         → ¿usa solo evidencia recuperada?
+completeness         → ¿cubre la evidencia necesaria?
+citation correctness → ¿cita [FUENTE n] coherentemente?
+abstention           → ¿evita inventar cuando no existe respuesta?
+```
+
+Este paso demostrará además un principio importante:
+
+> **El mecanismo RAG puede mantenerse estable mientras cambia el proveedor o runtime generativo.**
+
+---
+
+## 17. Casos de prueba que debe soportar el primer LAB
 
 ### Caso A — respuesta presente
 
@@ -865,7 +982,7 @@ Este caso será especialmente importante para controlar alucinaciones.
 
 ---
 
-## 17. Fuentes, formatos y adquisición
+## 18. Fuentes, formatos y adquisición
 
 RAG no depende de un único formato ni de un único repositorio documental.
 
@@ -928,7 +1045,7 @@ Esto evita construir un RAG distinto para cada sistema fuente.
 
 ---
 
-## 18. Papel deseable de IBM Maximo
+## 19. Papel deseable de IBM Maximo
 
 IBM Maximo es el **ejemplo EAM deseable para una fase posterior**, no la fuente inicial del LAB.
 
@@ -971,7 +1088,7 @@ Secuencia vigente:
 5. Índice vectorial persistente mínimo        ✅
 6. Construcción de contexto fundamentado      ✅
 7. Baseline de evaluación del retrieval       ✅
-8. Generación fundamentada / evaluación       ← AHORA
+8. Generación fundamentada local              ← AHORA
 9. Simulación de Maximo/doclinks
 10. Combinación de contexto EAM + RAG
 11. Integración real con Maximo                ← solo si procede
@@ -981,7 +1098,7 @@ La simulación Maximo se construirá cuando lleguemos realmente a ese paso.
 
 ---
 
-## 19. Aplicación futura a EAM / IBM Maximo
+## 20. Aplicación futura a EAM / IBM Maximo
 
 Fuentes candidatas de conocimiento:
 
@@ -1009,50 +1126,53 @@ Esta combinación es futura; primero se validará RAG por separado.
 
 ---
 
-## 20. Decisiones todavía NO tomadas
+## 21. Decisiones todavía NO tomadas
 
-Aún no se ha decidido:
+Para **este LAB** sí se ha decidido temporalmente:
 
-- proveedor/modelo de embeddings para una solución futura;
+```text
+generación → local mediante Ollama
+modelo baseline → gemma3:4b
+Top-k de evaluación → 4
+```
+
+Aún no se ha decidido para una solución futura/productiva:
+
+- proveedor/modelo de embeddings;
 - vector database dedicada;
 - framework RAG;
-- LLM específico;
-- ejecución local vs API;
+- LLM específico de producción;
+- ejecución local vs API en producción;
 - estrategia de chunking definitiva;
 - tamaño de `top-k` definitivo;
 - framework de evaluación definitivo.
 
-El modelo `paraphrase-multilingual-MiniLM-L12-v2`, el índice NumPy/JSON y `Top-k = 4` para la siguiente evaluación son **baselines de aprendizaje del LAB**, no decisiones de arquitectura de AI-EAM-MAXIMO.
+El modelo `paraphrase-multilingual-MiniLM-L12-v2`, el índice NumPy/JSON, `Top-k = 4`, Ollama y `gemma3:4b` son **baselines de aprendizaje del LAB**, no decisiones de arquitectura de AI-EAM-MAXIMO.
 
 ---
 
-## 21. Siguiente paso
+## 22. Siguiente paso
 
-La baseline de retrieval ya está suficientemente entendida para introducir la primera **generación real**.
-
-Se utilizará inicialmente:
+Antes de instalar el runtime local conviene cerrar la ruta API que ya no se utilizará:
 
 ```text
-Top-k = 4
+1. revocar/eliminar la API key actual si no se usará
+2. eliminar OPENAI_API_KEY del entorno de usuario de Windows
 ```
 
-solo durante la evaluación de generación, manteniendo intactos los experimentos históricos con `Top-k = 3`.
-
-Los casos A–D permitirán evaluar:
+Después:
 
 ```text
-groundedness       → ¿usa solo evidencia recuperada?
-completeness       → ¿cubre la evidencia necesaria?
-citation correctness → ¿cita [FUENTE n] coherentemente?
-abstention         → ¿evita inventar cuando no existe respuesta?
+3. instalar Ollama para Windows
+4. verificar: ollama --version
+5. descargar una sola vez: ollama pull gemma3:4b
+6. ejecutar: python rag/src/step08_generate_grounded_answer.py
 ```
 
-Antes de incorporar el generador al código debe elegirse explícitamente el modo de ejecución del LLM:
+La consulta por defecto será el **Caso C**. Si la generación resulta correctamente fundamentada, se repetirá con:
 
 ```text
-API externa
-vs.
-modelo local
+¿Cuál es el par de apriete de los bornes eléctricos del PT-201?
 ```
 
-Esa elección afecta instalación, credenciales, coste y reproducibilidad, por lo que se trata como una decisión de laboratorio independiente y no como una decisión productiva de AI-EAM-MAXIMO.
+para verificar el **Caso D — abstención**.
