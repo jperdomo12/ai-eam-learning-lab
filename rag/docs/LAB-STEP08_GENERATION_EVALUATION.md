@@ -1,17 +1,19 @@
 # LAB — Paso 08: evaluación de generación fundamentada
 
 > **Tipo:** LAB  
-> **Estado:** 🧪 EN CURSO — Paso 08B C y D ejecutados; siguiente control: reproducibilidad de generación  
+> **Estado:** ✅ VERIFICADO — Paso 08 cerrado  
 > **Fecha:** 2026-09-14
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-14 | ✅ Se completa el **Paso 08C** con generación reproducible mediante API local de Ollama (`temperature=0`, `seed=42`, dos repeticiones por prompt). Ambos prompts producen salidas idénticas entre repeticiones. Bajo las mismas condiciones, el **Prompt A baseline** sigue siendo parcialmente incompleto, mientras el **Prompt B orientado a completeness** cubre inspección, seguridad, procedimiento completo de calibración, criterios de aceptación y acción ante tolerancia excedida. Se confirma que, en este experimento, la mejora procede del prompt y no del retrieval. |
+| 2026-09-14 | ✅ Se cierra el **Paso 08** para el nivel de aprendizaje buscado. `Groundedness` y `abstention` quedan satisfactoriamente demostrados; `completeness` mejora de forma clara con el prompt 08B bajo condiciones reproducibles. El formato exacto de citas `[FUENTE n]` no se fuerza más: el modelo referencia correctamente las fuentes, aunque use formas como `(FUENTE 2)`. No se continuarán optimizaciones de prompt, modelo, sampling ni evaluación automática en esta etapa. |
 | 2026-09-14 | 🧪 Se ejecuta el **Paso 08B — Caso D** con el mismo prompt orientado a completeness. La abstención se conserva: el modelo declara que el contexto no contiene el par de apriete y no inventa ningún valor. La respuesta sigue sin respetar exactamente el formato solicitado `[FUENTE n]`, usando una referencia textual global a las fuentes. |
 | 2026-09-14 | ⚙️ Se identifica una limitación metodológica importante de las comparaciones 08/08B: la generación se ejecutó mediante `ollama run` sin fijar explícitamente parámetros de muestreo. Por tanto, aunque retrieval/modelo/pregunta se mantuvieron, una sola ejecución por prompt no permite atribuir toda diferencia únicamente al prompt. Se prepara el **Paso 08C** con API local de Ollama, `temperature=0`, `seed=42` y dos repeticiones por prompt para crear una comparación reproducible. |
 | 2026-09-14 | 🧪 Se ejecuta el **Paso 08B — Caso C** variando las instrucciones del prompt. La respuesta mejora claramente respecto a la baseline: cubre inspección, seguridad y menciona el procedimiento de calibración. Sin embargo, sigue siendo **parcialmente incompleta**: resume el procedimiento en lugar de desarrollar sus pasos respaldados y omite los criterios de aceptación de `[FUENTE 3]`. Además, las referencias aparecen como `FUENTE 1`/`FUENTE 4` en lugar del formato solicitado `[FUENTE n]`. |
-| 2026-09-14 | Se documenta la baseline end-to-end del Paso 08 con Ollama + `llama3:latest`: Caso C fundamentado pero incompleto y Caso D con abstención correcta. Se prepara el Paso 08B para variar las instrucciones del prompt y estudiar `completeness` sin cambiar retrieval, `Top-k` ni modelo. |
+| 2026-09-14 | Se documenta la baseline end-to-end del Paso 08 con Ollama + `llama3:latest`: Caso C fundamentado pero incompleto y Caso D con abstención correcta. Se prepara el Paso 08B para variar únicamente las instrucciones del prompt y estudiar `completeness` sin cambiar retrieval, `Top-k` ni modelo. |
 
 ---
 
@@ -85,16 +87,16 @@ Top-4 recuperado:
 #4 | 0.4400 | Antes de calibrar un transmisor de presión
 ```
 
-El contexto contenía evidencia suficiente para inspección, seguridad, procedimiento y criterio de aceptación.
-
-Resultado observado:
+El contexto contenía evidencia suficiente para:
 
 ```text
-inspección previa       → cubierta
-seguridad previa        → cubierta
-procedimiento           → omitido
-criterio de aceptación  → omitido
+- inspección previa
+- seguridad previa
+- procedimiento de calibración
+- criterio de aceptación
 ```
+
+La primera generación fue conservadora y fundamentada, pero incompleta: utilizó inspección y seguridad y omitió procedimiento y criterios.
 
 Evaluación:
 
@@ -128,7 +130,7 @@ Top-4 recuperado:
 #4 | 0.3564 | Antes de calibrar un transmisor de presión
 ```
 
-Ningún chunk contiene el dato solicitado.
+Ningún chunk contiene un valor de par de apriete para bornes eléctricos.
 
 Respuesta observada:
 
@@ -143,7 +145,7 @@ Evaluación:
 ```text
 groundedness         → BUENA
 completeness         → CORRECTA para una pregunta sin evidencia
-citation correctness → no usó referencias explícitas
+citation correctness → sin referencias explícitas exactas
 abstention           → CORRECTA
 ```
 
@@ -155,14 +157,32 @@ Aprendizaje:
 
 ## 5. Paso 08B — prompt orientado a completeness
 
-El prompt 08B añade instrucciones explícitas para:
+Se varió una sola variable conceptual:
+
+```text
+PROMPT
+```
+
+Se mantuvo:
+
+```text
+mismo índice
+mismo modelo de embeddings
+mismo retrieval
+mismo Top-k = 4
+mismo Ollama
+mismo llama3:latest
+mismas preguntas
+```
+
+El prompt 08B exige:
 
 ```text
 1. identificar todas las partes de la pregunta;
-2. revisar todas las fuentes;
-3. responder cada parte respaldada;
+2. revisar todas las fuentes recuperadas;
+3. responder cada parte respaldada por evidencia;
 4. declarar qué parte carece de evidencia;
-5. comprobar antes de finalizar que no se omitió evidencia aplicable.
+5. verificar antes de finalizar que no se omitió evidencia aplicable.
 ```
 
 Script:
@@ -173,147 +193,186 @@ rag/src/step08b_generate_grounded_answer_prompt_completeness.py
 
 ### 5.1 Caso C con prompt 08B
 
-Con el mismo `Top-4`, la respuesta mejoró:
-
-```text
-inspección previa       → cubierta
-seguridad previa        → cubierta
-procedimiento           → mencionado / resumido
-criterio de aceptación  → omitido
-```
-
-Limitaciones observadas:
-
-- no desarrolló los pasos `0 → 5 → 10 bar`;
-- no incluyó de forma completa los ajustes `ZERO` / `SPAN`;
-- no incluyó la tolerancia `±0,05 bar` ni la evaluación adicional;
-- las citas no respetaron exactamente `[FUENTE n]`.
-
-Evaluación comparada, solo como observación inicial:
-
-```text
-                    Paso 08 baseline   Paso 08B
-Groundedness        buena              buena
-Completeness        insuficiente       mejora, pero parcial
-Citation compliance parcial            parcial
-```
+En la primera ejecución no determinista, la respuesta mejoró pero siguió parcialmente incompleta: cubrió inspección y seguridad, mencionó calibración, pero resumió el procedimiento y omitió criterios de aceptación.
 
 ### 5.2 Caso D con prompt 08B
 
-La misma pregunta sin respuesta documental produjo una abstención correcta:
-
-```text
-No hay información en el contexto recuperado que indique el par de apriete
-...
-no se puede determinar ... basado en el contexto recuperado.
-```
-
-Evaluación:
-
-```text
-groundedness         → BUENA
-abstention           → CORRECTA
-citation compliance  → PARCIAL; menciona "Fuentes 1, 2, 3 y 4" pero no `[FUENTE n]`
-```
+La abstención se mantuvo correctamente. El modelo declaró ausencia de evidencia y no inventó un valor de torque.
 
 Conclusión provisional:
 
-```text
-prompt 08B
-→ mejora aparente de completeness en C
-→ mantiene abstention en D
-→ no corrige todavía citation compliance
-```
+> **El prompt influye en la calidad generativa, pero una ejecución aislada no basta para medir rigurosamente el efecto.**
 
 ---
 
-## 6. Limitación metodológica descubierta: stochasticity
+## 6. Paso 08C — comparación reproducible de prompts
 
-Las ejecuciones 08 y 08B se hicieron con:
+Para controlar la variabilidad de generación se utiliza la API local de Ollama con:
 
 ```text
-ollama run llama3:latest <prompt>
+temperature = 0.0
+seed        = 42
+repeticiones por prompt = 2
 ```
 
-sin fijar explícitamente parámetros como `temperature` y `seed`.
-
-Eso significa que, aunque se mantuvieron fijos retrieval, `Top-k`, modelo y pregunta, la generación podía contener variación de muestreo entre ejecuciones.
-
-Por tanto, no debemos afirmar todavía que **toda** la diferencia observada entre Paso 08 y 08B fue causada exclusivamente por el prompt.
-
-Aprendizaje metodológico:
-
-> **Un experimento controlado de generación debe controlar también la stochasticity del LLM.**
-
-La documentación oficial de Ollama expone `temperature` como parámetro de generación y `seed` como mecanismo para obtener salidas reproducibles con el mismo prompt/modelo.
-
----
-
-## 7. Paso 08C — comparación reproducible de prompts
-
-Se crea:
+Script:
 
 ```text
 rag/src/step08c_compare_prompts_deterministic.py
 ```
 
-El nuevo control utiliza la API local de Ollama:
+Se compara:
 
 ```text
-http://localhost:11434/api/generate
+PROMPT A → baseline del Paso 08
+PROMPT B → completeness del Paso 08B
 ```
 
-sin autenticación y sin coste externo.
-
-Parámetros fijados:
+manteniendo exactamente el mismo:
 
 ```text
-temperature = 0
-seed        = 42
-repeticiones por prompt = 2
+índice
+embedding model
+retrieval
+Top-k = 4
+llama3:latest
+pregunta
+parámetros de generación
 ```
 
-Se recupera el contexto una sola vez y se comparan bajo exactamente las mismas condiciones:
+### 6.1 Reproducibilidad
+
+Resultado:
 
 ```text
-PROMPT A → baseline Paso 08
-PROMPT B → completeness Paso 08B
+Prompt A → ejecución 1 == ejecución 2
+Prompt B → ejecución 1 == ejecución 2
 ```
 
-Cada prompt se ejecuta dos veces para observar si la salida es estable.
+Por tanto, para este control:
 
-Este Paso 08C **no reescribe retroactivamente** los resultados anteriores. Los Pasos 08 y 08B permanecen como evidencia histórica que llevó a descubrir la necesidad de controlar reproducibilidad.
+```text
+Prompt A reproducible → True
+Prompt B reproducible → True
+```
+
+### 6.2 Prompt A — resultado reproducible
+
+El prompt baseline cubre:
+
+```text
+inspección previa      → sí
+seguridad previa       → sí
+procedimiento          → solo resumido
+criterio de aceptación → omitido
+```
+
+La respuesta permanece fundamentada, pero no explota toda la evidencia disponible.
+
+### 6.3 Prompt B — resultado reproducible
+
+El prompt orientado a completeness cubre:
+
+```text
+inspección previa      → sí
+seguridad previa       → sí
+procedimiento completo → sí
+ZERO / SPAN            → sí
+0 / 5 / 10 bar         → sí
+±0,05 bar              → sí
+as-left                 → sí
+criterio aceptación    → sí
+evaluación adicional   → sí
+```
+
+No se observan valores técnicos ajenos al contexto.
+
+Las referencias corresponden a las fuentes correctas, aunque el modelo usa formas como `(FUENTE 2)` en lugar de respetar literalmente `[FUENTE 2]`.
+
+### 6.4 Conclusión del control
+
+Bajo condiciones reproducibles:
+
+```text
+mismo retrieval
+mismo contexto
+mismo LLM
+mismos parámetros
+          ↓
+solo cambia el prompt
+          ↓
+Prompt B produce una respuesta sustancialmente más completa
+```
+
+Por tanto, en este experimento puede afirmarse que **la formulación del prompt mejoró `completeness` sin cambiar el retrieval**.
 
 ---
 
-## 8. Próximo paso
+## 7. Resultado final del Paso 08
 
-Ejecutar primero el Caso C con Paso 08C:
+Evaluación consolidada:
 
 ```text
-python rag/src/step08c_compare_prompts_deterministic.py
+Groundedness         → ✅ SATISFACTORIA
+Completeness         → ✅ SATISFACTORIA con prompt orientado a cobertura
+Abstention           → ✅ SATISFACTORIA en el Caso D probado
+Citation correctness → 🟡 SEMÁNTICAMENTE CORRECTA; formato literal no siempre respetado
+Reproducibilidad      → ✅ VERIFICADA en el control 08C
 ```
 
-Objetivos:
+Aprendizajes principales:
 
 ```text
-1. comprobar si cada prompt produce dos salidas idénticas;
-2. comparar baseline vs 08B en condiciones reproducibles;
-3. reevaluar completeness y citation compliance;
-4. solo después repetir Caso D.
+1. retrieval correcto no garantiza una respuesta completa;
+2. generation debe evaluarse como una capa independiente;
+3. un mejor prompt puede mejorar completeness sin tocar retrieval;
+4. abstention puede funcionar aunque el retriever siempre entregue Top-k;
+5. para comparar prompts conviene controlar también los parámetros de generación;
+6. embeddings, retriever y LLM generativo pueden ser componentes desacoplados.
 ```
 
 ---
 
-## 9. Lo que todavía NO se concluye
+## 8. Decisión de cierre
 
-Las ejecuciones actuales no demuestran que:
+Para el objetivo de aprendizaje actual, **no se requieren más experimentos de optimización en esta etapa**.
+
+No se continuará ahora con:
+
+- más variantes de prompt;
+- comparación de otros LLM locales;
+- ajuste fino de `temperature`, `seed` u otros parámetros;
+- thresholds de answerability;
+- jueces LLM;
+- evaluación automática avanzada;
+- reranking o retrieval híbrido por motivos de generación.
+
+Estas técnicas quedan como conocimiento posterior si una necesidad concreta de AI-EAM-MAXIMO las justifica.
+
+El siguiente bloque del Learning Lab debe regresar al objetivo EAM:
+
+```text
+RAG básico comprendido y probado
+        ↓
+Simulación Maximo / doclinks
+        ↓
+contexto EAM para localizar documentos
+        ↓
+RAG sobre el documento localizado
+```
+
+---
+
+## 9. Lo que NO se concluye
+
+Este LAB no demuestra que:
 
 - Llama 3 sea el modelo generativo definitivo;
-- el prompt 08B sea universalmente mejor;
-- la diferencia observada en una sola ejecución se deba exclusivamente al prompt;
+- el prompt 08B sea universalmente óptimo;
 - `Top-k=4` sea apropiado fuera de este corpus;
-- la abstención sea robusta en cualquier pregunta sin respuesta;
-- exista un threshold de similarity capaz de decidir answerability.
+- la abstención sea robusta para cualquier pregunta;
+- el índice NumPy/JSON sea una solución de producción;
+- exista un threshold universal de similarity;
+- Ollama sea la arquitectura recomendada para AI-EAM-MAXIMO.
 
-El objetivo sigue siendo aprender mediante experimentos controlados y reproducibles antes de introducir optimizaciones adicionales.
+Todos esos elementos siguen siendo **baselines pedagógicas del LAB**, no decisiones productivas.
