@@ -8,7 +8,8 @@ Hands-on learning and experimentation lab for AI applied to EAM: fundamentos de 
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-14 | Se incorpora la nota transversal [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md), consolidando historia mínima de IA, LLM, tokenización, Transformer/Attention, modelos/runtimes/productos, RAG, MCP y agentes. Se actualiza además la situación 2026 de IBM Maximo: servidor MCP oficial en MAS 9.2, continuidad de OSLC y capacidades RAG/DocSearch documentadas en Maximo Assistant. |
+| 2026-09-14 | Se mueve `STUDY-AI_FOUNDATIONS_AND_HISTORY.md` a la raíz del repositorio y se amplía con historia de IA, IA simbólica/Turbo Prolog, nacimiento progresivo de los LLM, origen de MCP, entrenamiento/inferencia, cuantización, Fine-tuning vs. RAG y una definición más precisa de agente. |
+| 2026-09-14 | Se incorpora la nota transversal [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md), consolidando historia mínima de IA, LLM, tokenización, Transformer/Attention, modelos/runtimes/productos, RAG, MCP y agentes. Se actualiza además la situación 2026 de IBM Maximo: servidor MCP oficial en MAS 9.2, continuidad de OSLC y capacidades RAG/DocSearch documentadas en Maximo Assistant. |
 | 2026-09-14 | Se actualiza el estado del RAG: fundamentos básicos **verificados y cerrados para el nivel actual de aprendizaje** tras los Pasos 01–08. El siguiente bloque práctico será la aplicación EAM mediante simulación Maximo/doclinks. |
 | 2026-09-12 | Se inicia formalmente el **RAG Learning Lab** con pregunta guía, documentación viva y plan incremental de aprendizaje. |
 | 2026-09-12 | Se simplifica la estructura documental: `DOCUMENTATION_STANDARD.md` pasa a la raíz del repositorio y se refuerza la regla de Historial obligatorio en toda documentación Markdown viva. |
@@ -47,7 +48,7 @@ El estándar documental está en [`DOCUMENTATION_STANDARD.md`](DOCUMENTATION_STA
 
 | Tema | Estado | Entrada |
 |---|---|---|
-| Fundamentos de IA e historia mínima | 📘 Estudio transversal activo | [`docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md) |
+| Fundamentos de IA e historia mínima | 📘 Estudio transversal activo | [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md) |
 | MCP — Model Context Protocol | ✅ Cerrado / congelado · v1.2 | [`mcp/README.md`](mcp/README.md) |
 | RAG — Retrieval-Augmented Generation | ✅ RAG básico verificado · Pasos 01–08 cerrados | [`rag/README.md`](rag/README.md) |
 | Agentes | ⏳ Futuro | Se creará cuando comience el estudio real. |
@@ -58,18 +59,18 @@ El estándar documental está en [`DOCUMENTATION_STANDARD.md`](DOCUMENTATION_STA
 
 La nota de referencia rápida para conectar los conceptos estudiados es:
 
-[`docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](docs/study/STUDY-AI_FOUNDATIONS_AND_HISTORY.md)
+[`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md)
 
 Resume y relaciona:
 
 ```text
 historia mínima de IA
-→ Machine Learning / Deep Learning
+→ IA simbólica / Machine Learning / Deep Learning
 → tokenización
 → Transformer / Attention
 → LLM
-→ prompting
-→ RAG
+→ entrenamiento / inferencia / cuantización
+→ prompting / Fine-tuning / RAG
 → Tools / MCP
 → agentes
 → aplicación EAM / IBM Maximo
