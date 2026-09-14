@@ -40,9 +40,9 @@ def generate_with_openai(prompt: str, model_name: str) -> str:
     try:
         from openai import OpenAI
     except ImportError:
-        print("Falta instalar el SDK oficial de OpenAI.")
+        print("Falta instalar el SDK oficial de OpenAI para esta ruta opcional.")
         print("Ejecuta:")
-        print("  python -m pip install -r rag/requirements.txt")
+        print("  python -m pip install -r rag/requirements_openai_optional.txt")
         raise SystemExit(1)
 
     if not os.getenv("OPENAI_API_KEY"):
@@ -66,7 +66,7 @@ def main() -> None:
     query = " ".join(sys.argv[1:]).strip() if len(sys.argv) > 1 else DEFAULT_QUERY
     model_name = os.getenv("OPENAI_MODEL", DEFAULT_GENERATION_MODEL)
 
-    print("RAG LAB — Paso 08: generación fundamentada con LLM externo")
+    print("RAG LAB — Paso 08A: generación fundamentada con OpenAI API (ruta opcional)")
     print(f"Pregunta: {query}")
     print(f"Top-k baseline temporal: {GENERATION_TOP_K}")
     print(f"Modelo generativo: {model_name}\n")
@@ -76,7 +76,7 @@ def main() -> None:
     print("- construir el mismo contexto fundamentado observado en el Paso 06")
     print("- enviar pregunta + instrucciones + evidencia a un LLM real")
     print("- comprobar respuesta, citas y abstención sin dar acceso al LLM a herramientas externas")
-    print("- la elección de proveedor/modelo es solo una decisión del LAB\n")
+    print("- esta ruta API queda como alternativa opcional del LAB\n")
 
     results = retrieve_top_k(query)
     context = build_context(results)
@@ -111,7 +111,7 @@ def main() -> None:
     print("OBSERVACIÓN")
     print("En este paso el LLM no hizo el retrieval y no recibió los vectores.")
     print("Recibió únicamente instrucciones + pregunta + texto original recuperado.")
-    print("El siguiente análisis evaluará si la respuesta está fundamentada y si se abstiene cuando falta evidencia.")
+    print("La ruta local del LAB permite probar el mismo contrato sin coste de API.")
     print("=" * 80)
 
 
