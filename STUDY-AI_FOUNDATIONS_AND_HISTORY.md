@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-14 | Se amplía la explicación de Tools con la analogía `MCP Server ≈ package/service` y `Tool ≈ función/procedimiento público invocable`, incluyendo el contrato que permite al LLM descubrir y llamar cada Tool. |
 | 2026-09-14 | Se mueve la nota a la raíz del repositorio y se amplía la historia de IA, el puente con IA simbólica/Turbo Prolog, el nacimiento progresivo de los LLM, el origen de MCP, entrenamiento/inferencia, cuantización, Fine-tuning vs. RAG y la definición de agente. |
 | 2026-09-14 | Creación inicial a partir de notas personales de estudio revisadas y del aprendizaje práctico realizado en los LAB de MCP y RAG. Se actualiza específicamente la situación de IBM Maximo 9.2 respecto a MCP, OSLC y capacidades RAG/DocSearch documentadas por IBM. |
 
@@ -792,6 +793,65 @@ leer un archivo
 buscar inventario
 llamar una API
 ```
+
+Para un perfil de arquitectura/software, una analogía muy útil es pensar en un **package o servicio con operaciones públicas**.
+
+Por ejemplo, conceptualmente en PL/SQL podríamos tener:
+
+```text
+PACKAGE MAXIMO_OT
+    FUNCTION consultar_ot(...)
+    PROCEDURE cambiar_estado_ot(...)
+    FUNCTION consultar_prioridad(...)
+```
+
+Una organización equivalente en MCP sería:
+
+```text
+MCP Server: Maximo
+    Tool: consultar_ot(...)
+    Tool: cambiar_estado_ot(...)
+    Tool: query_maximo(...)
+```
+
+La analogía práctica es:
+
+```text
+MCP Server
+≈ package / servicio que agrupa capacidades
+
+Tool
+≈ función o procedimiento público invocable
+```
+
+No es una equivalencia literal. Un package de base de datos vive dentro de un motor concreto; un MCP Server es un proceso/servicio que expone capacidades mediante el protocolo MCP. Pero para entender la **unidad funcional** resulta una comparación muy útil.
+
+Además, una Tool MCP no es solo una función con código. Debe exponer un **contrato que el modelo pueda descubrir e interpretar**, normalmente compuesto por:
+
+```text
+nombre de la Tool
++
+descripción de lo que hace
++
+parámetros / esquema de entrada
++
+resultado
+```
+
+Ejemplo conceptual:
+
+```text
+Tool: consultar_ot
+Descripción: consulta los detalles de una Orden de Trabajo en Maximo
+Entrada: num_ot
+Salida: descripción, estado, activo, sitio, prioridad...
+```
+
+El LLM puede utilizar esas señales para decidir qué Tool llamar según la intención del usuario.
+
+Por eso una forma útil de recordarlo es:
+
+> **El MCP Server publica capacidades; cada Tool es una operación pública con un contrato suficientemente claro para que un agente/LLM pueda descubrirla e invocarla.**
 
 ### 10.5 MCP
 
