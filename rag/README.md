@@ -4,12 +4,13 @@
 >
 > 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · 🟨 **Aplicación EAM en curso: Maximo simulado + Doclinks + RAG**
 >
-> 🗓️ **Actualizado:** 2026-09-14
+> 🗓️ **Actualizado:** 2026-09-15
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-15 | Se prepara el **Paso 09** con datos simulados `ASSET + DOCLINKS + DOCINFO` y un script que resuelve los documentos asociados a `PT-201 / PLANTA1`; queda pendiente la ejecución local para cierre pedagógico. |
 | 2026-09-14 | Se inicia el bloque de aplicación EAM documentando cómo Maximo representa attachments mediante `DOCINFO` + `DOCLINKS`; se añade `STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`. |
 | 2026-09-14 | Se completa el cierre documental con `RAG_LAB_FAST_READING.md` y `RAG_LAB_HANDOFF.md`. |
 | 2026-09-14 | Se cierran los Pasos 01–08: retrieval, contexto, generación fundamentada, abstención y control reproducible de prompts. |
@@ -20,9 +21,10 @@
 1. [`docs/RAG_LAB_FAST_READING.md`](docs/RAG_LAB_FAST_READING.md) — resumen final de lectura rápida.
 2. [`docs/RAG_LIVING_DOCUMENTATION.md`](docs/RAG_LIVING_DOCUMENTATION.md) — documentación canónica y evolutiva.
 3. [`docs/RAG_LAB_HANDOFF.md`](docs/RAG_LAB_HANDOFF.md) — cierre y continuidad hacia Maximo simulado / doclinks.
-4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual del nuevo bloque Maximo simulado + Doclinks + RAG.
-5. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
-6. [`docs/study/`](docs/study/) — otras notas pedagógicas.
+4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual del bloque Maximo simulado + Doclinks + RAG.
+5. [`docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md`](docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md) — práctica actual: resolver documentos desde contexto EAM simulado.
+6. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
+7. [`docs/study/`](docs/study/) — otras notas pedagógicas.
 
 ## 🧠 Pipeline probado
 
@@ -86,7 +88,7 @@ RAG → conocimiento documental
 
 ## 🚀 Bloque actual — Maximo simulado + Doclinks + RAG
 
-Primero se estudia cómo Maximo representa la asociación documental:
+La base conceptual ya está documentada:
 
 ```text
 ASSET / WORKORDER / ...
@@ -98,12 +100,22 @@ ASSET / WORKORDER / ...
 archivo / storage / URL
 ```
 
-Después construiremos una simulación mínima que permita:
+El Paso 09 ya prepara una simulación mínima:
+
+```text
+PT-201 / PLANTA1
+→ ASSETUID
+→ DOCLINKS
+→ DOCINFO
+→ localizar los documentos asociados
+```
+
+Una vez validada localmente, el siguiente incremento será:
 
 ```text
 contexto EAM
-→ localizar documento asociado
-→ RAG recupera conocimiento documental
+→ documentos permitidos por Maximo simulado
+→ RAG sobre esos documentos
 → respuesta fundamentada
 ```
 
