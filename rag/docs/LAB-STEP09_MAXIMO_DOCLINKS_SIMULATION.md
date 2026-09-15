@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** comprobar de forma visible cómo un contexto EAM mínimo puede resolver qué documentos están asociados a un activo antes de entregar esos documentos al pipeline RAG.
 >
-> 📍 **Estado:** 🧪 **PREPARADO — pendiente de ejecución local y validación pedagógica**
+> 📍 **Estado:** ✅ **VERIFICADO — resolución documental Maximo simulada validada localmente**
 >
 > 🗓️ **Actualizado:** 2026-09-15
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-15 | ✅ Ejecución local verificada: `PT-201 / PLANTA1` resuelve `ASSETUID=1001`, `ASSETID=2001`, dos `DOCLINKS`, dos `DOCINFO` y ambos archivos asociados existen. |
 | 2026-09-15 | Se explicita la coexistencia de `ASSETUID` y `ASSETID`; el LAB conserva ambos y usa `ASSETUID` como baseline site-specific para resolver `DOCLINKS.OWNERID`. |
 | 2026-09-15 | Se crea el Paso 09 con datos Maximo simulados y un script de resolución `ASSET → DOCLINKS → DOCINFO → archivo`. |
 
@@ -43,7 +44,7 @@ La idea clave es:
 
 > **Maximo determina qué documentación corresponde al activo; RAG buscará después el conocimiento dentro de esa documentación.**
 
-Para `ASSET`, Maximo maneja tanto `ASSETUID` como `ASSETID`. En este LAB utilizaremos deliberadamente `ASSETUID` como baseline site-specific, sin presentarlo como una regla universal.
+Para `ASSET`, Maximo maneja tanto `ASSETUID` como `ASSETID`. En este LAB utilizamos deliberadamente `ASSETUID` como baseline site-specific, sin presentarlo como una regla universal.
 
 ---
 
@@ -174,7 +175,9 @@ También puede ejecutarse explícitamente:
 python rag/src/step09_resolve_maximo_doclinks.py PT-201 PLANTA1
 ```
 
-Resultado esperado:
+### Resultado verificado
+
+La ejecución local del 2026-09-15 confirmó:
 
 ```text
 ASSETNUM : PT-201
@@ -186,13 +189,8 @@ OWNERID  : 1001
 
 Documentos asociados: 2
 
-MANUAL-PT201
-→ manual_transmisor_PT201.md
-→ EXISTE: sí
-
-PROC-SEG-INSTR
-→ procedimiento_seguridad_instrumentacion.md
-→ EXISTE: sí
+DOCLINKSID 5001 → DOCINFOID 9001 → MANUAL-PT201    → EXISTE: sí
+DOCLINKSID 5002 → DOCINFOID 9002 → PROC-SEG-INSTR → EXISTE: sí
 ```
 
 El objetivo no es memorizar el output, sino observar el JOIN conceptual elegido para esta baseline:
@@ -236,7 +234,7 @@ La estructura se mantiene mínima para comprender la relación antes de añadir 
 
 ## 6. Criterio de cierre del Paso 09
 
-El Paso 09 quedará ✅ **VERIFICADO** cuando la ejecución local confirme que:
+✅ **Cumplido.** La ejecución local confirmó que:
 
 ```text
 PT-201 / PLANTA1
@@ -248,11 +246,15 @@ PT-201 / PLANTA1
 → se localizan los dos archivos existentes
 ```
 
+Aprendizaje consolidado:
+
+> **Doclinks actúa como la capa de asociación EAM que limita qué documentación corresponde al contexto del activo; RAG todavía no ha intervenido.**
+
 ---
 
 ## 7. Siguiente paso previsto
 
-Una vez verificada la resolución documental:
+Con la resolución documental ya verificada:
 
 ```text
 ASSET + DOCLINKS + DOCINFO
