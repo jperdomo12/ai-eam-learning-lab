@@ -1,0 +1,18 @@
+[
+  {
+    "docinfoid": 9001,
+    "document": "MANUAL-PT201",
+    "description": "Manual transmisor PT-201",
+    "doctype": "Attachments",
+    "urltype": "FILE",
+    "urlname": "rag/data/source_documents/manual_transmisor_PT201.md"
+  },
+  {
+    "docinfoid": 9002,
+    "document": "PROC-SEG-INSTR",
+    "description": "Procedimiento de seguridad de instrumentación",
+    "doctype": "Attachments",
+    "urltype": "FILE",
+    "urlname": "rag/data/source_documents/procedimiento_seguridad_instrumentacion.md"
+  }
+]
