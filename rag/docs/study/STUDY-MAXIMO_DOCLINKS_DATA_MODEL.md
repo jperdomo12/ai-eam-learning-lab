@@ -2,7 +2,7 @@
 
 > **Tipo:** STUDY  
 > **Estado:** 📘 ENTENDIDO — base conceptual para el bloque Maximo simulado + Doclinks + RAG  
-> **Actualizado:** 2026-09-14  
+> **Actualizado:** 2026-09-15  
 >
 > **Propósito:** entender cómo IBM Maximo Manage representa los documentos adjuntos y sus vínculos con objetos de negocio para construir una simulación fiel, pero simple, antes de conectarla con el RAG ya validado.
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-15 | Se corrige y amplía la explicación de `DOCLINKS.OWNERID` para `ASSET`: se documentan `ASSETUID` y `ASSETID` y se fija `ASSETUID` como baseline site-specific del LAB, sin asumir que sea la única variante válida en Maximo. |
 | 2026-09-14 | Creación inicial a partir de documentación oficial IBM sobre attachments/doclinks, API REST y almacenamiento de documentos. |
 
 ---
@@ -57,7 +58,7 @@ OWNERTABLE
 → ejemplos: ASSET, WORKORDER, PM, SR
 
 OWNERID
-→ identificador interno del registro propietario
+→ identificador interno utilizado para relacionar el documento con el registro propietario
 
 DOCINFOID
 → referencia al documento descrito por DOCINFO
@@ -70,21 +71,60 @@ La documentación REST vigente de Maximo Manage expone metadata de attachments q
 
 ### Importante: OWNERID no es el número funcional visible
 
-`OWNERID` normalmente apunta al identificador interno/único del objeto, no al valor de negocio que ve el usuario.
+`OWNERID` no debe confundirse con identificadores funcionales como `ASSETNUM` o `WONUM`.
 
-Ejemplo conceptual:
+Para `WORKORDER`, por ejemplo, el vínculo puede utilizar el identificador interno `WORKORDERID`.
+
+Para `ASSET` existe un matiz importante: Maximo maneja tanto `ASSETUID` como `ASSETID`, y el comportamiento de Attached Documents puede hacer que `DOCLINKS.OWNERID` se relacione con uno u otro según el contexto/configuración.
+
+Modelo conceptual simplificado:
 
 ```text
-ASSETNUM = PT-201        ← identificador funcional
-ASSETUID = 1001          ← identificador interno de ejemplo
+ASSETNUM
+→ identificador funcional visible
+
+ASSETUID
+→ identificador único utilizado en relaciones site-specific
+
+ASSETID
+→ identificador de activo utilizado en comportamiento system-level
+```
+
+Por tanto, no debemos enseñar esta regla como universal:
+
+```text
+DOCLINKS.OWNERID = ASSETUID siempre   ❌
+```
+
+La regla correcta para nuestro nivel de aprendizaje es:
+
+```text
+DOCLINKS.OWNERID
+→ identificador interno esperado por la relación de Doclinks del objeto
+
+Para ASSET puede implicar:
+→ ASSETUID en relaciones site-specific
+→ ASSETID en comportamiento/configuración system-level
+```
+
+IBM documenta comportamiento específico de Asset Doclinks asociado a la configuración `SYSTEMLEVASSETDOCS`, por lo que ambas variantes deben conocerse aunque el LAB utilice solo una como baseline.
+
+### Baseline elegida para este LAB
+
+Para mantener una primera práctica simple y reproducible utilizaremos:
+
+```text
+ASSETUID = 1001
+ASSETID  = 2001
 
 DOCLINKS.OWNERTABLE = ASSET
 DOCLINKS.OWNERID    = 1001
+
+Baseline:
+OWNERID ↔ ASSETUID
 ```
 
-En otros objetos el identificador interno puede ser, por ejemplo, `WORKORDERID` para `WORKORDER`.
-
-La relación exacta depende del objeto y de la configuración/relationship vigente de Maximo. Para la simulación no debemos asumir que `OWNERID = ASSETNUM`.
+Esto representa deliberadamente una resolución **site-specific**. `ASSETID` también se conserva en el mock para que el modelo de datos no oculte la otra posibilidad real.
 
 ---
 
@@ -217,6 +257,7 @@ Baseline propuesta:
 ```text
 ASSET_MOCK
 - assetuid
+- assetid
 - assetnum
 - siteid
 - description
@@ -242,13 +283,14 @@ Ejemplo:
 ```text
 ASSET
 assetuid    = 1001
+assetid     = 2001
 assetnum    = PT-201
 siteid      = PLANTA1
 
 DOCLINKS
 doclinksid  = 5001
 ownertable  = ASSET
-ownerid     = 1001
+ownerid     = 1001      ← baseline del LAB: ASSETUID
 docinfoid   = 9001
 
 DOCINFO
@@ -275,7 +317,9 @@ contexto Maximo simulado
         ↓
 ASSETNUM / SITEID
         ↓
-identificador interno del ASSET
+ASSET
+        ↓
+identificador interno definido por la relación de Doclinks
         ↓
 DOCLINKS
         ↓
@@ -303,6 +347,7 @@ Idea central:
 Para mantener el aprendizaje controlado, inicialmente no modelaremos:
 
 ```text
+cambio dinámico entre ASSETUID y ASSETID
 seguridad real de attachments
 S3/COS real
 PVC/OpenShift
@@ -310,11 +355,10 @@ versionado documental completo
 permisos por usuario/grupo
 relationships complejas heredadas
 propagación de doclinks entre objetos relacionados
-configuración system-level de Asset Doclinks
 API real de Maximo
 ```
 
-Se incorporarán solo si una necesidad concreta lo justifica.
+La distinción `ASSETUID` / `ASSETID` queda documentada, pero el Paso 09 usa una sola baseline: `ASSETUID`.
 
 ---
 
@@ -337,11 +381,17 @@ Fuentes principales utilizadas para esta nota:
 - IBM Support — How to import attachments into Maximo using MIF  
   https://www.ibm.com/support/pages/how-import-attachments-maximo-using-mif
 
+- IBM Support — consultas/relaciones de Doclinks para Asset usando `ASSETID` / `OWNERID`  
+  https://www.ibm.com/support/pages/node/1112727
+
+- IBM Support — comportamiento system-level de Asset attached documents (`SYSTEMLEVASSETDOCS`)  
+  https://www.ibm.com/support/pages/node/4820487
+
 ---
 
 ## 11. Próximo paso
 
-Construir una simulación mínima de:
+Ejecutar y verificar la simulación mínima de:
 
 ```text
 ASSET
@@ -351,4 +401,10 @@ DOCLINKS
 DOCINFO
 ```
 
-reutilizando el documento `manual_transmisor_PT201.md`, y después conectar esa resolución documental con el pipeline RAG ya existente.
+con la baseline explícita:
+
+```text
+DOCLINKS.OWNERID ↔ ASSET.ASSETUID
+```
+
+y después conectar esa resolución documental con el pipeline RAG ya existente.
