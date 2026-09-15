@@ -1,0 +1,16 @@
+[
+  {
+    "doclinksid": 5001,
+    "ownertable": "ASSET",
+    "ownerid": 1001,
+    "docinfoid": 9001,
+    "doctype": "Attachments"
+  },
+  {
+    "doclinksid": 5002,
+    "ownertable": "ASSET",
+    "ownerid": 1001,
+    "docinfoid": 9002,
+    "doctype": "Attachments"
+  }
+]
