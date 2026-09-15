@@ -8,6 +8,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MAXIMO_MOCK_DIR = REPO_ROOT / "rag" / "data" / "maximo_mock"
 
+# Baseline pedagógica elegida para este LAB:
+# Doclinks de ASSET resueltos por ASSETUID (site-specific).
+# ASSETID también se conserva en el mock porque Maximo puede usarlo
+# en comportamiento/configuración system-level de attached documents.
+ASSET_DOCLINK_OWNER_KEY = "assetuid"
+
 
 def load_json(path: Path):
     with path.open("r", encoding="utf-8") as file:
@@ -25,12 +31,12 @@ def find_asset(assets, assetnum: str, siteid: str):
 
 
 def resolve_documents(asset, doclinks, docinfo):
-    assetuid = asset["assetuid"]
+    owner_id = asset[ASSET_DOCLINK_OWNER_KEY]
     links = [
         link
         for link in doclinks
         if link.get("ownertable", "").upper() == "ASSET"
-        and link.get("ownerid") == assetuid
+        and link.get("ownerid") == owner_id
     ]
 
     docinfo_by_id = {doc["docinfoid"]: doc for doc in docinfo}
@@ -86,11 +92,15 @@ def main():
         )
 
     documents = resolve_documents(asset, doclinks, docinfo)
+    owner_id = asset[ASSET_DOCLINK_OWNER_KEY]
 
     print("=== MAXIMO MOCK: RESOLUCIÓN DE DOCLINKS ===")
     print(f"ASSETNUM : {asset['assetnum']}")
     print(f"SITEID   : {asset['siteid']}")
     print(f"ASSETUID : {asset['assetuid']}")
+    print(f"ASSETID  : {asset['assetid']}")
+    print(f"OWNER KEY: {ASSET_DOCLINK_OWNER_KEY.upper()} (baseline site-specific)")
+    print(f"OWNERID  : {owner_id}")
     print(f"DESCRIP. : {asset['description']}")
     print()
 
