@@ -10,7 +10,8 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-15 | Se prepara el **Paso 09** con datos simulados `ASSET + DOCLINKS + DOCINFO` y un script que resuelve los documentos asociados a `PT-201 / PLANTA1`; queda pendiente la ejecución local para cierre pedagógico. |
+| 2026-09-15 | ✅ Se verifica localmente el **Paso 09**: `PT-201 / PLANTA1 → ASSET → DOCLINKS → DOCINFO → archivos asociados`; ambos documentos esperados fueron localizados correctamente. |
+| 2026-09-15 | Se prepara el **Paso 09** con datos simulados `ASSET + DOCLINKS + DOCINFO` y un script que resuelve los documentos asociados a `PT-201 / PLANTA1`. |
 | 2026-09-14 | Se inicia el bloque de aplicación EAM documentando cómo Maximo representa attachments mediante `DOCINFO` + `DOCLINKS`; se añade `STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`. |
 | 2026-09-14 | Se completa el cierre documental con `RAG_LAB_FAST_READING.md` y `RAG_LAB_HANDOFF.md`. |
 | 2026-09-14 | Se cierran los Pasos 01–08: retrieval, contexto, generación fundamentada, abstención y control reproducible de prompts. |
@@ -22,7 +23,7 @@
 2. [`docs/RAG_LIVING_DOCUMENTATION.md`](docs/RAG_LIVING_DOCUMENTATION.md) — documentación canónica y evolutiva.
 3. [`docs/RAG_LAB_HANDOFF.md`](docs/RAG_LAB_HANDOFF.md) — cierre y continuidad hacia Maximo simulado / doclinks.
 4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual del bloque Maximo simulado + Doclinks + RAG.
-5. [`docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md`](docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md) — práctica actual: resolver documentos desde contexto EAM simulado.
+5. [`docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md`](docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md) — práctica verificada: resolver documentos desde contexto EAM simulado.
 6. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
 7. [`docs/study/`](docs/study/) — otras notas pedagógicas.
 
@@ -54,6 +55,7 @@ Evaluación retrieval A–D         ✅
 Generación fundamentada          ✅
 Abstención                       ✅
 Control reproducible de prompts  ✅
+Resolución Maximo Doclinks       ✅ Paso 09
 ```
 
 Aprendizajes esenciales:
@@ -65,6 +67,7 @@ Similarity ≠ confianza / answerability.
 Top-k encontrado ≠ respuesta encontrada.
 Retrieval correcto ≠ generación necesariamente completa.
 Sin evidencia suficiente → abstención.
+Maximo/Doclinks determina qué documentos corresponden al contexto EAM.
 ```
 
 ## 🧪 Baseline pedagógica
@@ -100,22 +103,23 @@ ASSET / WORKORDER / ...
 archivo / storage / URL
 ```
 
-El Paso 09 ya prepara una simulación mínima:
+El Paso 09 verificó:
 
 ```text
 PT-201 / PLANTA1
-→ ASSETUID
+→ ASSET
+→ ASSETUID 1001 / ASSETID 2001
 → DOCLINKS
 → DOCINFO
-→ localizar los documentos asociados
+→ 2 documentos asociados existentes
 ```
 
-Una vez validada localmente, el siguiente incremento será:
+El siguiente incremento es:
 
 ```text
 contexto EAM
 → documentos permitidos por Maximo simulado
-→ RAG sobre esos documentos
+→ RAG limitado a esos documentos
 → respuesta fundamentada
 ```
 
