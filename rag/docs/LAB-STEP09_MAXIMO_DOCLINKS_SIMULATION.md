@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-15 | Se explicita la coexistencia de `ASSETUID` y `ASSETID`; el LAB conserva ambos y usa `ASSETUID` como baseline site-specific para resolver `DOCLINKS.OWNERID`. |
 | 2026-09-15 | Se crea el Paso 09 con datos Maximo simulados y un script de resolución `ASSET → DOCLINKS → DOCINFO → archivo`. |
 
 ---
@@ -27,7 +28,7 @@ ASSETNUM + SITEID
         ↓
 ASSET simulado
         ↓
-ASSETUID
+identificador interno usado por Doclinks
         ↓
 DOCLINKS
         ↓
@@ -42,11 +43,13 @@ La idea clave es:
 
 > **Maximo determina qué documentación corresponde al activo; RAG buscará después el conocimiento dentro de esa documentación.**
 
+Para `ASSET`, Maximo maneja tanto `ASSETUID` como `ASSETID`. En este LAB utilizaremos deliberadamente `ASSETUID` como baseline site-specific, sin presentarlo como una regla universal.
+
 ---
 
 ## 2. Datos simulados
 
-Se crean tres archivos deliberadamente simples:
+Se utilizan tres archivos deliberadamente simples:
 
 ```text
 rag/data/maximo_mock/
@@ -61,16 +64,29 @@ Activo inicial:
 
 ```text
 assetuid    = 1001
+assetid     = 2001
 assetnum    = PT-201
 siteid      = PLANTA1
 description = Transmisor de presión PT-201
 ```
 
-`assetnum` es el identificador funcional visible; `assetuid` representa el identificador interno usado por la simulación para relacionarse con `DOCLINKS`.
+Interpretación:
+
+```text
+ASSETNUM
+→ identificador funcional visible
+
+ASSETUID
+→ identificador interno usado por nuestra baseline site-specific
+
+ASSETID
+→ identificador real de Maximo que también puede participar en Doclinks
+  cuando aplica comportamiento/configuración system-level
+```
 
 ### DOCLINKS
 
-El activo `1001` tiene dos vínculos documentales:
+El activo tiene dos vínculos documentales:
 
 ```text
 DOCLINKSID 5001 → DOCINFOID 9001
@@ -83,6 +99,14 @@ con:
 OWNERTABLE = ASSET
 OWNERID    = 1001
 ```
+
+En esta prueba:
+
+```text
+DOCLINKS.OWNERID = ASSET.ASSETUID
+```
+
+Esto es una **elección explícita del LAB**, no la afirmación de que Maximo utilice siempre `ASSETUID` para Asset Doclinks.
 
 ### DOCINFO
 
@@ -106,13 +130,20 @@ No se duplican documentos; la simulación solo añade metadata EAM que permite e
 rag/src/step09_resolve_maximo_doclinks.py
 ```
 
-El script realiza exclusivamente esta resolución:
+El script define de forma visible:
+
+```text
+ASSET_DOCLINK_OWNER_KEY = "assetuid"
+```
+
+Y realiza exclusivamente esta resolución:
 
 ```text
 assetnum + siteid
 → localizar ASSET
-→ obtener assetuid
-→ buscar DOCLINKS con OWNERTABLE=ASSET y OWNERID=assetuid
+→ leer ASSETUID y ASSETID
+→ usar ASSETUID como OWNER KEY de la baseline
+→ buscar DOCLINKS con OWNERTABLE=ASSET y OWNERID=ASSETUID
 → resolver DOCINFOID
 → obtener URLTYPE / URLNAME
 → comprobar que el archivo existe
@@ -149,6 +180,9 @@ Resultado esperado:
 ASSETNUM : PT-201
 SITEID   : PLANTA1
 ASSETUID : 1001
+ASSETID  : 2001
+OWNER KEY: ASSETUID (baseline site-specific)
+OWNERID  : 1001
 
 Documentos asociados: 2
 
@@ -161,7 +195,7 @@ PROC-SEG-INSTR
 → EXISTE: sí
 ```
 
-El objetivo no es memorizar el output, sino observar el JOIN conceptual:
+El objetivo no es memorizar el output, sino observar el JOIN conceptual elegido para esta baseline:
 
 ```text
 ASSET.assetuid
@@ -174,6 +208,8 @@ DOCINFO.docinfoid
 DOCINFO.urlname
 ```
 
+Y recordar que, en Maximo real, la relación de Asset Doclinks puede involucrar `ASSETID` según el comportamiento/configuración aplicable.
+
 ---
 
 ## 5. Qué estamos simplificando
@@ -183,6 +219,7 @@ Esta prueba no pretende reproducir toda la implementación real de Maximo.
 No incluye todavía:
 
 ```text
+cambio dinámico ASSETUID ↔ ASSETID
 API REST real
 MCP real
 S3 / object storage
@@ -203,7 +240,9 @@ El Paso 09 quedará ✅ **VERIFICADO** cuando la ejecución local confirme que:
 
 ```text
 PT-201 / PLANTA1
-→ se resuelve al ASSETUID 1001
+→ se resuelve al ASSET simulado
+→ se muestran ASSETUID 1001 y ASSETID 2001
+→ la baseline usa ASSETUID 1001 como OWNERID
 → se encuentran sus DOCLINKS
 → se resuelven sus DOCINFO
 → se localizan los dos archivos existentes
