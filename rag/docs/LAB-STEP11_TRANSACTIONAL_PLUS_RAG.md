@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** combinar, para un mismo contexto EAM, datos estructurados/transaccionales simulados de Maximo con conocimiento documental recuperado mediante RAG.
 >
-> 📍 **Estado:** 🧪 **PREPARADO — pendiente de ejecución local y validación pedagógica**
+> 📍 **Estado:** ✅ **VERIFICADO — datos transaccionales + RAG documental integrados**
 >
 > 🗓️ **Actualizado:** 2026-09-16
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-16 | ✅ Verificación local del Paso 11: `WORKORDER` identifica 2 OTs abiertas de 3; Doclinks limita el universo documental; RAG recupera evidencia relevante y Llama 3 combina ambos tipos de evidencia en una respuesta integrada. Se observa que el modelo no respetó literalmente el formato de cita `[MAXIMO]`/`[FUENTE n]`, limitación menor ya conocida que no abre una nueva fase de tuning. |
 | 2026-09-16 | Creación inicial del Paso 11: se añade `WORKORDER` simulado para `PT-201`, consulta estructurada de OTs abiertas, Doclinks + RAG documental y combinación final mediante Llama 3 local. |
 
 ---
@@ -41,7 +42,7 @@ DOCUMENTOS / CONOCIMIENTO
 → RAG
 ```
 
-La pregunta guía es:
+Pregunta guía:
 
 ```text
 ¿Tiene el PT-201 alguna OT abierta y qué indica su documentación
@@ -52,7 +53,7 @@ que debo revisar antes de intervenirlo?
 
 ## 2. Reutilización del MCP Lab sin acoplar ambos laboratorios
 
-El MCP Lab ya había utilizado campos típicos de órdenes de trabajo Maximo como:
+El MCP Lab ya había utilizado campos típicos de órdenes de trabajo Maximo:
 
 ```text
 WONUM
@@ -66,19 +67,17 @@ WOPRIORITY
 
 El Paso 11 conserva esa convención y añade `WORKORDERID`, pero **no modifica ni reabre el MCP Lab**, que permanece cerrado/congelado.
 
-Los nuevos datos viven separadamente en:
+Los datos viven separadamente en:
 
 ```text
 rag/data/maximo_mock/workorders.json
 ```
 
-Esto permite reutilizar el aprendizaje sin crear dependencia entre los dos experimentos.
-
 ---
 
 ## 3. WORKORDER simulado
 
-Para `PT-201 / PLANTA1` se crean tres órdenes:
+Para `PT-201 / PLANTA1` existen tres órdenes:
 
 ```text
 OT-PT201-01 | APPR  | prioridad 2 | PM | abierta en la baseline
@@ -86,7 +85,7 @@ OT-PT201-02 | INPRG | prioridad 1 | CM | abierta en la baseline
 OT-PT201-03 | COMP  | prioridad 3 | PM | excluida como completada
 ```
 
-Campos usados:
+Campos utilizados:
 
 ```text
 workorderid
@@ -101,9 +100,7 @@ wopriority
 
 Los nombres representan atributos reales/típicos del objeto `WORKORDER`; los JSON usan minúsculas por conveniencia del LAB.
 
-### Qué significa "abierta" aquí
-
-Para esta prueba se define explícitamente:
+Para esta prueba se consideran abiertos:
 
 ```text
 WAPPR
@@ -112,26 +109,22 @@ INPRG
 WMATL
 ```
 
-como conjunto de estados abiertos de la baseline pedagógica.
-
-Esto **no pretende modelar universalmente la semántica de estados de cualquier instalación Maximo**. En sistemas reales pueden existir sinónimos y configuraciones propias del dominio de estados.
+Esta lista es una baseline pedagógica; en Maximo real pueden existir sinónimos/configuraciones propias del dominio de estados.
 
 ---
 
-## 4. Dos rutas diferentes para responder una sola pregunta
+## 4. Dos rutas distintas para una sola pregunta
 
 ### Ruta A — datos transaccionales
 
 ```text
 ASSETNUM + SITEID
 → filtrar WORKORDER
-→ filtrar estado
+→ filtrar STATUS
 → obtener OTs abiertas
 ```
 
-No hay embeddings ni RAG en esta ruta.
-
-Es una consulta estructurada exacta sobre datos operativos simulados.
+No hay embeddings ni RAG en esta ruta. Es consulta estructurada exacta sobre datos operativos simulados.
 
 ### Ruta B — conocimiento documental
 
@@ -153,8 +146,6 @@ Esta ruta sí es RAG documental.
 
 ## 5. Descomposición controlada de la pregunta
 
-La pregunta completa contiene dos necesidades distintas:
-
 ```text
 ¿Tiene el PT-201 alguna OT abierta?
 → datos transaccionales
@@ -163,15 +154,13 @@ La pregunta completa contiene dos necesidades distintas:
 → conocimiento documental
 ```
 
-En este Paso 11 la descomposición está **codificada explícitamente**, no decidida autónomamente por un agente.
+La descomposición está **codificada explícitamente**, no decidida autónomamente por un agente.
 
-La consulta documental usada para retrieval es:
+Consulta documental usada para retrieval:
 
 ```text
 ¿Qué debo revisar antes de intervenir o calibrar el PT-201?
 ```
-
-Después, ambas clases de evidencia se entregan al LLM.
 
 ---
 
@@ -209,70 +198,76 @@ respuesta integrada
 
 ---
 
-## 7. Ejecución
+## 7. Resultado verificado
 
-Desde la raíz del repositorio:
-
-```bash
-python rag/src/step11_transactional_plus_rag.py
-```
-
-La salida debe mostrar cuatro bloques:
-
-```text
-1. RUTA TRANSACCIONAL — WORKORDER
-2. RUTA DOCUMENTAL — DOCLINKS + RAG
-3. RETRIEVAL DOCUMENTAL
-4. INTEGRACIÓN EN EL LLM
-```
-
----
-
-## 8. Qué esperamos comprobar
-
-La prueba será satisfactoria si observamos que:
+La ejecución local confirmó:
 
 ```text
 PT-201 / PLANTA1
-→ encuentra 3 OTs del activo
-→ identifica 2 como abiertas en la baseline
-→ excluye la OT en COMP
+→ 3 OTs del activo/sitio
+→ 2 OTs abiertas
+→ 1 OT COMP excluida
 
-PT-201 / PLANTA1
-→ resuelve 2 documentos por Doclinks
-→ RAG recupera evidencia relevante
-
-LLM
-→ informa las OTs usando [MAXIMO]
-→ responde la parte documental usando [FUENTE n]
+OT-PT201-01 → APPR  → abierta
+OT-PT201-02 → INPRG → abierta
+OT-PT201-03 → COMP  → excluida
 ```
 
-La calidad exacta de redacción del LLM se observará, pero no se abrirá una nueva fase de tuning salvo que aparezca una necesidad pedagógica material.
-
----
-
-## 9. Qué NO estamos haciendo todavía
-
-Este Paso 11 no usa:
+La ruta documental confirmó:
 
 ```text
-Maximo real
-API REST real
-MCP activo
-Maximo MCP Server oficial
-agente autónomo
-SQL generado por LLM
-acciones sobre órdenes de trabajo
-seguridad real
+2 documentos asociados por Doclinks
+11 chunks de contenido candidatos
+Top-k = 4
 ```
 
-La orquestación está codificada de forma explícita para que siga siendo visible y explicable.
+Los cuatro chunks recuperados fueron relevantes para la pregunta:
+
+```text
+1. Manual PT-201 — Inspección previa
+2. Manual PT-201 — Seguridad previa
+3. Manual PT-201 — Procedimiento de calibración
+4. Procedimiento de seguridad — Antes de calibrar un transmisor de presión
+```
+
+La respuesta del LLM integró correctamente:
+
+```text
+[datos operativos]
+→ existen 2 OTs abiertas
+→ OT-PT201-01
+→ OT-PT201-02
+
+[conocimiento documental]
+→ permiso de trabajo
+→ aislamiento del instrumento
+→ eliminación de presión residual
+→ condición segura
+→ EPP
+→ revisión de conectores/tubing
+→ ausencia de fugas
+→ identificación PT-201
+→ rango 0–10 bar
+```
+
+### Limitación observada
+
+El modelo respetó el origen de la información, pero no siguió literalmente la convención de citas solicitada:
+
+```text
+esperado → [MAXIMO], [FUENTE 1], [FUENTE 2]
+observado → "Según los datos transaccionales MAXIMO", "(FUENTE 1)", "(FUENTE 2)"
+```
+
+No afecta al objetivo pedagógico del Paso 11 y no justifica reabrir tuning de prompts.
+
+El warning de Hugging Face por requests no autenticados tampoco afectó la prueba: MiniLM cargó y el retrieval se ejecutó correctamente.
 
 ---
 
-## 10. Aprendizaje objetivo
+## 8. Aprendizaje consolidado
 
-La regla mental que queremos comprobar en ejecución es:
+La práctica verifica de forma visible la regla mental:
 
 ```text
 DATOS ESTRUCTURADOS / TRANSACCIONALES
@@ -285,18 +280,49 @@ LLM
 → combina ambos cuando hace falta
 ```
 
-Este Paso 11 es la primera demostración práctica conjunta de esa separación dentro del Learning Lab.
+Y además:
+
+```text
+WORKORDER
+→ aporta estado operativo
+
+DOCLINKS
+→ determina qué documentos aplican
+
+RAG
+→ recupera conocimiento dentro de esos documentos
+
+LLM
+→ integra ambas clases de evidencia
+```
 
 ---
 
-## 11. Siguiente paso previsto
+## 9. Qué NO valida este Paso 11
 
-Si el Paso 11 queda verificado, evaluaremos el siguiente salto con foco de aprendizaje:
+Todavía no se utiliza:
 
 ```text
-orquestación fija actual
-→ decidir cuándo y cómo introducir Tools/MCP en la combinación
-→ más adelante, agentes
+Maximo real
+API REST real
+MCP activo
+Maximo MCP Server oficial
+agente autónomo
+SQL generado por LLM
+acciones sobre órdenes de trabajo
+seguridad real
 ```
 
-No se introducirán agentes todavía hasta que la separación entre datos operativos, conocimiento documental y LLM quede suficientemente clara.
+La orquestación permanece codificada de forma explícita para que sea visible y explicable.
+
+---
+
+## 10. Siguiente paso previsto
+
+Con la separación ya verificada, el siguiente salto de aprendizaje es pasar de:
+
+```text
+orquestación fija en código
+```
+
+a estudiar cómo expresar esas capacidades como **Tools / MCP**, manteniendo todavía controlada la orquestación y dejando los agentes para una etapa posterior.
