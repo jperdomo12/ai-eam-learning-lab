@@ -1,0 +1,32 @@
+[
+  {
+    "workorderid": 3001,
+    "wonum": "OT-PT201-01",
+    "description": "Calibración preventiva del transmisor PT-201",
+    "status": "APPR",
+    "assetnum": "PT-201",
+    "siteid": "PLANTA1",
+    "worktype": "PM",
+    "wopriority": 2
+  },
+  {
+    "workorderid": 3002,
+    "wonum": "OT-PT201-02",
+    "description": "Diagnóstico por desviación de lectura del PT-201",
+    "status": "INPRG",
+    "assetnum": "PT-201",
+    "siteid": "PLANTA1",
+    "worktype": "CM",
+    "wopriority": 1
+  },
+  {
+    "workorderid": 3003,
+    "wonum": "OT-PT201-03",
+    "description": "Calibración anterior del transmisor PT-201",
+    "status": "COMP",
+    "assetnum": "PT-201",
+    "siteid": "PLANTA1",
+    "worktype": "PM",
+    "wopriority": 3
+  }
+]
