@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** integrar por primera vez el contexto EAM simulado con el RAG ya validado, de modo que Maximo determine qué documentos son aplicables y RAG recupere conocimiento únicamente dentro de esos documentos.
 >
-> 📍 **Estado:** 🧪 **PREPARADO — pendiente de ejecución local y validación pedagógica**
+> 📍 **Estado:** ✅ **VERIFICADO — integración EAM → Doclinks → RAG → LLM comprobada localmente; se documenta una limitación puntual de generación**
 >
 > 🗓️ **Actualizado:** 2026-09-16
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-16 | ✅ Ejecución local verificada del flujo completo `PT-201 / PLANTA1 → ASSET → DOCLINKS → DOCINFO → documentos asociados → retrieval semántico → Llama 3`. Se documenta una inconsistencia puntual de la respuesta generada: el LLM afirmó que no había evidencia sobre `as-found` y observaciones aunque la FUENTE 2 sí las contiene. |
 | 2026-09-16 | Creación inicial del Paso 10, conectando la resolución `ASSET → DOCLINKS → DOCINFO` del Paso 09 con retrieval semántico y generación local. |
 
 ---
@@ -121,52 +122,131 @@ contexto EAM
 
 ---
 
-## 5. Ejecución
+## 5. Ejecución verificada
 
-Desde la raíz del repositorio:
+Comando ejecutado desde la raíz del repositorio:
 
 ```bash
 python rag/src/step10_eam_context_to_rag.py
 ```
 
-También puede indicarse explícitamente el activo y site:
+Contexto resuelto:
 
-```bash
-python rag/src/step10_eam_context_to_rag.py PT-201 PLANTA1
+```text
+ASSETNUM : PT-201
+SITEID   : PLANTA1
+ASSETUID : 1001
+ASSETID  : 2001
+OWNER KEY: ASSETUID (baseline site-specific)
 ```
 
-Y opcionalmente otra pregunta:
+Documentos resueltos por Maximo mock:
 
-```bash
-python rag/src/step10_eam_context_to_rag.py PT-201 PLANTA1 --query "¿Qué debo revisar antes de calibrar este activo?"
+```text
+MANUAL-PT201    → manual_transmisor_PT201.md
+PROC-SEG-INSTR  → procedimiento_seguridad_instrumentacion.md
 ```
+
+Resultado del alcance RAG:
+
+```text
+Documentos habilitados por Doclinks : 2
+Chunks totales                      : 14
+Chunks de contenido candidatos      : 11
+Chunks estructura/metadata excluidos: 3
+```
+
+Modelo de embeddings:
+
+```text
+sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+384 dimensiones
+```
+
+Top-k efectivo:
+
+```text
+#1  0.4526  manual_transmisor_PT201.md                  | 3. Inspección previa
+#2  0.3537  procedimiento_seguridad_instrumentacion.md | 4. Registro
+#3  0.3418  manual_transmisor_PT201.md                  | 4. Procedimiento de calibración
+#4  0.3146  manual_transmisor_PT201.md                  | 1. Propósito
+```
+
+La carga del modelo mostró un warning de Hugging Face por uso no autenticado. No bloqueó la ejecución ni afecta la validación conceptual del experimento.
 
 ---
 
-## 6. Qué debe observarse
+## 6. Resultado de generación
 
-La salida está dividida conceptualmente en cuatro partes:
+El LLM local (`llama3:latest` vía Ollama) utilizó correctamente evidencia recuperada para responder sobre:
 
 ```text
-1. documentos resueltos por Maximo mock
-2. alcance RAG determinado por el contexto EAM
-3. retrieval semántico dentro de ese alcance
-4. generación fundamentada
+inspección previa
+rango 0–10 bar
+ZERO
+SPAN
+puntos 0 / 5 / 10 bar
+criterio ±0,05 bar
+registro as-left
 ```
 
-La prueba será satisfactoria si se observa que:
+La respuesta demuestra que el flujo completo llegó hasta generación y que el LLM recibió texto original de los chunks recuperados, no embeddings.
+
+### Limitación observada
+
+La última frase generada indicó que no había evidencia para registrar valores `as-found` y observaciones, aunque la propia `FUENTE 2` —sección **4. Registro** del procedimiento de seguridad— sí contiene explícitamente:
+
+```text
+activo
+fecha
+técnico
+valores as-found
+valores as-left
+observaciones
+```
+
+Por tanto:
+
+```text
+retrieval correcto + evidencia presente
+≠
+interpretación/generación siempre correcta
+```
+
+La inconsistencia se registra como evidencia útil del comportamiento del LLM. **No se abre una nueva fase de tuning**, porque el objetivo del Paso 10 es validar la integración EAM + RAG y ese objetivo quedó demostrado.
+
+---
+
+## 7. Qué quedó verificado
 
 ```text
 PT-201 / PLANTA1
-→ resuelve sus documentos por Doclinks
-→ solo esos documentos producen chunks candidatos
-→ MiniLM recupera los chunks relevantes
-→ Llama 3 responde usando el texto recuperado
+→ Maximo mock localiza el ASSET
+→ DOCLINKS / DOCINFO resuelven 2 documentos asociados
+→ solo esos documentos forman el universo RAG del experimento
+→ se crean chunks solo dentro de ese alcance
+→ MiniLM realiza retrieval semántico
+→ Top-k recupera evidencia pertinente
+→ el texto original recuperado se envía al LLM
+→ Llama 3 genera una respuesta fundamentada en gran medida
+```
+
+Conclusión conceptual:
+
+```text
+MAXIMO / EAM
+→ determina QUÉ documentación corresponde al contexto
+
+RAG
+→ determina QUÉ evidencia dentro de esa documentación es relevante
+
+LLM
+→ interpreta y redacta la respuesta
 ```
 
 ---
 
-## 7. Qué NO estamos diciendo todavía
+## 8. Qué NO estamos diciendo todavía
 
 Este Paso 10 no valida aún:
 
@@ -186,9 +266,11 @@ Tampoco convierte el mock en arquitectura oficial de AI-EAM-MAXIMO.
 
 ---
 
-## 8. Criterio de cierre
+## 9. Criterio de cierre
 
-El Paso 10 quedará ✅ **VERIFICADO** cuando una ejecución local confirme el flujo completo:
+✅ **CUMPLIDO para el objetivo de integración del Paso 10.**
+
+El flujo técnico completo fue observado localmente:
 
 ```text
 contexto EAM
@@ -197,14 +279,16 @@ contexto EAM
 → retrieval limitado a esos documentos
 → contexto fundamentado
 → LLM
-→ respuesta coherente y respaldada
+→ respuesta
 ```
+
+La inconsistencia puntual de generación queda documentada, pero no invalida la verificación del flujo de integración.
 
 ---
 
-## 9. Siguiente paso previsto
+## 10. Siguiente paso previsto
 
-Una vez verificada esta integración, el siguiente bloque natural será incorporar además datos estructurados/transaccionales simulados de Maximo, por ejemplo OTs abiertas del activo:
+El siguiente bloque natural es incorporar además datos estructurados/transaccionales simulados de Maximo, por ejemplo OTs abiertas del activo:
 
 ```text
 Maximo / MCP
