@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · ✅ **Aplicación EAM verificada hasta Paso 10** · 🧪 **Paso 11 preparado: datos transaccionales + RAG**
+> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · ✅ **Aplicación EAM verificada hasta Paso 11**
 >
 > 🗓️ **Actualizado:** 2026-09-16
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-16 | ✅ Se verifica localmente el **Paso 11**: `WORKORDER` aporta datos transaccionales exactos, `Doclinks → RAG` aporta conocimiento documental y Llama 3 integra ambos. Se observó una desviación menor en el formato literal de citas; no se abre tuning adicional. |
 | 2026-09-16 | Se prepara el **Paso 11**: `WORKORDER` simulado + consulta estructurada de OTs abiertas + `Doclinks → RAG` + combinación final mediante LLM. Se reutilizan convenciones del MCP Lab sin modificarlo ni reabrirlo. |
 | 2026-09-16 | ✅ Se verifica localmente el **Paso 10**: `contexto EAM → Doclinks → documentos asociados → retrieval limitado → LLM`. Se documenta una inconsistencia puntual del LLM sobre `as-found`/observaciones pese a existir evidencia en la FUENTE 2; no se abre nueva fase de tuning. |
 | 2026-09-16 | Se prepara el **Paso 10** para integrar `contexto EAM → Doclinks → documentos asociados → retrieval semántico → LLM`. |
@@ -28,7 +29,7 @@
 4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual del bloque Maximo simulado + Doclinks + RAG.
 5. [`docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md`](docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md) — práctica verificada: resolver documentos desde contexto EAM simulado.
 6. [`docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md`](docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md) — práctica verificada: limitar RAG a documentos resueltos por contexto EAM y generar respuesta con LLM local.
-7. [`docs/LAB-STEP11_TRANSACTIONAL_PLUS_RAG.md`](docs/LAB-STEP11_TRANSACTIONAL_PLUS_RAG.md) — práctica actual: combinar OTs estructuradas con conocimiento documental RAG.
+7. [`docs/LAB-STEP11_TRANSACTIONAL_PLUS_RAG.md`](docs/LAB-STEP11_TRANSACTIONAL_PLUS_RAG.md) — práctica verificada: combinar OTs estructuradas con conocimiento documental RAG.
 8. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
 9. [`docs/study/`](docs/study/) — otras notas pedagógicas.
 
@@ -62,7 +63,7 @@ Abstención                       ✅
 Control reproducible de prompts  ✅
 Resolución Maximo Doclinks       ✅ Paso 09
 Integración EAM → RAG → LLM      ✅ Paso 10
-Datos transaccionales + RAG      🧪 Paso 11 preparado
+Datos transaccionales + RAG      ✅ Paso 11
 ```
 
 Aprendizajes esenciales:
@@ -98,21 +99,9 @@ MCP → sistemas, datos y acciones
 RAG → conocimiento documental
 ```
 
-El Paso 11 reutiliza nombres/campos y estados ya conocidos del MCP Lab, pero no ejecuta MCP ni modifica el laboratorio MCP cerrado.
+Los Pasos 09–11 reutilizan conceptos y convenciones ya conocidas del MCP Lab, pero **no ejecutan MCP ni modifican el laboratorio MCP cerrado**.
 
 ## 🚀 Estado del bloque Maximo simulado + Doclinks + RAG
-
-La base conceptual queda:
-
-```text
-ASSET / WORKORDER / ...
-        ↓
-     DOCLINKS
-        ↓
-      DOCINFO
-        ↓
-archivo / storage / URL
-```
 
 El Paso 09 verificó:
 
@@ -137,31 +126,14 @@ contexto EAM
 → respuesta
 ```
 
-Resultado conceptual consolidado:
-
-```text
-MAXIMO / EAM
-→ determina QUÉ documentos aplican
-
-RAG
-→ determina QUÉ evidencia dentro de esos documentos responde la pregunta
-
-LLM
-→ interpreta y redacta
-```
-
-Se observó una inconsistencia puntual del LLM: negó evidencia sobre `as-found` y observaciones aunque la FUENTE 2 sí las contenía. Se conserva como aprendizaje de generación y no se continúa con tuning adicional en esta etapa.
-
-## 🚀 Paso 11 — datos transaccionales + RAG
-
-El incremento preparado separa explícitamente dos rutas:
+El Paso 11 verificó dos rutas en paralelo:
 
 ```text
 WORKORDER mock
 → filtro estructurado por ASSETNUM / SITEID / STATUS
-→ OTs abiertas
+→ 2 OTs abiertas de 3
              \
-              → LLM
+              → LLM → respuesta integrada
              /
 DOCLINKS / DOCINFO
 → documentos del activo
@@ -169,13 +141,37 @@ DOCLINKS / DOCINFO
 → evidencia documental
 ```
 
-Pregunta objetivo:
+Resultado conceptual consolidado:
 
 ```text
-¿Tiene el PT-201 alguna OT abierta y qué indica su documentación
-que debo revisar antes de intervenirlo?
+DATOS ESTRUCTURADOS / TRANSACCIONALES
+→ consulta estructurada / API / MCP
+
+DOCUMENTOS / CONOCIMIENTO
+→ RAG
+
+LLM
+→ combina ambos cuando hace falta
 ```
 
-La orquestación sigue siendo fija y visible en código. Todavía no hay agente ni MCP activo.
+En el Paso 11 la respuesta integró correctamente las dos OTs abiertas y las verificaciones documentales previas a la intervención. El formato literal de citas no se respetó completamente (`[MAXIMO]`/`[FUENTE n]`), pero el origen de la evidencia se mantuvo distinguible; se considera limitación menor para el objetivo actual.
+
+## 🚀 Siguiente incremento
+
+Con la separación ya visible y verificada, el siguiente bloque debe estudiar el salto desde:
+
+```text
+orquestación fija en código
+```
+
+hacia:
+
+```text
+Tools / MCP
+→ capacidades invocables
+→ acceso estructurado a Maximo y/o conocimiento documental
+```
+
+sin introducir todavía agentes autónomos. La prioridad sigue siendo entender cada capa antes de añadir autonomía.
 
 No se profundizará ahora en reranking, retrieval híbrido, thresholds, evaluación avanzada o tuning adicional salvo que una necesidad EAM concreta lo justifique.
