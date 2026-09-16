@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import contextlib
+import os
+import sys
+
 from mcp.server.fastmcp import FastMCP
 
 from step04_semantic_retrieval import DEFAULT_MODEL, semantic_rank
@@ -31,7 +35,12 @@ def get_embedding_model():
                 "Falta la dependencia 'sentence-transformers'. "
                 "Ejecuta: python -m pip install -r rag/requirements.txt"
             ) from exc
-        _embedding_model = SentenceTransformer(DEFAULT_MODEL)
+
+        # En un MCP Server con transporte stdio, stdout se reserva para el protocolo.
+        # Cualquier salida incidental de carga se redirige a stderr para no corromper JSON-RPC.
+        os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+        with contextlib.redirect_stdout(sys.stderr):
+            _embedding_model = SentenceTransformer(DEFAULT_MODEL)
     return _embedding_model
 
 
