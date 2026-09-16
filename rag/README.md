@@ -4,12 +4,13 @@
 >
 > 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · 🟨 **Aplicación EAM en curso: Maximo simulado + Doclinks + RAG**
 >
-> 🗓️ **Actualizado:** 2026-09-15
+> 🗓️ **Actualizado:** 2026-09-16
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-16 | Se prepara el **Paso 10** para integrar `contexto EAM → Doclinks → documentos asociados → retrieval semántico → LLM`; queda pendiente la ejecución local. |
 | 2026-09-15 | ✅ Se verifica localmente el **Paso 09**: `PT-201 / PLANTA1 → ASSET → DOCLINKS → DOCINFO → archivos asociados`; ambos documentos esperados fueron localizados correctamente. |
 | 2026-09-15 | Se prepara el **Paso 09** con datos simulados `ASSET + DOCLINKS + DOCINFO` y un script que resuelve los documentos asociados a `PT-201 / PLANTA1`. |
 | 2026-09-14 | Se inicia el bloque de aplicación EAM documentando cómo Maximo representa attachments mediante `DOCINFO` + `DOCLINKS`; se añade `STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`. |
@@ -24,8 +25,9 @@
 3. [`docs/RAG_LAB_HANDOFF.md`](docs/RAG_LAB_HANDOFF.md) — cierre y continuidad hacia Maximo simulado / doclinks.
 4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual del bloque Maximo simulado + Doclinks + RAG.
 5. [`docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md`](docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md) — práctica verificada: resolver documentos desde contexto EAM simulado.
-6. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
-7. [`docs/study/`](docs/study/) — otras notas pedagógicas.
+6. [`docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md`](docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md) — práctica actual: limitar el RAG a documentos resueltos por el contexto EAM.
+7. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
+8. [`docs/study/`](docs/study/) — otras notas pedagógicas.
 
 ## 🧠 Pipeline probado
 
@@ -56,6 +58,7 @@ Generación fundamentada          ✅
 Abstención                       ✅
 Control reproducible de prompts  ✅
 Resolución Maximo Doclinks       ✅ Paso 09
+Integración EAM → RAG             🧪 Paso 10 preparado
 ```
 
 Aprendizajes esenciales:
@@ -114,13 +117,18 @@ PT-201 / PLANTA1
 → 2 documentos asociados existentes
 ```
 
-El siguiente incremento es:
+El Paso 10, actualmente preparado, añade:
 
 ```text
 contexto EAM
 → documentos permitidos por Maximo simulado
-→ RAG limitado a esos documentos
-→ respuesta fundamentada
+→ chunking / embeddings solo sobre esos documentos
+→ retrieval semántico
+→ contexto fundamentado
+→ Llama 3 vía Ollama
+→ respuesta
 ```
+
+En este paso los embeddings se calculan en memoria para los documentos seleccionados por Doclinks. Es una simplificación pedagógica deliberada; no reemplaza el índice persistente ni define arquitectura productiva.
 
 No se profundizará ahora en reranking, retrieval híbrido, thresholds, evaluación avanzada o tuning adicional salvo que una necesidad EAM concreta lo justifique.
