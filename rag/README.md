@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · 🟨 **Aplicación EAM en curso: Maximo simulado + Doclinks + RAG**
+> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · ✅ **Aplicación EAM verificada hasta contexto Maximo + Doclinks + RAG + LLM**
 >
 > 🗓️ **Actualizado:** 2026-09-16
 
@@ -10,7 +10,8 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-16 | Se prepara el **Paso 10** para integrar `contexto EAM → Doclinks → documentos asociados → retrieval semántico → LLM`; queda pendiente la ejecución local. |
+| 2026-09-16 | ✅ Se verifica localmente el **Paso 10**: `contexto EAM → Doclinks → documentos asociados → retrieval limitado → LLM`. Se documenta una inconsistencia puntual del LLM sobre `as-found`/observaciones pese a existir evidencia en la FUENTE 2; no se abre nueva fase de tuning. |
+| 2026-09-16 | Se prepara el **Paso 10** para integrar `contexto EAM → Doclinks → documentos asociados → retrieval semántico → LLM`. |
 | 2026-09-15 | ✅ Se verifica localmente el **Paso 09**: `PT-201 / PLANTA1 → ASSET → DOCLINKS → DOCINFO → archivos asociados`; ambos documentos esperados fueron localizados correctamente. |
 | 2026-09-15 | Se prepara el **Paso 09** con datos simulados `ASSET + DOCLINKS + DOCINFO` y un script que resuelve los documentos asociados a `PT-201 / PLANTA1`. |
 | 2026-09-14 | Se inicia el bloque de aplicación EAM documentando cómo Maximo representa attachments mediante `DOCINFO` + `DOCLINKS`; se añade `STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`. |
@@ -25,7 +26,7 @@
 3. [`docs/RAG_LAB_HANDOFF.md`](docs/RAG_LAB_HANDOFF.md) — cierre y continuidad hacia Maximo simulado / doclinks.
 4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual del bloque Maximo simulado + Doclinks + RAG.
 5. [`docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md`](docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md) — práctica verificada: resolver documentos desde contexto EAM simulado.
-6. [`docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md`](docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md) — práctica actual: limitar el RAG a documentos resueltos por el contexto EAM.
+6. [`docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md`](docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md) — práctica verificada: limitar RAG a documentos resueltos por contexto EAM y generar respuesta con LLM local.
 7. [`docs/LAB-STEP08_GENERATION_EVALUATION.md`](docs/LAB-STEP08_GENERATION_EVALUATION.md) — evaluación detallada del Paso 08.
 8. [`docs/study/`](docs/study/) — otras notas pedagógicas.
 
@@ -58,7 +59,7 @@ Generación fundamentada          ✅
 Abstención                       ✅
 Control reproducible de prompts  ✅
 Resolución Maximo Doclinks       ✅ Paso 09
-Integración EAM → RAG             🧪 Paso 10 preparado
+Integración EAM → RAG → LLM      ✅ Paso 10
 ```
 
 Aprendizajes esenciales:
@@ -68,9 +69,10 @@ RAG recupera evidencia; no reentrena al LLM.
 Los embeddings localizan chunks; el LLM recibe texto original.
 Similarity ≠ confianza / answerability.
 Top-k encontrado ≠ respuesta encontrada.
-Retrieval correcto ≠ generación necesariamente completa.
+Retrieval correcto ≠ generación necesariamente completa/correcta.
 Sin evidencia suficiente → abstención.
 Maximo/Doclinks determina qué documentos corresponden al contexto EAM.
+El contexto EAM puede reducir el universo documental antes del retrieval.
 ```
 
 ## 🧪 Baseline pedagógica
@@ -92,9 +94,9 @@ MCP → sistemas, datos y acciones
 RAG → conocimiento documental
 ```
 
-## 🚀 Bloque actual — Maximo simulado + Doclinks + RAG
+## 🚀 Estado del bloque Maximo simulado + Doclinks + RAG
 
-La base conceptual ya está documentada:
+La base conceptual queda:
 
 ```text
 ASSET / WORKORDER / ...
@@ -117,7 +119,7 @@ PT-201 / PLANTA1
 → 2 documentos asociados existentes
 ```
 
-El Paso 10, actualmente preparado, añade:
+El Paso 10 verificó:
 
 ```text
 contexto EAM
@@ -129,6 +131,41 @@ contexto EAM
 → respuesta
 ```
 
-En este paso los embeddings se calculan en memoria para los documentos seleccionados por Doclinks. Es una simplificación pedagógica deliberada; no reemplaza el índice persistente ni define arquitectura productiva.
+Resultado conceptual consolidado:
+
+```text
+MAXIMO / EAM
+→ determina QUÉ documentos aplican
+
+RAG
+→ determina QUÉ evidencia dentro de esos documentos responde la pregunta
+
+LLM
+→ interpreta y redacta
+```
+
+Se observó una inconsistencia puntual del LLM: negó evidencia sobre `as-found` y observaciones aunque la FUENTE 2 sí las contenía. Se conserva como aprendizaje de generación y no se continúa con tuning adicional en esta etapa.
+
+## 🚀 Siguiente incremento
+
+El siguiente bloque será combinar **datos estructurados/transaccionales simulados** con **conocimiento documental**:
+
+```text
+Maximo / MCP
+→ datos operativos
+
+RAG
+→ conocimiento documental
+
+LLM
+→ combina ambos
+```
+
+Ejemplo objetivo:
+
+```text
+“La bomba B-201 presenta alta temperatura.
+¿Tiene OTs abiertas y qué indica su manual?”
+```
 
 No se profundizará ahora en reranking, retrieval híbrido, thresholds, evaluación avanzada o tuning adicional salvo que una necesidad EAM concreta lo justifique.
