@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import os
 import sys
+import time
 
 from mcp.server.fastmcp import FastMCP
 
@@ -25,7 +26,7 @@ _embedding_model = None
 
 
 def get_embedding_model():
-    """Carga MiniLM de forma perezosa y lo reutiliza durante la sesión MCP."""
+    """Carga MiniLM una sola vez y lo reutiliza durante toda la sesión MCP."""
     global _embedding_model
     if _embedding_model is None:
         try:
@@ -36,11 +37,12 @@ def get_embedding_model():
                 "Ejecuta: python -m pip install -r rag/requirements.txt"
             ) from exc
 
-        # En un MCP Server con transporte stdio, stdout se reserva para el protocolo.
-        # Cualquier salida incidental de carga se redirige a stderr para no corromper JSON-RPC.
+        # MCP por stdio reserva stdout para el protocolo. Cualquier salida incidental
+        # de la carga del modelo se redirige a stderr para no interferir con JSON-RPC.
         os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
         with contextlib.redirect_stdout(sys.stderr):
             _embedding_model = SentenceTransformer(DEFAULT_MODEL)
+
     return _embedding_model
 
 
@@ -195,4 +197,31 @@ def buscar_documentacion_activo(assetnum: str, siteid: str, pregunta: str) -> st
 
 
 if __name__ == "__main__":
+    # Diagnóstico local 2026-09-17: el mismo modelo tarda ~46.7 s en cargar desde
+    # este intérprete, pero la carga perezosa dentro de una Tool MCP agotó incluso
+    # un timeout de 180 s. Para evitar inicializar PyTorch/SentenceTransformer dentro
+    # del request síncrono de FastMCP, precalentamos el modelo en el hilo principal
+    # antes de iniciar el loop stdio. Luego ambas Tools reutilizan la misma instancia.
+    started = time.perf_counter()
+    print(
+        f"[eam-rag-lab] Pre-cargando modelo de embeddings: {DEFAULT_MODEL}",
+        file=sys.stderr,
+        flush=True,
+    )
+    try:
+        get_embedding_model()
+    except Exception as exc:
+        print(
+            f"[eam-rag-lab] Error al precargar embeddings: {type(exc).__name__}: {exc}",
+            file=sys.stderr,
+            flush=True,
+        )
+        raise
+
+    elapsed = time.perf_counter() - started
+    print(
+        f"[eam-rag-lab] Modelo listo en {elapsed:.1f} s. Iniciando MCP stdio.",
+        file=sys.stderr,
+        flush=True,
+    )
     mcp.run()
