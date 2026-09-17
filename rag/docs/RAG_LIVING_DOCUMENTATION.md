@@ -2,15 +2,17 @@
 
 > 🎯 **Propósito:** conservar el conocimiento vigente, decisiones de laboratorio, resultados y aprendizajes del frente **RAG aplicado a EAM / IBM Maximo**.
 >
-> 📍 **Estado:** ✅ **RAG básico verificado** · ✅ **Aplicación EAM verificada hasta Paso 11** · 🧪 **Paso 12 preparado: Tools/MCP + EAM + RAG**
+> 📍 **Estado:** ✅ **RAG básico verificado** · ✅ **Aplicación EAM verificada hasta Paso 12**
 >
-> 🗓️ **Actualizado:** 2026-09-16
+> 🗓️ **Actualizado:** 2026-09-17
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-16 | Se consolida la documentación viva hasta el **Paso 12**: Pasos 09–11 verificados y Paso 12 preparado para exponer capacidades EAM/RAG como Tools MCP en Cline. Se simplifica esta documentación canónica y se remiten los detalles experimentales a los documentos `LAB-STEP*.md`. |
+| 2026-09-17 | ✅ Se verifica el **Paso 12** completo: Cline valida individualmente la Tool transaccional y la Tool RAG, y después selecciona e invoca ambas para una sola pregunta integrada. Se confirma el salto desde orquestación fija a composición dinámica de Tools mediante MCP. |
+| 2026-09-17 | Se resuelve la incidencia de carga de MiniLM del Paso 12 usando caché local (`local_files_only=True`), manteniendo publicación inmediata de las Tools MCP. |
+| 2026-09-16 | Se consolida la documentación viva hasta el **Paso 12**: Pasos 09–11 verificados y Paso 12 preparado para exponer capacidades EAM/RAG como Tools MCP en Cline. |
 | 2026-09-14 | Se consolida la distinción entre **RAG documental** y acceso a **datos estructurados/transaccionales** mediante SQL, API o MCP. |
 | 2026-09-14 | ✅ Se cierra el **Paso 08 — generación fundamentada** y con ello la fase de RAG básico. |
 | 2026-09-13 | ✅ Se verifican evaluación de retrieval, índice persistente y contexto fundamentado. |
@@ -37,7 +39,7 @@ TOP-K
    ↓
 TEXTO ORIGINAL + PROCEDENCIA
    ↓
-LLM
+LLM / HOST
    ↓
 RESPUESTA
 ```
@@ -258,7 +260,7 @@ rag/docs/LAB-STEP11_TRANSACTIONAL_PLUS_RAG.md
 
 ## 7. Paso 12 — Tools/MCP + datos EAM + RAG
 
-🧪 **PREPARADO — pendiente de validación local con Cline**
+✅ **VERIFICADO / CERRADO para el alcance pedagógico previsto**
 
 Objetivo: pasar de una orquestación fija en código a capacidades expuestas como Tools MCP.
 
@@ -281,7 +283,7 @@ buscar_documentacion_activo(assetnum, siteid, pregunta)
 → [FUENTE 1..N]
 ```
 
-Arquitectura:
+Arquitectura verificada:
 
 ```text
 Usuario
@@ -302,6 +304,62 @@ respuesta integrada
 Decisión importante:
 
 > **La Tool RAG recupera evidencia, pero no invoca un segundo LLM. La síntesis final corresponde al LLM del Host MCP.**
+
+### Validación individual
+
+```text
+consultar_ots_abiertas_activo  ✅
+buscar_documentacion_activo    ✅
+```
+
+La Tool transaccional recuperó las 2 OTs abiertas esperadas.
+
+La Tool RAG resolvió 2 documentos por Doclinks y recuperó 4 fuentes relevantes sobre inspección, seguridad y calibración.
+
+### Incidencia técnica aprendida
+
+La carga normal de MiniLM tardó ~46,7 s con el mismo intérprete Python del MCP Server. Con:
+
+```text
+local_files_only=True
+```
+
+la carga desde caché local bajó a ~20,8 s. Se adoptó esa modalidad para la primera llamada RAG y se reutiliza la instancia en memoria en llamadas posteriores.
+
+La precarga antes de `mcp.run()` se descartó porque podía retrasar el registro de Tools en Cline.
+
+### Composición final
+
+Ante una única pregunta:
+
+```text
+¿Tiene alguna orden de trabajo abierta y qué indica su documentación
+que debo revisar antes de intervenirlo?
+```
+
+sin indicar qué Tool utilizar, Cline/Host LLM:
+
+```text
+→ seleccionó consultar_ots_abiertas_activo
+→ seleccionó buscar_documentacion_activo
+→ ejecutó ambas
+→ distinguió [MAXIMO] de [DOCUMENTACIÓN]
+→ integró los resultados en una sola respuesta
+```
+
+La diferencia pedagógica queda demostrada:
+
+```text
+Paso 11
+→ el script decide el flujo
+
+Paso 12
+→ el Host/LLM interpreta la pregunta
+→ selecciona las Tools necesarias
+→ combina resultados
+```
+
+Esto demuestra **tool calling y composición dinámica mediante MCP**, no autonomía completa de un agente.
 
 El MCP Lab histórico bajo `mcp/` permanece cerrado/congelado; este experimento no modifica `mcp/src/maximo_mcp.py`.
 
@@ -324,7 +382,7 @@ Maximo / APIs / MCP
         │
         ├──────────────┐
         │              ↓
-        │             LLM
+        │          LLM / Host
         │              ↑
         └──────────────┤
                        │
@@ -336,7 +394,7 @@ manuales / procedimientos
    evidencia técnica
 ```
 
-En etapas futuras un agente podría decidir dinámicamente qué capacidades utilizar, pero todavía no es necesario introducir autonomía para validar el Paso 12.
+Con MCP, ambas rutas pueden exponerse como capacidades independientes y el Host/LLM puede decidir cuáles invocar según la pregunta.
 
 ---
 
@@ -380,17 +438,14 @@ Los resultados del Learning Lab son aprendizaje y evidencia. Cualquier traslado 
 
 ---
 
-## 11. Próximo paso operativo
+## 11. Siguiente decisión
 
-Validar el Paso 12 con Cline:
+No se continúa automáticamente por numeración. Los candidatos naturales son:
 
 ```text
-eam-rag-lab activo
-→ 2 Tools visibles
-→ Tool transaccional devuelve OTs abiertas
-→ Tool documental devuelve evidencia RAG
-→ Host/LLM utiliza ambas
-→ respuesta integrada
+A. composición MCP más realista / contraste con IBM Maximo MCP oficial
+B. introducir conceptos mínimos de agente sobre capacidades ya comprendidas
+C. cerrar este bloque y revisar qué aprendizajes pasan como 🟨 CANDIDATO A INCORPORAR a AI-EAM-MAXIMO
 ```
 
-Después de esa validación se decidirá el siguiente salto sin abrir complejidad innecesaria.
+La elección debe priorizar valor de aprendizaje y valor para AI-Driven EAM, evitando complejidad innecesaria.
