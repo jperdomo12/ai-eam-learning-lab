@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** comprobar cómo cambia la solución cuando las capacidades que antes estaban cableadas en un único script pasan a exponerse como **Tools MCP** invocables por un Host/LLM.
 >
-> 📍 **Estado:** 🧪 **EN VALIDACIÓN — Tool transaccional verificada; Tool RAG en ajuste técnico de carga local de embeddings**
+> 📍 **Estado:** ✅ **VERIFICADO — Tool transaccional, Tool RAG y composición de ambas desde Cline**
 >
 > 🗓️ **Actualizado:** 2026-09-17
 
@@ -10,7 +10,9 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-17 | Se verifica `consultar_ots_abiertas_activo` desde Cline. `buscar_documentacion_activo` agota timeouts de 60 s y 180 s con carga lazy normal. Diagnóstico local: MiniLM tarda ~46,7 s con resolución normal y ~20,8 s usando `local_files_only=True`. Se descarta seguir aumentando timeouts; el servidor vuelve a publicar Tools inmediatamente y la primera llamada RAG cargará MiniLM solo desde caché local. |
+| 2026-09-17 | ✅ Se verifica la composición final: Cline selecciona e invoca por sí mismo las dos Tools de `eam-rag-lab` para una sola pregunta integrada y combina hechos `[MAXIMO]` con evidencia documental `[FUENTE n]`. Paso 12 cerrado. |
+| 2026-09-17 | ✅ Se verifica `buscar_documentacion_activo` tras cambiar la carga de MiniLM a `local_files_only=True`; la Tool recupera 4 fuentes relevantes desde 2 documentos asociados por Doclinks. |
+| 2026-09-17 | Se verifica `consultar_ots_abiertas_activo` desde Cline. `buscar_documentacion_activo` agotó timeouts de 60 s y 180 s con carga lazy normal. Diagnóstico local: MiniLM tarda ~46,7 s con resolución normal y ~20,8 s usando `local_files_only=True`. Se descartó seguir aumentando timeouts. |
 | 2026-09-16 | Se prepara el Paso 12 con un MCP Server independiente dentro de `rag/`, dos Tools (`consultar_ots_abiertas_activo` y `buscar_documentacion_activo`) y una configuración Cline de ejemplo. |
 
 ---
@@ -28,7 +30,7 @@ script
 → produce respuesta
 ```
 
-En el Paso 12 se separan esas capacidades como Tools:
+En el Paso 12 las capacidades pasan a exponerse como Tools:
 
 ```text
 Cline / LLM
@@ -40,7 +42,16 @@ MCP Server: eam-rag-lab
      └── buscar_documentacion_activo(...)
 ```
 
-La idea pedagógica es observar que el Host/LLM puede decidir invocar capacidades diferentes según la necesidad de la pregunta.
+La diferencia verificada es:
+
+```text
+PASO 11
+script decide previamente todo el flujo
+
+PASO 12
+Tools exponen capacidades
+Host/LLM decide cuáles necesita e invoca
+```
 
 Todavía no se introduce un agente autónomo ni acciones de escritura sobre Maximo.
 
@@ -50,22 +61,20 @@ Todavía no se introduce un agente autónomo ni acciones de escritura sobre Maxi
 
 El MCP Lab histórico bajo `mcp/` permanece **cerrado / congelado**.
 
-Este nuevo experimento vive en:
+Este experimento vive en:
 
 ```text
 rag/src/step12_eam_rag_mcp_server.py
 ```
 
-porque forma parte de la evolución del bloque actual `EAM + RAG` y no modifica el servidor histórico `mcp/src/maximo_mcp.py`.
-
-Así mantenemos:
+porque forma parte de la evolución del bloque `EAM + RAG` y no modifica el servidor histórico `mcp/src/maximo_mcp.py`.
 
 ```text
 mcp/
 → evidencia y aprendizaje MCP ya cerrado
 
 rag/
-→ evolución actual donde RAG se combina con contexto EAM y ahora se expone como Tool
+→ evolución actual donde RAG se combina con contexto EAM y se expone como Tool
 ```
 
 ---
@@ -86,15 +95,9 @@ ASSETNUM + SITEID
 → [MAXIMO]
 ```
 
-No utiliza:
+No utiliza embeddings ni RAG.
 
-```text
-embeddings
-RAG
-LLM interno
-```
-
-Para la baseline del LAB, los estados considerados abiertos siguen siendo:
+Para la baseline del LAB, los estados considerados abiertos son:
 
 ```text
 WAPPR
@@ -103,7 +106,7 @@ INPRG
 WMATL
 ```
 
-### Validación local
+### Validación
 
 ✅ Verificada desde Cline usando exclusivamente `eam-rag-lab`.
 
@@ -116,7 +119,7 @@ OT-PT201-01 | APPR  | PM | prioridad 2
 OT-PT201-02 | INPRG | CM | prioridad 1
 ```
 
-Se observó además que el LLM del Host añadió interpretación semántica sobre códigos y prioridad. Esto refuerza la separación:
+El Host LLM añadió interpretaciones de códigos y prioridad en su redacción. Esto refuerza la separación:
 
 ```text
 Tool → aporta datos
@@ -154,11 +157,9 @@ Sección: ...
 Contenido: ...
 ```
 
-Importante:
-
 > **La Tool RAG no llama a otro LLM para redactar la respuesta final.**
 
-El Host/LLM recibe la evidencia recuperada y realiza la síntesis final. Esto evita ocultar un segundo LLM dentro de la Tool y mantiene visible la separación:
+El Host/LLM recibe la evidencia recuperada y realiza la síntesis final:
 
 ```text
 RAG Tool
@@ -168,7 +169,7 @@ Host LLM
 → interpreta / combina / responde
 ```
 
-### Incidencia de carga observada
+### Incidencia técnica y solución
 
 Las primeras llamadas desde Cline agotaron:
 
@@ -186,21 +187,42 @@ local_files_only=True         → ~20,8 s
 
 La precarga del modelo antes de `mcp.run()` se descartó porque retrasaba el arranque del servidor y podía impedir que Cline registrara las Tools a tiempo.
 
-Baseline técnica vigente:
+Baseline técnica final:
 
 ```text
 servidor MCP inicia inmediatamente
-→ publica Tools
+→ publica 2 Tools
 → primera llamada RAG carga MiniLM de forma lazy
-→ carga exclusivamente desde caché local
+→ carga exclusivamente desde caché local (`local_files_only=True`)
 → siguientes llamadas reutilizan la misma instancia en memoria
 ```
 
-Esto evita consultas innecesarias al Hugging Face Hub y mantiene `stdout` reservado al protocolo MCP `stdio`.
+Se mantiene `stdout` reservado al protocolo MCP `stdio`.
+
+### Validación
+
+✅ Verificada desde Cline.
+
+Para la pregunta:
+
+```text
+¿Qué debo revisar antes de intervenir o calibrar el PT-201?
+```
+
+la Tool resolvió 2 documentos asociados por Doclinks y recuperó Top-k=4:
+
+```text
+FUENTE 1 → manual_transmisor_PT201.md / 3. Inspección previa
+FUENTE 2 → manual_transmisor_PT201.md / 2. Seguridad previa
+FUENTE 3 → manual_transmisor_PT201.md / 4. Procedimiento de calibración
+FUENTE 4 → procedimiento_seguridad_instrumentacion.md / 3. Antes de calibrar un transmisor de presión
+```
+
+El Host LLM organizó luego esa evidencia en una respuesta final sin necesitar un segundo LLM dentro de la Tool.
 
 ---
 
-## 5. Arquitectura del experimento
+## 5. Arquitectura verificada
 
 ```text
 Usuario
@@ -229,7 +251,7 @@ eam-rag-lab MCP Server
           ↓
        Host LLM
           ↓
-       respuesta
+       respuesta integrada
 ```
 
 En esta etapa:
@@ -257,7 +279,7 @@ Configuración Cline de ejemplo:
 rag/config/cline_step12_mcp_settings.example.json
 ```
 
-Dependencias declaradas:
+Dependencias:
 
 ```text
 sentence-transformers
@@ -268,132 +290,100 @@ El servidor utiliza `FastMCP`, igual que el aprendizaje previo del MCP Lab, pero
 
 ---
 
-## 7. Configuración local en Cline
+## 7. Configuración local validada
 
-Ruta documentada actualmente para la configuración de Cline:
+Ruta actual de configuración de Cline:
 
 ```text
 C:\Users\jpperdomo\.cline\data\settings\cline_mcp_settings.json
 ```
 
-Desde la UI:
-
-```text
-VS Code
-→ Cline
-→ Customize
-→ MCP
-→ Installed
-→ Edit Configuration
-```
-
-Debe existir un servidor adicional, por ejemplo:
-
-```json
-"eam-rag-lab": {
-  "transport": {
-    "type": "stdio",
-    "command": "python",
-    "args": [
-      "-u",
-      "C:/Users/jpperdomo/JP/Profesional/IA/Proyecto_AI-EAM-LEARNING-LAB/ai-eam-learning-lab/rag/src/step12_eam_rag_mcp_server.py"
-    ]
-  },
-  "timeout": 180
-}
-```
-
-Si la configuración `maximo` existente usa una ruta absoluta a otro intérprete Python, conviene reutilizar ese patrón o utilizar el intérprete donde estén disponibles `mcp` y `sentence-transformers`.
-
-No se requieren API keys ni secretos para este servidor.
-
----
-
-## 8. Verificación previa del entorno
-
-Desde el terminal del repositorio se verificó:
-
-```bash
-python -c "import mcp, sentence_transformers; print('Dependencias OK')"
-```
-
-Resultado:
-
-```text
-Dependencias OK
-```
-
-La caché local del modelo también quedó verificada con `local_files_only=True`.
-
----
-
-## 9. Prueba controlada en Cline
-
-Una vez activo `eam-rag-lab`, Cline debe mostrar:
+El servidor `eam-rag-lab` quedó activo con:
 
 ```text
 2 Tools
 ```
 
-Prueba final prevista:
+y timeout configurado en 180 s. El timeout ampliado se conserva como margen, aunque la solución real al problema de latencia fue usar la caché local del modelo.
 
-```text
-Usa exclusivamente el servidor MCP eam-rag-lab para responder esta pregunta.
-Para PT-201 en PLANTA1, consulta tanto los datos de órdenes de trabajo
-como la documentación asociada y responde:
-
-¿Tiene alguna OT abierta y qué indica su documentación que debo revisar
-antes de intervenirlo?
-
-Distingue claramente los hechos operativos [MAXIMO] de la evidencia
-documental [FUENTE n].
-```
-
-Resultado esperado:
-
-```text
-Tool transaccional
-→ 2 OTs abiertas
-→ OT-PT201-01 APPR
-→ OT-PT201-02 INPRG
-
-Tool documental
-→ evidencia de inspección previa
-→ seguridad previa
-→ preparación antes de calibrar
-
-Host LLM
-→ combina ambas salidas
-```
+No se requieren API keys ni secretos para este servidor.
 
 ---
 
-## 10. Qué queremos observar
+## 8. Verificación final de composición
 
-La validación no consiste solo en obtener una respuesta correcta.
-
-Queremos observar el cambio de responsabilidad:
+Pregunta usada:
 
 ```text
-Paso 11
-script decide el flujo
+Para el activo PT-201 en el sitio PLANTA1 responde:
 
-Paso 12
-Tools exponen capacidades
-Host/LLM selecciona e invoca capacidades
+¿Tiene alguna orden de trabajo abierta y qué indica su documentación
+que debo revisar antes de intervenirlo?
+
+Decide qué Tools del servidor eam-rag-lab necesitas utilizar.
 ```
 
-También queremos comprobar el aprendizaje ya visto en el MCP Lab:
+No se indicó al modelo qué Tool debía llamar ni en qué orden.
 
-> **Servidor MCP activo no garantiza que el modelo seleccione siempre correctamente las Tools.**
+Resultado observado:
 
-Por eso nombre, descripción y esquema de parámetros de cada Tool se han diseñado de forma explícita.
+```text
+Cline / Host LLM
+→ seleccionó consultar_ots_abiertas_activo
+→ seleccionó buscar_documentacion_activo
+→ ejecutó ambas correctamente
+→ distinguió [MAXIMO] de [DOCUMENTACIÓN]
+→ produjo una respuesta integrada
+```
+
+Hechos operativos recuperados:
+
+```text
+OT-PT201-01 | APPR  | PM | prioridad 2
+OT-PT201-02 | INPRG | CM | prioridad 1
+```
+
+Evidencia documental recuperada:
+
+```text
+inspección previa
+seguridad previa
+procedimiento de calibración
+seguridad específica antes de calibrar
+```
+
+✅ **Criterio de cierre satisfecho.**
 
 ---
 
-## 11. Qué NO estamos haciendo todavía
+## 9. Aprendizaje principal
 
-No se valida aún:
+La práctica demuestra una evolución clara:
+
+```text
+PASO 11
+orquestación fija en Python
+→ el programador decide el flujo
+
+PASO 12
+capacidades expuestas como Tools MCP
+→ el Host/LLM interpreta la pregunta
+→ selecciona las Tools necesarias
+→ recibe resultados estructurados/documentales
+→ integra la respuesta
+```
+
+Esto no convierte automáticamente al sistema en un agente autónomo. Demuestra **tool calling y composición dinámica de capacidades mediante MCP**.
+
+También se confirma:
+
+> **Servidor MCP activo no implica selección perfecta de Tools en todos los casos.**
+
+Nombre, descripción y esquema de parámetros siguen siendo parte importante del diseño de una Tool.
+
+---
+
+## 10. Qué NO se validó
 
 ```text
 Maximo real
@@ -410,33 +400,20 @@ Tampoco se incorpora nada automáticamente al producto AI-EAM-MAXIMO.
 
 ---
 
-## 12. Criterio de cierre
-
-El Paso 12 quedará ✅ **VERIFICADO** cuando Cline confirme que:
-
-```text
-eam-rag-lab está activo
-→ expone 2 Tools
-→ consultar_ots_abiertas_activo aporta datos [MAXIMO]
-→ buscar_documentacion_activo aporta evidencia RAG [FUENTE n]
-→ el Host/LLM utiliza ambas capacidades
-→ produce una respuesta integrada
-```
-
-Estado actual:
+## 11. Estado final
 
 ```text
 consultar_ots_abiertas_activo  ✅ verificada
-buscar_documentacion_activo    🧪 pendiente de revalidación tras carga local-only
-composición de ambas Tools      ⏳ pendiente
+buscar_documentacion_activo    ✅ verificada
+composición de ambas Tools      ✅ verificada
 ```
 
-Una vez verificado, podremos comparar claramente:
+**Paso 12: ✅ VERIFICADO / CERRADO para el alcance pedagógico previsto.**
+
+El siguiente salto debe decidirse por valor de aprendizaje, evitando añadir complejidad solo por continuar la secuencia. Los candidatos naturales son:
 
 ```text
-orquestación fija
-vs.
-Tool calling mediante MCP
+A. composición MCP más realista / contraste con IBM Maximo MCP oficial
+B. introducir conceptos mínimos de agente sobre capacidades ya comprendidas
+C. cerrar este bloque y transferir aprendizajes candidatos a AI-EAM-MAXIMO
 ```
-
-antes de decidir si el siguiente salto debe ser hacia una composición MCP más realista o hacia conceptos de agentes.
