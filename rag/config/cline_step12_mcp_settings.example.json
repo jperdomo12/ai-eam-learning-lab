@@ -8,7 +8,8 @@
           "-u",
           "C:/Users/<USUARIO>/<RUTA-REPO>/rag/src/step12_eam_rag_mcp_server.py"
         ]
-      }
+      },
+      "timeout": 180
     }
   }
 }
