@@ -2,14 +2,15 @@
 
 > 🎯 **Objetivo:** comprobar cómo cambia la solución cuando las capacidades que antes estaban cableadas en un único script pasan a exponerse como **Tools MCP** invocables por un Host/LLM.
 >
-> 📍 **Estado:** 🧪 **PREPARADO — pendiente de validación local con Cline**
+> 📍 **Estado:** 🧪 **EN VALIDACIÓN — Tool transaccional verificada; Tool RAG en ajuste técnico de carga local de embeddings**
 >
-> 🗓️ **Actualizado:** 2026-09-16
+> 🗓️ **Actualizado:** 2026-09-17
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-17 | Se verifica `consultar_ots_abiertas_activo` desde Cline. `buscar_documentacion_activo` agota timeouts de 60 s y 180 s con carga lazy normal. Diagnóstico local: MiniLM tarda ~46,7 s con resolución normal y ~20,8 s usando `local_files_only=True`. Se descarta seguir aumentando timeouts; el servidor vuelve a publicar Tools inmediatamente y la primera llamada RAG cargará MiniLM solo desde caché local. |
 | 2026-09-16 | Se prepara el Paso 12 con un MCP Server independiente dentro de `rag/`, dos Tools (`consultar_ots_abiertas_activo` y `buscar_documentacion_activo`) y una configuración Cline de ejemplo. |
 
 ---
@@ -102,6 +103,26 @@ INPRG
 WMATL
 ```
 
+### Validación local
+
+✅ Verificada desde Cline usando exclusivamente `eam-rag-lab`.
+
+Resultado:
+
+```text
+OTs totales del activo/sitio: 3
+OTs abiertas: 2
+OT-PT201-01 | APPR  | PM | prioridad 2
+OT-PT201-02 | INPRG | CM | prioridad 1
+```
+
+Se observó además que el LLM del Host añadió interpretación semántica sobre códigos y prioridad. Esto refuerza la separación:
+
+```text
+Tool → aporta datos
+Host LLM → interpreta / explica
+```
+
 ---
 
 ## 4. Tool 2 — conocimiento documental
@@ -146,6 +167,36 @@ RAG Tool
 Host LLM
 → interpreta / combina / responde
 ```
+
+### Incidencia de carga observada
+
+Las primeras llamadas desde Cline agotaron:
+
+```text
+60 s
+180 s
+```
+
+El modelo se probó directamente con el mismo intérprete Python del servidor:
+
+```text
+carga normal                  → ~46,7 s
+local_files_only=True         → ~20,8 s
+```
+
+La precarga del modelo antes de `mcp.run()` se descartó porque retrasaba el arranque del servidor y podía impedir que Cline registrara las Tools a tiempo.
+
+Baseline técnica vigente:
+
+```text
+servidor MCP inicia inmediatamente
+→ publica Tools
+→ primera llamada RAG carga MiniLM de forma lazy
+→ carga exclusivamente desde caché local
+→ siguientes llamadas reutilizan la misma instancia en memoria
+```
+
+Esto evita consultas innecesarias al Hugging Face Hub y mantiene `stdout` reservado al protocolo MCP `stdio`.
 
 ---
 
@@ -236,7 +287,7 @@ VS Code
 → Edit Configuration
 ```
 
-Debe añadirse un servidor adicional, por ejemplo:
+Debe existir un servidor adicional, por ejemplo:
 
 ```json
 "eam-rag-lab": {
@@ -247,7 +298,8 @@ Debe añadirse un servidor adicional, por ejemplo:
       "-u",
       "C:/Users/jpperdomo/JP/Profesional/IA/Proyecto_AI-EAM-LEARNING-LAB/ai-eam-learning-lab/rag/src/step12_eam_rag_mcp_server.py"
     ]
-  }
+  },
+  "timeout": 180
 }
 ```
 
@@ -259,29 +311,31 @@ No se requieren API keys ni secretos para este servidor.
 
 ## 8. Verificación previa del entorno
 
-Antes de iniciar el servidor desde Cline puede verificarse desde el terminal del repositorio:
+Desde el terminal del repositorio se verificó:
 
 ```bash
 python -c "import mcp, sentence_transformers; print('Dependencias OK')"
 ```
 
-Si falta alguna dependencia:
+Resultado:
 
-```bash
-python -m pip install -r rag/requirements.txt
+```text
+Dependencias OK
 ```
+
+La caché local del modelo también quedó verificada con `local_files_only=True`.
 
 ---
 
 ## 9. Prueba controlada en Cline
 
-Una vez activo `eam-rag-lab`, Cline debería mostrar:
+Una vez activo `eam-rag-lab`, Cline debe mostrar:
 
 ```text
 2 Tools
 ```
 
-La primera prueba debe ser controlada y explícita para validar composición de Tools:
+Prueba final prevista:
 
 ```text
 Usa exclusivamente el servidor MCP eam-rag-lab para responder esta pregunta.
@@ -292,7 +346,7 @@ como la documentación asociada y responde:
 antes de intervenirlo?
 
 Distingue claramente los hechos operativos [MAXIMO] de la evidencia
-ocumental [FUENTE n].
+documental [FUENTE n].
 ```
 
 Resultado esperado:
@@ -363,10 +417,18 @@ El Paso 12 quedará ✅ **VERIFICADO** cuando Cline confirme que:
 ```text
 eam-rag-lab está activo
 → expone 2 Tools
-→ consulta_ots_abiertas_activo aporta datos [MAXIMO]
+→ consultar_ots_abiertas_activo aporta datos [MAXIMO]
 → buscar_documentacion_activo aporta evidencia RAG [FUENTE n]
 → el Host/LLM utiliza ambas capacidades
 → produce una respuesta integrada
+```
+
+Estado actual:
+
+```text
+consultar_ots_abiertas_activo  ✅ verificada
+buscar_documentacion_activo    🧪 pendiente de revalidación tras carga local-only
+composición de ambas Tools      ⏳ pendiente
 ```
 
 Una vez verificado, podremos comparar claramente:
