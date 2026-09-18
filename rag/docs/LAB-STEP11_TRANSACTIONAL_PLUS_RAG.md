@@ -10,8 +10,26 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido y el salto a Tools/MCP se registra como continuidad histórica ya completada en el Paso 12. |
 | 2026-09-16 | ✅ Verificación local del Paso 11: `WORKORDER` identifica 2 OTs abiertas de 3; Doclinks limita el universo documental; RAG recupera evidencia relevante y Llama 3 combina ambos tipos de evidencia en una respuesta integrada. Se observa que el modelo no respetó literalmente el formato de cita `[MAXIMO]`/`[FUENTE n]`, limitación menor ya conocida que no abre una nueva fase de tuning. |
 | 2026-09-16 | Creación inicial del Paso 11: se añade `WORKORDER` simulado para `PT-201`, consulta estructurada de OTs abiertas, Doclinks + RAG documental y combinación final mediante Llama 3 local. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Objetivo** | Comprueba que una misma pregunta puede requerir datos transaccionales y conocimiento documental. |
+| **2. Reutilización MCP** | Recupera conceptos previos sin reabrir ni acoplar el MCP Lab histórico. |
+| **3. WORKORDER simulado** | Define las OTs utilizadas como fuente estructurada/transaccional. |
+| **4. Dos rutas** | Separa consulta exacta de WORKORDER y recuperación documental mediante RAG. |
+| **5. Descomposición** | Hace visible cómo una pregunta integrada se divide en necesidades de evidencia distintas. |
+| **6. Script** | Identifica la implementación con orquestación explícita en Python. |
+| **7. Resultado** | Registra la respuesta integrada y limitaciones de formato observadas. |
+| **8. Aprendizaje** | Consolida la regla datos estructurados ≠ RAG documental. |
+| **9. Límites** | Aclara que todavía no había MCP activo, Maximo real ni agente autónomo. |
+| **10. Continuidad posterior** | Registra que la exposición como Tools/MCP se completó en el Paso 12. |
 
 ---
 
@@ -317,12 +335,13 @@ La orquestación permanece codificada de forma explícita para que sea visible y
 
 ---
 
-## 10. Siguiente paso previsto
+## 10. Continuidad posterior
 
-Con la separación ya verificada, el siguiente salto de aprendizaje es pasar de:
+El salto previsto desde orquestación fija en código hacia capacidades expuestas como **Tools / MCP** **ya fue ejecutado y verificado en el Paso 12**.
 
 ```text
-orquestación fija en código
+Paso 11 → script decide el flujo
+Paso 12 → Host/LLM selecciona las Tools necesarias
 ```
 
-a estudiar cómo expresar esas capacidades como **Tools / MCP**, manteniendo todavía controlada la orquestación y dejando los agentes para una etapa posterior.
+Por tanto, este documento no representa trabajo pendiente. El Paso 11 permanece cerrado.
