@@ -1,10 +1,10 @@
 # 🔄 RAG LAB — HandOff
 
-> 🎯 **Propósito:** permitir retomar rápidamente el trabajo del frente RAG sin reconstruir chats anteriores ni duplicar la documentación canónica.
+> 🎯 **Propósito:** permitir retomar el frente RAG/EAM sin reconstruir chats anteriores y sin duplicar la documentación canónica.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO / VERIFICADO**
+> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO** · ✅ **APLICACIÓN EAM VERIFICADA HASTA PASO 12**
 >
-> 🗓️ **Actualizado:** 2026-09-14
+> 🗓️ **Actualizado:** 2026-09-18
 >
 > 📘 **Documento canónico:** [`RAG_LIVING_DOCUMENTATION.md`](RAG_LIVING_DOCUMENTATION.md)
 
@@ -12,98 +12,300 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-14 | Creación del HandOff al cierre de los Pasos 01–08 y transición hacia aplicación EAM / Maximo simulado / doclinks. |
-
-## 1. Dónde estamos
-
-La fase de **RAG básico** está cerrada para el nivel actual de aprendizaje.
-
-Se verificó el flujo completo:
-
-```text
-documentos locales
-→ lectura / chunking
-→ embeddings
-→ índice persistente
-→ retrieval
-→ Top-k
-→ contexto fundamentado
-→ Modelo (LLM)
-→ respuesta
-```
-
-También se verificaron evaluación de retrieval, generación fundamentada, abstención cuando falta evidencia y control reproducible de dos variantes de prompt.
+| 2026-09-18 | Auditoría de continuidad: se actualiza el HandOff desde Paso 08 hasta Paso 12, se registran artefactos, resultados y siguiente estado para que GitHub permita continuar sin chats antiguos. |
+| 2026-09-14 | Creación del HandOff al cierre de los Pasos 01–08 y transición hacia aplicación EAM / Maximo simulado / Doclinks. |
 
 ---
 
-## 2. Qué quedó cerrado
+## 1. Dónde estamos
+
+El bloque actual está **cerrado para el alcance pedagógico previsto**.
+
+Se verificaron dos etapas:
 
 ```text
-Paso 01 → descubrimiento de documentos                ✅
-Paso 02 → lectura y chunking                           ✅
-Paso 03 → retrieval léxico                            ✅
-Paso 04 → retrieval semántico                         ✅
-Paso 05 → índice vectorial persistente                ✅
-Paso 06 → contexto fundamentado                       ✅
-Paso 07 → evaluación de retrieval / Top-k             ✅
-Paso 08 → generación fundamentada / evaluación        ✅
+RAG BÁSICO
+Pasos 01–08
+→ documentos → chunks → embeddings → retrieval → contexto → LLM
+
+APLICACIÓN EAM
+Pasos 09–12
+→ contexto Maximo simulado → Doclinks → RAG
+→ datos transaccionales + conocimiento documental
+→ Tools MCP
+→ Host/LLM selecciona capacidades y combina resultados
 ```
 
-Lecciones que deben conservarse:
+No hay trabajo técnico pendiente dentro de los Pasos 01–12.
+
+---
+
+## 2. Estado de los Pasos 01–12
+
+```text
+01  descubrimiento de documentos                         ✅
+02  lectura y chunking visible                           ✅
+03  retrieval léxico                                    ✅
+04  retrieval semántico                                 ✅
+04b filtro de estructura/metadata                       ✅
+05  índice vectorial persistente + consulta              ✅
+06  contexto fundamentado                               ✅
+07  evaluación retrieval / sensibilidad Top-k           ✅
+08  generación fundamentada + abstención + control      ✅
+09  Maximo simulado: ASSET → DOCLINKS → DOCINFO         ✅
+10  contexto EAM → documentos asociados → RAG → LLM     ✅
+11  WORKORDER transaccional + RAG documental            ✅
+12  Tools/MCP + EAM + RAG + composición desde Cline     ✅
+```
+
+Los Pasos 01–07 se conservan principalmente como scripts reproducibles y documentación consolidada. No se crean documentos LAB separados para cada uno porque no aportaría valor adicional al objetivo del laboratorio.
+
+---
+
+## 3. Aprendizajes que deben conservarse
+
+### RAG
 
 ```text
 RAG recupera evidencia; no reentrena al LLM.
 Embeddings localizan chunks; el LLM recibe texto original.
 Similarity ≠ confianza / answerability.
 Top-k encontrado ≠ respuesta encontrada.
-Retrieval correcto ≠ generación necesariamente completa.
-El prompt influye en cómo el LLM utiliza la evidencia.
-Sin evidencia suficiente, el sistema debe abstenerse.
-Retrieval y backend generativo están desacoplados.
+Retrieval correcto ≠ generación necesariamente completa/correcta.
+Sin evidencia suficiente → abstención.
+Retrieval y generación son capas desacoplables.
 ```
+
+### EAM / Maximo + documentación
+
+```text
+MAXIMO / EAM
+→ determina QUÉ documentos aplican al contexto
+
+RAG
+→ determina QUÉ evidencia dentro de esos documentos responde
+
+LLM / Host
+→ interpreta y redacta
+```
+
+### Datos transaccionales + conocimiento
+
+```text
+DATOS ESTRUCTURADOS / TRANSACCIONALES
+→ consulta estructurada / API / MCP
+
+DOCUMENTOS / CONOCIMIENTO
+→ RAG
+
+LLM / Host
+→ combina ambas clases de evidencia
+```
+
+### MCP
+
+```text
+Paso 11
+→ el script decide el flujo
+
+Paso 12
+→ las capacidades se exponen como Tools
+→ el Host/LLM decide cuáles necesita
+→ invoca Tools
+→ integra los resultados
+```
+
+Esto demuestra **tool calling y composición dinámica mediante MCP**, no autonomía completa de un agente.
 
 ---
 
-## 3. Baseline pedagógica utilizada
+## 4. Baseline pedagógica utilizada
 
 ```text
 Embeddings: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-Índice:     NumPy + JSON
-Top-k:      4 para la evaluación de generación
-Runtime:    Ollama 0.34.0
-Modelo:     llama3:latest — Llama 3 8B Q4_0
+Dimensión:  384
+Índice:     NumPy + JSON para Pasos 05–08
+Top-k:      4 como baseline de generación
+Runtime:    Ollama 0.34.0 en Pasos 08–11
+LLM local:  llama3:latest / Llama 3 8B Q4_0
+MCP:        FastMCP en Paso 12
+Host:       Cline en Paso 12
 ```
 
-Estas elecciones corresponden al Learning Lab y **no son decisiones de arquitectura del producto AI-EAM-MAXIMO**.
+Estas elecciones son **pedagógicas** y no constituyen arquitectura aprobada de AI-EAM-MAXIMO.
+
+No trasladar automáticamente:
+
+```text
+MiniLM
+NumPy + JSON
+Top-k = 4
+Ollama
+Llama 3
+FastMCP
+local_files_only=True
+timeout = 180 s
+prompts exactos del LAB
+```
 
 ---
 
-## 4. Documentos y artefactos relevantes
+## 5. Datos y artefactos que permiten reproducir el LAB
 
-Leer primero:
+### Documentos fuente
 
 ```text
-1. rag/README.md
-2. rag/docs/RAG_LAB_FAST_READING.md
-3. rag/docs/RAG_LIVING_DOCUMENTATION.md
+rag/data/source_documents/
+├── manual_transmisor_PT201.md
+└── procedimiento_seguridad_instrumentacion.md
 ```
 
-Consultar después según necesidad:
+Son documentos sintéticos del LAB.
+
+### Evaluación RAG
+
+```text
+rag/data/evaluation_cases.json
+```
+
+Incluye casos A–D, entre ellos el caso sin respuesta sobre torque para validar abstención.
+
+### Maximo simulado
+
+```text
+rag/data/maximo_mock/
+├── assets.json
+├── doclinks.json
+├── docinfo.json
+└── workorders.json
+```
+
+Baseline principal:
+
+```text
+PT-201 / PLANTA1
+ASSETUID = 1001
+ASSETID  = 2001
+
+DOCLINKS.OWNERID → ASSETUID
+→ elección site-specific del LAB, no regla universal de Maximo
+
+2 documentos asociados
+3 OTs totales
+2 OTs abiertas
+```
+
+### Dependencias
+
+```text
+rag/requirements.txt
+→ sentence-transformers
+→ mcp
+```
+
+Ollama/Llama 3 fue usado en Pasos 08–11 pero no está gestionado por `requirements.txt`.
+
+---
+
+## 6. Archivos de código relevantes
+
+```text
+rag/src/
+├── step01_discover_documents.py
+├── step02_read_and_chunk.py
+├── step03_lexical_retrieval.py
+├── step04_semantic_retrieval.py
+├── step04b_semantic_retrieval_content_filter.py
+├── step05_build_vector_index.py
+├── step05_query_vector_index.py
+├── step06_build_grounded_context.py
+├── step07_evaluate_retrieval_cases.py
+├── step07b_evaluate_topk_sensitivity.py
+├── step08_generate_grounded_answer.py
+├── step08b_generate_grounded_answer_prompt_completeness.py
+├── step08c_compare_prompts_deterministic.py
+├── step09_resolve_maximo_doclinks.py
+├── step10_eam_context_to_rag.py
+├── step11_transactional_plus_rag.py
+└── step12_eam_rag_mcp_server.py
+```
+
+Para comprender resultados y decisiones, leer los documentos antes de releer todo el código.
+
+---
+
+## 7. Documentos específicos de los pasos
 
 ```text
 rag/docs/LAB-STEP08_GENERATION_EVALUATION.md
-rag/docs/study/STUDY-RAG_CORE_CONCEPTS.md
-rag/docs/study/STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md
-rag/data/evaluation_cases.json
-rag/data/source_documents/
-rag/src/
+rag/docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md
+rag/docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md
+rag/docs/LAB-STEP11_TRANSACTIONAL_PLUS_RAG.md
+rag/docs/LAB-STEP12_MCP_TOOLS_EAM_RAG.md
+```
+
+Los Pasos 01–07 quedan cubiertos por:
+
+```text
+código reproducible
++ RAG_LAB_FAST_READING.md
++ RAG_LIVING_DOCUMENTATION.md
++ evaluation_cases.json
 ```
 
 ---
 
-## 5. Qué NO continuar ahora
+## 8. Paso 12 — estado final que no debe reconstruirse desde chats
 
-No reabrir por defecto investigación sobre:
+Servidor:
+
+```text
+rag/src/step12_eam_rag_mcp_server.py
+```
+
+Config sanitizada:
+
+```text
+rag/config/cline_step12_mcp_settings.example.json
+```
+
+Tools verificadas:
+
+```text
+consultar_ots_abiertas_activo(assetnum, siteid)
+→ WORKORDER simulado
+→ [MAXIMO]
+
+buscar_documentacion_activo(assetnum, siteid, pregunta)
+→ ASSET → DOCLINKS → DOCINFO
+→ RAG
+→ [FUENTE 1..N]
+```
+
+Problema técnico resuelto:
+
+```text
+carga normal MiniLM        → ~46,7 s
+local_files_only=True      → ~20,8 s
+```
+
+La solución final publica las Tools inmediatamente, carga MiniLM de forma lazy desde caché local y reutiliza la instancia.
+
+Validación final:
+
+```text
+Cline
+→ reconoce 2 Tools
+→ Tool transaccional ✅
+→ Tool RAG ✅
+→ selecciona ambas para una pregunta integrada ✅
+```
+
+---
+
+## 9. Qué NO continuar por defecto
+
+No reabrir sin una necesidad EAM concreta:
 
 ```text
 reranking
@@ -112,85 +314,82 @@ threshold tuning
 RAGAS
 LLM-as-judge
 auto-evaluadores avanzados
-otros modelos por comparación exploratoria
+comparación exploratoria de modelos
 vector databases productivas
 prompt tuning adicional
 ```
 
-Solo profundizar si una necesidad concreta de EAM / IBM Maximo lo justifica.
+El objetivo es **AI-Driven EAM**, no especialización en optimización RAG.
 
 ---
 
-## 6. Seguridad / APIs
+## 10. Relación con AI-EAM-MAXIMO
 
-Durante el Paso 08 se intentó una ruta de generación mediante OpenAI Responses API. El proveedor fue alcanzado, pero no se generó respuesta por falta de crédito independiente.
+Nada del Learning Lab pasa automáticamente al producto.
 
-Las claves utilizadas para esa prueba fueron eliminadas/revocadas y no deben recuperarse ni documentarse en el repositorio.
+Regla:
 
-La ruta adoptada para cerrar el LAB fue generación local con Ollama + Llama 3.
+```text
+Learning Lab
+→ aprendizaje verificado
+→ 🟨 candidato
+→ análisis explícito
+→ decisión del Product Owner
+→ 🟩 incorporación si se aprueba
+```
+
+Después de cerrar el Paso 12 se eligió iniciar una **consolidación de aprendizajes candidatos** en el repositorio de producto:
+
+```text
+jperdomo12/ai-driven-eam-copilot
+branch: docs/learning-lab-transfer-assessment
+```
+
+Documentos candidatos creados allí:
+
+```text
+docs/project/LEARNING_LAB_TRANSFER_FAST_READING.md
+docs/project/LEARNING_LAB_TRANSFER_ASSESSMENT.md
+```
+
+Su existencia no significa que los candidatos hayan sido aprobados o incorporados todavía.
 
 ---
 
-## 7. Relación con MCP
+## 11. Lectura recomendada al retomar
 
-Mantener la separación conceptual:
-
-```text
-MCP
-→ acceso a sistemas, datos y acciones
-
-RAG
-→ conocimiento documental
-```
-
-La combinación futura prevista es:
+Mantenerlo simple:
 
 ```text
-IBM Maximo / MCP
-→ identifica contexto EAM actual
+1. rag/docs/RAG_LAB_FAST_READING.md
+   → recordar lo esencial
 
-RAG
-→ recupera conocimiento de documentación asociada
+2. rag/docs/RAG_LIVING_DOCUMENTATION.md
+   → estado canónico y detalle consolidado
 
-Modelo (LLM) / agente
-→ integra la evidencia
+3. rag/docs/RAG_LAB_HANDOFF.md
+   → continuidad operativa / siguiente estado
+
+4. LAB-STEP*.md o código
+   → solo si la tarea necesita detalle técnico concreto
 ```
+
+No reconstruir conversaciones anteriores.
 
 ---
 
-## 8. Siguiente bloque aprobado
+## 12. Siguiente estado de trabajo
 
-El siguiente trabajo no es profundizar RAG, sino aplicarlo a EAM:
+Los Pasos 01–12 están cerrados.
 
-```text
-IBM Maximo simulado
-→ asset / site
-→ metadata de documentos / doclinks
-→ localizar documento asociado
-→ aplicar el RAG ya aprendido
-→ generar respuesta fundamentada
-```
+La continuación inmediata **no es crear automáticamente un Paso 13**. El trabajo abierto está en revisar la transferencia de aprendizajes al producto, manteniendo los Labs simples.
 
-Pregunta de ejemplo:
+Después de esa revisión, los siguientes bloques de aprendizaje posibles se decidirán por valor real:
 
 ```text
-Estoy trabajando sobre PT-201 en PLANTA1.
-¿Cómo debo calibrarlo según la documentación asociada al activo?
+- contraste con IBM Maximo MCP Server oficial;
+- conceptos mínimos de agentes;
+- otra necesidad EAM concreta.
 ```
 
-La simulación debe modelar el concepto de Maximo/doclinks sin afirmar todavía una implementación real o conexión viva a Maximo.
-
----
-
-## 9. Regla de continuidad
-
-Cuando se retome RAG:
-
-```text
-README
-→ Fast Reading
-→ Living Documentation
-→ código / documentos específicos solo si hacen falta
-```
-
-No reconstruir pasos ya cerrados ni convertir experimentos del Learning Lab en decisiones de AI-EAM-MAXIMO sin revisión explícita.
+No reabrir pasos ya verificados salvo nueva evidencia o una necesidad específica.
