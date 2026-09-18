@@ -11,6 +11,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Se añade un **Resumen de contenido** inmediatamente después del Historial para facilitar la recuperación rápida de los 14 bloques del estudio. |
 | 2026-09-18 | Creación inicial a partir de las aclaraciones posteriores a los Labs MCP y RAG. |
 
 ---
