@@ -10,10 +10,29 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido, se registra que la opción elegida fue cerrar/transferir aprendizajes al producto y se congela el bloque tras completar la transferencia. |
 | 2026-09-17 | ✅ Se verifica la composición final: Cline selecciona e invoca por sí mismo las dos Tools de `eam-rag-lab` para una sola pregunta integrada y combina hechos `[MAXIMO]` con evidencia documental `[FUENTE n]`. Paso 12 cerrado. |
 | 2026-09-17 | ✅ Se verifica `buscar_documentacion_activo` tras cambiar la carga de MiniLM a `local_files_only=True`; la Tool recupera 4 fuentes relevantes desde 2 documentos asociados por Doclinks. |
 | 2026-09-17 | Se verifica `consultar_ots_abiertas_activo` desde Cline. `buscar_documentacion_activo` agotó timeouts de 60 s y 180 s con carga lazy normal. Diagnóstico local: MiniLM tarda ~46,7 s con resolución normal y ~20,8 s usando `local_files_only=True`. Se descartó seguir aumentando timeouts. |
 | 2026-09-16 | Se prepara el Paso 12 con un MCP Server independiente dentro de `rag/`, dos Tools (`consultar_ots_abiertas_activo` y `buscar_documentacion_activo`) y una configuración Cline de ejemplo. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Cambio respecto al Paso 11** | Sustituye la orquestación fija por capacidades publicadas como Tools MCP. |
+| **2. Decisión de diseño** | Mantiene separadas la Tool transaccional y la Tool documental/RAG. |
+| **3. Tool transaccional** | Expone consulta de OTs abiertas y valida su ejecución. |
+| **4. Tool documental** | Expone Doclinks + RAG, incluyendo la incidencia de carga lazy de MiniLM. |
+| **5. Arquitectura** | Resume Host/LLM → MCP Server → Tool EAM / Tool RAG. |
+| **6. Implementación** | Identifica el servidor MCP y piezas reutilizadas del Lab. |
+| **7. Configuración** | Conserva la baseline local validada con Cline. |
+| **8. Composición final** | Verifica que Cline selecciona ambas Tools ante una pregunta integrada. |
+| **9. Aprendizaje** | Distingue tool calling/composición dinámica de autonomía agentic completa. |
+| **10. Límites** | Enumera Maximo real, escrituras, seguridad y agentes no validados. |
+| **11. Estado final** | Cierra Paso 12 y registra transferencia completada/congelación del Lab. |
 
 ---
 
@@ -410,10 +429,21 @@ composición de ambas Tools      ✅ verificada
 
 **Paso 12: ✅ VERIFICADO / CERRADO para el alcance pedagógico previsto.**
 
-El siguiente salto debe decidirse por valor de aprendizaje, evitando añadir complejidad solo por continuar la secuencia. Los candidatos naturales son:
+La opción finalmente ejecutada después del Paso 12 fue:
 
 ```text
-A. composición MCP más realista / contraste con IBM Maximo MCP oficial
-B. introducir conceptos mínimos de agente sobre capacidades ya comprendidas
-C. cerrar este bloque y transferir aprendizajes candidatos a AI-EAM-MAXIMO
+C. cerrar este bloque
+→ evaluar aprendizajes transferibles
+→ integrar solo lo aprobado en AI-EAM-MAXIMO
 ```
+
+La transferencia fue completada e integrada en `jperdomo12/ai-driven-eam-copilot`.
+
+Estado posterior:
+
+```text
+Paso 13 automático → no existe
+Learning Lab       → 🧊 congelado / bajo demanda
+```
+
+No se abre un estudio de agentes ni nueva complejidad por continuidad numérica. Cualquier reapertura deberá responder a una necesidad concreta de AI-EAM-MAXIMO.
