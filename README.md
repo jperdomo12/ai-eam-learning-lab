@@ -8,6 +8,7 @@ Hands-on learning and experimentation lab for AI applied to EAM: fundamentos de 
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Se incorpora [`STUDY-LLM_BEYOND_THE_MODEL.md`](STUDY-LLM_BEYOND_THE_MODEL.md) como estudio transversal sobre cómo los LLM usan Connectors/Apps, Tools, MCP, RAG y sistemas externos; se actualiza además el estado del RAG/EAM/MCP hasta Paso 12 y su transferencia al producto. |
 | 2026-09-14 | Se mueve `STUDY-AI_FOUNDATIONS_AND_HISTORY.md` a la raíz del repositorio y se amplía con historia de IA, IA simbólica/Turbo Prolog, nacimiento progresivo de los LLM, origen de MCP, entrenamiento/inferencia, cuantización, Fine-tuning vs. RAG y una definición más precisa de agente. |
 | 2026-09-14 | Se incorpora la nota transversal [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md), consolidando historia mínima de IA, LLM, tokenización, Transformer/Attention, modelos/runtimes/productos, RAG, MCP y agentes. Se actualiza además la situación 2026 de IBM Maximo: servidor MCP oficial en MAS 9.2, continuidad de OSLC y capacidades RAG/DocSearch documentadas en Maximo Assistant. |
 | 2026-09-14 | Se actualiza el estado del RAG: fundamentos básicos **verificados y cerrados para el nivel actual de aprendizaje** tras los Pasos 01–08. El siguiente bloque práctico será la aplicación EAM mediante simulación Maximo/doclinks. |
@@ -49,17 +50,19 @@ El estándar documental está en [`DOCUMENTATION_STANDARD.md`](DOCUMENTATION_STA
 | Tema | Estado | Entrada |
 |---|---|---|
 | Fundamentos de IA e historia mínima | 📘 Estudio transversal activo | [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md) |
+| LLM más allá del modelo | 📘 Estudio transversal activo | [`STUDY-LLM_BEYOND_THE_MODEL.md`](STUDY-LLM_BEYOND_THE_MODEL.md) |
 | MCP — Model Context Protocol | ✅ Cerrado / congelado · v1.2 | [`mcp/README.md`](mcp/README.md) |
-| RAG — Retrieval-Augmented Generation | ✅ RAG básico verificado · Pasos 01–08 cerrados | [`rag/README.md`](rag/README.md) |
+| RAG — Retrieval-Augmented Generation | ✅ RAG/EAM/MCP verificado · Pasos 01–12 cerrados | [`rag/README.md`](rag/README.md) |
 | Agentes | ⏳ Futuro | Se creará cuando comience el estudio real. |
 
 > No se crean carpetas ni documentación de un tema hasta que realmente se empiece a trabajar en él.
 
 ## 🧠 Fundamentos transversales
 
-La nota de referencia rápida para conectar los conceptos estudiados es:
+Las dos notas transversales principales son:
 
-[`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md)
+- [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md) → fundamentos generales e historia mínima.
+- [`STUDY-LLM_BEYOND_THE_MODEL.md`](STUDY-LLM_BEYOND_THE_MODEL.md) → cómo el LLM accede a Tools, Connectors, MCP, RAG y sistemas externos.
 
 Resume y relaciona:
 
@@ -76,7 +79,7 @@ historia mínima de IA
 → aplicación EAM / IBM Maximo
 ```
 
-No sustituye la documentación experimental de MCP o RAG; sirve como mapa conceptual común.
+Estas notas no sustituyen la documentación experimental de MCP o RAG; sirven como mapa conceptual común y puente hacia AI-EAM-MAXIMO.
 
 ## 🔗 Relación con AI-EAM-MAXIMO
 
@@ -110,18 +113,11 @@ Los ejemplos que requieran configuración sensible deben utilizar variables de e
 
 El laboratorio **MCP** está cerrado y congelado para el alcance actual.
 
-El bloque de **RAG básico** también está cerrado para el nivel de aprendizaje buscado. Se verificó el flujo completo desde documentos locales hasta generación fundamentada y abstención.
+El bloque **RAG + EAM + MCP** también está cerrado para el alcance pedagógico actual. Se verificaron los Pasos 01–12, incluyendo Maximo simulado, Doclinks, datos transaccionales, RAG y composición de Tools MCP.
 
-El siguiente bloque práctico previsto es:
+Los aprendizajes relevantes ya fueron evaluados y transferidos de forma controlada a `jperdomo12/ai-driven-eam-copilot`.
 
-```text
-IBM Maximo simulado
-→ activo
-→ doclinks / metadata
-→ localizar documentación asociada
-→ aplicar el RAG ya aprendido
-→ respuesta fundamentada
-```
+No existe un Paso 13 automático. El Lab se reabre solo cuando una necesidad EAM concreta justifique nueva experimentación.
 
 Entrada RAG:
 
