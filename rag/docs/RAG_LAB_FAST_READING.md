@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** recuperar en pocos minutos qué se aprendió, qué se probó y cómo quedó cerrado el bloque RAG + EAM + MCP.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO** · ✅ **APLICACIÓN EAM VERIFICADA HASTA PASO 12**
+> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO** · ✅ **APLICACIÓN EAM VERIFICADA HASTA PASO 12** · 🧊 **LAB CONGELADO / BAJO DEMANDA**
 >
 > 🗓️ **Actualizado:** 2026-09-18
 >
@@ -12,6 +12,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Cierre documental final: se marca el bloque completo como congelado/bajo demanda tras Pasos 01–12 y transferencia completada a AI-EAM-MAXIMO. |
 | 2026-09-18 | Se añaden aclaraciones conceptuales sobre vector search, RAG como capability, MCP y múltiples fuentes documentales; se alinea el estado con la transferencia ya cerrada hacia AI-EAM-MAXIMO. |
 | 2026-09-18 | Se actualiza el Fast Reading hasta Paso 12 y se alinea con la regla de continuidad sin depender de chats antiguos. |
 | 2026-09-14 | Se incorpora la distinción práctica entre RAG documental y acceso a datos estructurados/transaccionales mediante SQL, API o MCP. |
