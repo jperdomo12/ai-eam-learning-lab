@@ -2,7 +2,7 @@
 
 > 🎯 **Objetivo:** aprender RAG de forma práctica con foco EAM / IBM Maximo.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · ✅ **Aplicación EAM verificada hasta Paso 12**
+> 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · ✅ **Aplicación EAM verificada hasta Paso 12** · 🧊 **LAB CONGELADO / BAJO DEMANDA**
 >
 > 🗓️ **Actualizado:** 2026-09-18
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Cierre documental integral: se confirma transferencia aprobada al producto, se congela el bloque RAG/EAM/MCP tras Paso 12 y se elimina la idea de un siguiente paso automático. |
 | 2026-09-18 | Auditoría de continuidad: Fast Reading, Living Documentation y HandOff quedan alineados con Pasos 01–12 para poder retomar desde GitHub sin reconstruir chats anteriores. |
 | 2026-09-17 | ✅ Se verifica el **Paso 12**: Cline reconoce `eam-rag-lab` con 2 Tools, valida individualmente la Tool transaccional y la Tool RAG, y finalmente selecciona e invoca ambas para una pregunta integrada. |
 | 2026-09-17 | Se resuelve la incidencia de carga de embeddings del Paso 12 usando MiniLM desde caché local (`local_files_only=True`); se evita seguir aumentando timeouts y se mantiene publicación inmediata de Tools. |
@@ -203,14 +204,25 @@ Paso 12 → el Host/LLM decide qué Tools invocar
 
 Esto demuestra **tool calling y composición dinámica mediante MCP**, no autonomía completa de un agente.
 
-## 🚀 Siguiente decisión
+## 🧊 Estado final / reapertura
 
-El siguiente salto no se da por supuesto. Los candidatos naturales son:
+La opción finalmente ejecutada fue:
 
 ```text
-A. composición MCP más realista / contraste con IBM Maximo MCP oficial
-B. introducir conceptos mínimos de agente sobre capacidades ya comprendidas
-C. cerrar este bloque y transferir aprendizajes candidatos a AI-EAM-MAXIMO
+C. cerrar este bloque
+→ evaluar aprendizajes transferibles
+→ integrar solo lo aprobado en AI-EAM-MAXIMO
 ```
 
-No se profundizará en reranking, retrieval híbrido, thresholds, evaluación avanzada o tuning adicional salvo que una necesidad EAM concreta lo justifique.
+La evaluación fue completada e integrada en `jperdomo12/ai-driven-eam-copilot` mediante el trabajo de transferencia correspondiente.
+
+Estado actual:
+
+```text
+Pasos 01–12        → ✅ cerrados
+transferencia      → ✅ completada
+Paso 13 automático→ ❌ no existe
+Learning Lab       → 🧊 congelado / bajo demanda
+```
+
+No se profundizará en agentes, reranking, retrieval híbrido, thresholds, evaluación avanzada, nuevos modelos o infraestructura adicional salvo que una necesidad concreta de AI-EAM-MAXIMO lo justifique.
