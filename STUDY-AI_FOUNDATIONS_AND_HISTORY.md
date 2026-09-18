@@ -18,6 +18,33 @@
 
 ---
 
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Mapa mental general** | Ubica IA, ML, Deep Learning, modelos generativos, LLM, RAG, MCP y agentes en una misma visión. |
+| **2. Historia mínima** | Recorre los hitos esenciales desde Turing y Dartmouth hasta Transformer, LLM, MCP y Maximo 9.2. |
+| **3. Qué es un LLM** | Explica qué es un LLM, cuándo emerge el concepto moderno y sigue una frase completa por el proceso de generación. |
+| **4. Tokenización** | Muestra cómo el texto se divide en tokens y Token IDs antes de ser procesado por el modelo. |
+| **5. Embeddings, posición, Transformer y Attention** | Explica cómo el modelo representa tokens numéricamente, conserva orden y relaciona elementos del contexto. |
+| **6. Entrenamiento, inferencia y memoria** | Distingue aprendizaje de pesos, uso del modelo y memoria/contexto externo. |
+| **7. Modelos, runtimes y productos** | Separa conceptos como GPT/Llama, Ollama y aplicaciones como ChatGPT, Gemini, Claude o Cline. |
+| **8. Cuantización** | Explica cómo reducir precisión numérica permite ejecutar modelos con menos memoria y cómputo. |
+| **9. IA Generativa vs. LLM** | Aclara similitudes y diferencias entre IA generativa, LLM y ML predictivo, con ejemplos EAM. |
+| **10. Cómo ampliar un LLM** | Resume Prompting, RAG, Fine-tuning, Tools y MCP como mecanismos complementarios. |
+| **11. MCP y Claude** | Explica el origen de MCP, su relación inicial con Claude y su carácter abierto. |
+| **12. Agentes de IA** | Define un agente como sistema con objetivo, modelo, herramientas, estado y ciclo de decisión/acción. |
+| **13. RAG y MCP** | Aclara que resuelven problemas diferentes y cómo pueden combinarse en una solución AI-Driven EAM. |
+| **14. IBM Maximo: OSLC, MCP y RAG** | Sitúa estas tecnologías en Maximo 2026 y explica cómo pueden coexistir. |
+| **15. Lo probado en el Learning Lab** | Resume las pruebas reales realizadas en MCP y RAG. |
+| **16. Analogías útiles** | Ofrece imágenes mentales sencillas para recordar LLM, RAG, MCP y agentes sin confundirlos. |
+| **17. Síntesis AI-Driven EAM** | Conecta todos los conceptos con la arquitectura y decisiones que interesan al proyecto profesional. |
+| **18. Fuentes verificadas** | Recoge referencias primarias e institucionales utilizadas para validar los conceptos principales. |
+| **19. Regla de cierre** | Fija el nivel de profundidad buscado: comprender y aplicar sin convertir el estudio en un tratado académico. |
+
+---
+
 ## 1. Mapa mental general
 
 Una forma útil de ordenar los conceptos es:
