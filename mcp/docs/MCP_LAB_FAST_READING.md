@@ -12,6 +12,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Cierre documental final: se registra que el posterior RAG Lab completó la composición MCP + EAM + RAG hasta Paso 12; MCP permanece congelado y solo se reabre bajo demanda del producto. |
 | 2026-09-12 | Se aclara que la instalación mínima para reproducir **todo** el LAB incluye Claude Desktop y después Cline; se documenta además que Cline puede ejecutarse en varias superficies, pero en este laboratorio se utilizó específicamente como extensión de VS Code porque VS Code ya era el IDE principal y permitía concentrar código, terminal, diff, MCP y pruebas en un mismo entorno. |
 | 2026-09-12 | Se reorganiza la lectura para reflejar la secuencia real **Claude Desktop → VS Code + Cline**, se incorpora la configuración resumida de Claude Desktop y se explican explícitamente la razón del cambio y las ventajas prácticas de Cline. |
 | 2026-09-12 | Se añade Historial, se aclara Filesystem MCP/sandbox, se incorpora el prompt exacto de la prueba combinada final en Cline y se explica brevemente `verify=False`. |
@@ -457,16 +458,16 @@ Conclusión correcta:
 
 ---
 
-## 15. Próximo paso
+## 15. Estado posterior / reapertura
 
-➡️ **RAG Learning Lab** bajo `rag/`.
-
-Pregunta guía:
+El siguiente frente histórico fue RAG y **ya fue completado posteriormente** hasta el Paso 12, donde se validó:
 
 ```text
-¿Cómo calibro este equipo según su manual?
+Tool EAM
++
+Tool RAG
++
+selección/composición desde Host LLM
 ```
 
-MCP → acceso a sistemas/capacidades.
-
-RAG → recuperación de conocimiento desde documentos.
+El MCP Lab queda **cerrado / congelado**. No hay un siguiente paso MCP automático; se reabre únicamente si AI-EAM-MAXIMO necesita una prueba concreta.
