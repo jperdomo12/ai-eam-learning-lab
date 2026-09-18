@@ -2,7 +2,7 @@
 
 > **Tipo:** STUDY  
 > **Estado:** 📘 ENTENDIDO — nota transversal del Learning Lab  
-> **Actualizado:** 2026-09-14  
+> **Actualizado:** 2026-09-18  
 >
 > **Propósito:** consolidar los conceptos básicos de IA que sirven de base para entender LLM, RAG, MCP y agentes, conectándolos con EAM / IBM Maximo sin convertir esta nota en un tratado académico.
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Se añade referencia al estudio transversal `STUDY-LLM_BEYOND_THE_MODEL.md`, que profundiza de forma práctica en Connectors/Apps, Tool Calling, MCP, RAG y acceso de los LLM a sistemas externos. |
 | 2026-09-14 | Se amplía la explicación de Tools con la analogía `MCP Server ≈ package/service` y `Tool ≈ función/procedimiento público invocable`, incluyendo el contrato que permite al LLM descubrir y llamar cada Tool. |
 | 2026-09-14 | Se mueve la nota a la raíz del repositorio y se amplía la historia de IA, el puente con IA simbólica/Turbo Prolog, el nacimiento progresivo de los LLM, el origen de MCP, entrenamiento/inferencia, cuantización, Fine-tuning vs. RAG y la definición de agente. |
 | 2026-09-14 | Creación inicial a partir de notas personales de estudio revisadas y del aprendizaje práctico realizado en los LAB de MCP y RAG. Se actualiza específicamente la situación de IBM Maximo 9.2 respecto a MCP, OSLC y capacidades RAG/DocSearch documentadas por IBM. |
@@ -38,6 +39,10 @@ LLM / modelos multimodales
 ```
 
 No son capas completamente excluyentes, pero esta jerarquía ayuda a entender cómo se relacionan.
+
+Para profundizar específicamente en **cómo el LLM accede a datos, herramientas y conocimiento externo**, usar:
+
+[`STUDY-LLM_BEYOND_THE_MODEL.md`](STUDY-LLM_BEYOND_THE_MODEL.md)
 
 También conviene recordar otra vista:
 
