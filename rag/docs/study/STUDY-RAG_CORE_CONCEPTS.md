@@ -3,16 +3,39 @@
 > **Subtítulo:** Fundamentos y conceptos intermedios que conviene dominar.
 >
 > **Tipo:** Nota de estudio del AI-EAM Learning Lab  
-> **Estado:** 📘 ENTENDIDO — documento vivo de apoyo al aprendizaje  
+> **Estado:** 📘 CONSOLIDADO — referencia de conceptos RAG; Learning Lab congelado  
 > **Fecha:** 2026-09-13
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido y el estudio queda consolidado como referencia conceptual del bloque RAG ya cerrado. |
 | 2026-09-13 | Se amplía la sección **Embeddings** con el modelo mental completo texto → vector → similitud semántica → recuperación, aclarando qué representa el vector, qué no representa, cómo se compara con la consulta y por qué el texto original sigue siendo el contexto que recibe el LLM. |
 | 2026-09-13 | Se reorganiza la nota dentro de `rag/docs/study/` para separar claramente el material pedagógico de la documentación canónica del laboratorio. |
 | 2026-09-13 | Creación inicial. Se consolidan los conceptos básicos de RAG y los conceptos intermedios necesarios para comprender el pipeline completo sin entrar todavía en implementaciones avanzadas. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1–3. RAG y pipeline** | Define RAG, el problema que resuelve y su flujo básico. |
+| **4. Conceptos básicos** | Explica fuentes, adquisición, extracción, normalización, chunks, chunking y metadata. |
+| **5. Retrieval** | Compara retrieval léxico, semántico e híbrido. |
+| **6. Embeddings** | Explica vectores, similitud y su papel en retrieval semántico. |
+| **7. Índice / vector store** | Describe cómo se organizan representaciones para poder buscarlas. |
+| **8. Top-k** | Explica cuántos resultados se recuperan y por qué más no siempre es mejor. |
+| **9. Reranking** | Introduce la reordenación posterior al retrieval inicial. |
+| **10. Contexto** | Explica qué evidencia termina entrando al LLM. |
+| **11–12. Grounding y alucinación** | Relaciona evidencia, citas y riesgo de inventar información. |
+| **13. Evaluación** | Resume por qué retrieval y generación deben evaluarse. |
+| **14. Actualización** | Explica cómo mantener vigente el conocimiento externo. |
+| **15. Seguridad** | Introduce permisos y control de acceso documental. |
+| **16. Ejemplo EAM** | Aplica RAG a manuales/procedimientos asociados a Maximo. |
+| **17. Mapa rápido** | Condensa el pipeline y conceptos esenciales/intermedios. |
+| **18. No confundir** | Enumera errores conceptuales frecuentes. |
 
 ---
 
