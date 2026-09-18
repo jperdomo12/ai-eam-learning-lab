@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Se añade un **Resumen de contenido** inmediatamente después del Historial para facilitar la recuperación rápida de los 19 bloques del estudio. |
 | 2026-09-18 | Se enriquecen los fundamentos con una ruta pedagógica completa de una frase por un LLM, ejemplos de tokenización, Token IDs, embeddings, posición, Attention y generación; se añade la distinción explícita entre IA Generativa y LLM con ejemplos generales y EAM. |
 | 2026-09-18 | Se añade referencia al estudio transversal `STUDY-LLM_BEYOND_THE_MODEL.md`, que profundiza de forma práctica en Connectors/Apps, Tool Calling, MCP, RAG y acceso de los LLM a sistemas externos. |
 | 2026-09-14 | Se amplía la explicación de Tools con la analogía `MCP Server ≈ package/service` y `Tool ≈ función/procedimiento público invocable`, incluyendo el contrato que permite al LLM descubrir y llamar cada Tool. |
