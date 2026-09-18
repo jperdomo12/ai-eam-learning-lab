@@ -15,6 +15,28 @@
 
 ---
 
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Idea principal** | Explica por qué un LLM necesita que el Host le presente capacidades externas para acceder a sistemas y datos. |
+| **2. Formas de ampliar un LLM** | Resume Connectors/Apps, Tool Calling y MCP como mecanismos de acceso a capacidades externas. |
+| **3. Cómo elige una capacidad** | Muestra cómo nombre, descripción y parámetros ayudan al LLM a seleccionar una o varias Tools. |
+| **4. MCP, RAG y OSLC** | Aclara que son conceptos distintos y que RAG u OSLC pueden utilizarse detrás de Tools MCP. |
+| **5. RAG como capacidad** | Explica cómo RAG puede exponerse como Tool y cómo se validó este patrón en el Paso 12. |
+| **6. Fuentes del RAG** | Describe cómo Maximo Doclinks, Documentum u otros repositorios pueden alimentar una capacidad de conocimiento. |
+| **7. Datos estructurados y vectores** | Distingue consulta estructurada, búsqueda vectorial y participación de una base de datos en un flujo RAG. |
+| **8. MCP local y remoto** | Resume la diferencia entre Hosts locales/desktop/CLI y aplicaciones web para conectarse a servidores MCP. |
+| **9. Connector vs. MCP** | Separa la experiencia de integración visible del protocolo que puede existir por debajo. |
+| **10. Aplicación a IBM Maximo** | Presenta una arquitectura conceptual que combina capacidades EAM, Maximo, RAG y MCP. |
+| **11. Qué demostraron los Labs** | Resume los aprendizajes prácticos de MCP, RAG, Maximo simulado y composición de Tools. |
+| **12. Regla para AI-EAM-MAXIMO** | Fija el criterio de separar capacidades y decidir mecanismos de integración just-in-time. |
+| **13. Chuleta para recordar** | Condensa los conceptos principales en definiciones de una línea. |
+| **14. Relación con otros documentos** | Indica dónde profundizar en fundamentos, MCP, RAG y continuidad del Lab. |
+
+---
+
 ## 1. Idea principal
 
 Un LLM por sí solo no consulta automáticamente Maximo, Google Drive, Documentum ni una base de datos.
