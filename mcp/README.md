@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Cierre documental final: se registra que el RAG Lab posterior llegó hasta Paso 12, combinó Tools MCP + EAM + RAG y transfirió aprendizajes al producto; este MCP Lab permanece congelado y se reabre solo bajo demanda de AI-EAM-MAXIMO. |
 | 2026-09-12 | Se incorpora el Historial exigido por el estándar documental y se aclara que la configuración Cline sanitizada conserva también el GitHub MCP histórico como evidencia, aunque no fue revalidado funcionalmente. |
 | 2026-09-12 | Cierre/congelación del MCP LAB v1.2 tras la revalidación final de VS Code + Cline. |
 | 2026-09-10 | Creación y consolidación inicial del área MCP en el Learning Lab. |
@@ -53,7 +54,7 @@ Para recuperar MCP rápidamente, leer en este orden:
 - workflow real;
 - seguridad productiva;
 - GitHub MCP oficial actual instalado en esta máquina;
-- RAG.
+- RAG **dentro de este MCP Lab**; RAG se estudió y verificó posteriormente bajo `rag/`, incluyendo composición MCP + RAG en el Paso 12.
 
 ---
 
@@ -107,8 +108,10 @@ Nada del laboratorio se convierte automáticamente en decisión o implementació
 
 ---
 
-## 🚀 Siguiente paso
+## 🧊 Estado posterior / reapertura
 
-➡️ **RAG Learning Lab**, bajo `rag/`, cuando se inicie formalmente ese frente.
+El frente RAG que figuraba originalmente como siguiente paso **ya fue completado** posteriormente bajo `rag/` hasta el Paso 12, incluyendo la composición de una Tool transaccional y una Tool RAG mediante MCP.
 
-MCP queda cerrado como aprendizaje actual y podrá combinarse con RAG más adelante si un experimento o decisión de producto lo requiere.
+Los aprendizajes transferibles fueron evaluados e integrados de forma controlada en `jperdomo12/ai-driven-eam-copilot`.
+
+Este MCP Lab queda **cerrado / congelado**. Solo se reabre si AI-EAM-MAXIMO presenta una necesidad concreta que requiera nueva experimentación MCP.
