@@ -6,20 +6,43 @@
 | Campo | Valor |
 |---|---|
 | **Ruta** | `DOCUMENTATION_STANDARD.md` |
-| **Versión** | 0.5 |
+| **Versión** | 0.6 |
 | **Estado** | Activo de laboratorio |
-| **Fecha** | 12/09/2026 |
+| **Fecha** | 18/09/2026 |
 | **Ámbito** | Toda la documentación del Learning Lab |
 
 ## 🕘 Historial
 
 | Versión | Fecha | Cambio |
 |---|---:|---|
+| 0.6 | 18/09/2026 | Se incorpora el **Resumen de contenido** después del Historial para documentos medianos/largos o de consulta futura, con tabla breve de puntos y contenido; se añade la comprobación correspondiente al Quality Check. |
 | 0.5 | 12/09/2026 | Se mueve el estándar a la raíz del repositorio para simplificar la estructura y se reafirma que **todo documento Markdown mantenido por el laboratorio debe incluir su Historial**. |
 | 0.4 | 10/09/2026 | Se adopta formalmente el modelo de **documentación viva**: los materiales históricos o importados son fuentes de referencia; la documentación vigente debe ser reconstruida, verificada y mantenida dentro del Learning Lab. |
 | 0.3 | 10/09/2026 | Se adopta `main` como rama de trabajo por defecto para cambios habituales del Learning Lab. |
 | 0.2 | 10/09/2026 | Se incorpora un bloque `Historial` obligatorio y ligero en cada documento. |
 | 0.1 | 10/09/2026 | Primera versión del estándar. |
+
+---
+
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Propósito** | Define para qué existe el estándar y qué debe poder recuperar el repositorio con el tiempo. |
+| **2. Documentación viva** | Establece qué documentación es vigente y cómo tratar fuentes históricas o importadas. |
+| **3. Filosofía de trabajo** | Fija principios de aprendizaje práctico, claridad, mantenibilidad y uso de `main`. |
+| **4. Niveles de evidencia** | Distingue entendido, probado, verificado, referencia, inferido y transferencia al producto. |
+| **5. Tipos de documentos** | Define el uso de README, STUDY, LAB, GUIDE, HandOff y documentación viva. |
+| **6. Pruebas prácticas** | Enumera qué debe registrarse cuando se realiza una instalación, configuración o experimento. |
+| **7. Historial y resumen de contenido** | Define el Historial obligatorio y el Resumen de contenido para documentos medianos/largos. |
+| **8. README de tema** | Define el README como entrada y mapa de navegación, no como duplicado de la documentación. |
+| **9. HandOff** | Establece cómo mantener continuidad sin repetir toda la documentación. |
+| **10. Material histórico** | Explica cómo conservar referencias antiguas sin confundirlas con la verdad vigente. |
+| **11. Seguridad** | Evita publicar secretos, credenciales, endpoints privados o datos confidenciales. |
+| **12. Relación con AI-EAM-MAXIMO** | Separa experimentación del Lab y decisiones oficiales del producto. |
+| **13. Quality Check** | Resume las verificaciones antes de cerrar una etapa. |
+| **14. Regla final** | Reafirma la documentación viva como memoria consolidada del aprendizaje. |
 
 ---
 
@@ -186,6 +209,32 @@ La regla aplica también a:
 
 No aplica a archivos de código o configuración (`.py`, `.json`, etc.) ni obliga a modificar artefactos históricos preservados únicamente como evidencia.
 
+### 7.1 Resumen de contenido para documentos medianos/largos
+
+Los documentos diseñados para consulta futura deben permitir entender su estructura **sin tener que recorrerlos completos**.
+
+Después del bloque `Historial`, incluir un:
+
+```markdown
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Nombre del punto** | Descripción muy breve de lo que contiene. |
+| **2. Nombre del punto** | Descripción muy breve de lo que contiene. |
+```
+
+Reglas:
+
+- debe aparecer **inmediatamente después del Historial**;
+- debe resumir las secciones principales, no repetir el contenido;
+- cada descripción debe ser breve y orientada a recuperación rápida;
+- debe mantenerse actualizado si cambian secciones o numeración;
+- es **obligatorio** en documentos medianos/largos o de consulta futura, especialmente `STUDY-*.md`, `*_LIVING_DOCUMENTATION.md` y guías extensas;
+- es **opcional** en documentos cortos, Fast Reading, HandOffs o README cuando su propia estructura ya cumple claramente la función de navegación.
+
+> **Principio:** el Resumen de contenido debe ayudar a decidir en segundos dónde está la información buscada.
+
 ---
 
 ## 🧭 8. README de cada tema
@@ -270,6 +319,7 @@ Antes de cerrar una etapa comprobar:
 
 - ¿la documentación viva explica qué se hizo sin depender del chat?;
 - ¿todo documento Markdown vigente incluye su `Historial`?;
+- ¿los documentos medianos/largos incluyen un `Resumen de contenido` breve y actualizado después del Historial?;
 - ¿incluye instalaciones, configuración, pruebas y resultados cuando aplican?;
 - ¿se distingue evidencia primaria de referencia histórica?;
 - ¿las contradicciones conocidas están resueltas o explícitamente marcadas?;
