@@ -6,8 +6,8 @@
 | Campo | Valor |
 |---|---|
 | **Ruta** | `DOCUMENTATION_STANDARD.md` |
-| **Versión** | 0.6 |
-| **Estado** | Activo de laboratorio |
+| **Versión** | 0.7 |
+| **Estado** | Vigente — aplicable también cuando el Lab esté congelado |
 | **Fecha** | 18/09/2026 |
 | **Ámbito** | Toda la documentación del Learning Lab |
 
@@ -15,6 +15,7 @@
 
 | Versión | Fecha | Cambio |
 |---|---:|---|
+| 0.7 | 18/09/2026 | Se formaliza la regla de **congelación / reapertura bajo demanda**, se aclara que los Markdown usados como datos fuente bajo `data/` no son documentación viva y se amplía el Quality Check para verificar el estado de cierre. |
 | 0.6 | 18/09/2026 | Se incorpora el **Resumen de contenido** después del Historial para documentos medianos/largos o de consulta futura, con tabla breve de puntos y contenido; se añade la comprobación correspondiente al Quality Check. |
 | 0.5 | 12/09/2026 | Se mueve el estándar a la raíz del repositorio para simplificar la estructura y se reafirma que **todo documento Markdown mantenido por el laboratorio debe incluir su Historial**. |
 | 0.4 | 10/09/2026 | Se adopta formalmente el modelo de **documentación viva**: los materiales históricos o importados son fuentes de referencia; la documentación vigente debe ser reconstruida, verificada y mantenida dentro del Learning Lab. |
@@ -31,7 +32,7 @@
 |---|---|
 | **1. Propósito** | Define para qué existe el estándar y qué debe poder recuperar el repositorio con el tiempo. |
 | **2. Documentación viva** | Establece qué documentación es vigente y cómo tratar fuentes históricas o importadas. |
-| **3. Filosofía de trabajo** | Fija principios de aprendizaje práctico, claridad, mantenibilidad y uso de `main`. |
+| **3. Filosofía de trabajo** | Fija principios de aprendizaje práctico, claridad, mantenibilidad, uso de `main` y congelación cuando el objetivo ya está cumplido. |
 | **4. Niveles de evidencia** | Distingue entendido, probado, verificado, referencia, inferido y transferencia al producto. |
 | **5. Tipos de documentos** | Define el uso de README, STUDY, LAB, GUIDE, HandOff y documentación viva. |
 | **6. Pruebas prácticas** | Enumera qué debe registrarse cuando se realiza una instalación, configuración o experimento. |
@@ -114,6 +115,22 @@ Una buena nota debe poder entenderse sin reconstruir un chat anterior.
 
 ### 3.4 `main` por defecto
 El Learning Lab trabaja directamente sobre `main` cuando el cambio sea seguro, claro y reversible. Branches y PR se utilizan solo cuando aportan valor real.
+
+### 3.5 Congelar cuando el objetivo está cumplido
+
+Un LAB no debe continuar por inercia ni por numeración.
+
+Cuando el objetivo pedagógico esté satisfecho:
+
+```text
+entender lo esencial
+→ probar lo necesario
+→ documentar lo justo
+→ cerrar / congelar
+→ volver al producto
+```
+
+Un LAB congelado se reabre únicamente si **AI-EAM-MAXIMO** plantea una necesidad concreta que requiera estudiar, validar o experimentar algo adicional. No se crean pasos, carpetas o documentos nuevos solo para mantener activa una secuencia.
 
 ---
 
@@ -231,7 +248,8 @@ Reglas:
 - cada descripción debe ser breve y orientada a recuperación rápida;
 - debe mantenerse actualizado si cambian secciones o numeración;
 - es **obligatorio** en documentos medianos/largos o de consulta futura, especialmente `STUDY-*.md`, `*_LIVING_DOCUMENTATION.md` y guías extensas;
-- es **opcional** en documentos cortos, Fast Reading, HandOffs o README cuando su propia estructura ya cumple claramente la función de navegación.
+- es **opcional** en documentos cortos, Fast Reading, HandOffs o README cuando su propia estructura ya cumple claramente la función de navegación;
+- los Markdown bajo `data/` utilizados deliberadamente como **datos de entrada, fixtures o documentos fuente de una prueba** no se consideran documentación viva y están exentos de `Historial` y `Resumen de contenido`.
 
 > **Principio:** el Resumen de contenido debe ayudar a decidir en segundos dónde está la información buscada.
 
@@ -326,6 +344,7 @@ Antes de cerrar una etapa comprobar:
 - ¿los ejemplos sensibles están sanitizados?;
 - ¿el README apunta a la documentación viva correcta?;
 - ¿el HandOff refleja el estado real?;
+- ¿si el objetivo del LAB ya está cumplido, su documentación indica claramente que está cerrado/congelado y que solo se reabre bajo demanda?;
 
 ---
 
