@@ -8,6 +8,7 @@ Hands-on learning and experimentation lab for AI applied to EAM: fundamentos de 
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Cierre documental integral: el Learning Lab queda **congelado / bajo demanda**; MCP y RAG/EAM/MCP permanecen cerrados, los estudios transversales quedan consolidados y Agentes deja de ser un siguiente laboratorio automático. |
 | 2026-09-18 | Se incorpora [`STUDY-LLM_BEYOND_THE_MODEL.md`](STUDY-LLM_BEYOND_THE_MODEL.md) como estudio transversal sobre cómo los LLM usan Connectors/Apps, Tools, MCP, RAG y sistemas externos; se actualiza además el estado del RAG/EAM/MCP hasta Paso 12 y su transferencia al producto. |
 | 2026-09-14 | Se mueve `STUDY-AI_FOUNDATIONS_AND_HISTORY.md` a la raíz del repositorio y se amplía con historia de IA, IA simbólica/Turbo Prolog, nacimiento progresivo de los LLM, origen de MCP, entrenamiento/inferencia, cuantización, Fine-tuning vs. RAG y una definición más precisa de agente. |
 | 2026-09-14 | Se incorpora la nota transversal [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md), consolidando historia mínima de IA, LLM, tokenización, Transformer/Attention, modelos/runtimes/productos, RAG, MCP y agentes. Se actualiza además la situación 2026 de IBM Maximo: servidor MCP oficial en MAS 9.2, continuidad de OSLC y capacidades RAG/DocSearch documentadas en Maximo Assistant. |
@@ -49,11 +50,11 @@ El estándar documental está en [`DOCUMENTATION_STANDARD.md`](DOCUMENTATION_STA
 
 | Tema | Estado | Entrada |
 |---|---|---|
-| Fundamentos de IA e historia mínima | 📘 Estudio transversal activo | [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md) |
-| LLM más allá del modelo | 📘 Estudio transversal activo | [`STUDY-LLM_BEYOND_THE_MODEL.md`](STUDY-LLM_BEYOND_THE_MODEL.md) |
+| Fundamentos de IA e historia mínima | 📘 Consolidado / consulta | [`STUDY-AI_FOUNDATIONS_AND_HISTORY.md`](STUDY-AI_FOUNDATIONS_AND_HISTORY.md) |
+| LLM más allá del modelo | 📘 Consolidado / consulta | [`STUDY-LLM_BEYOND_THE_MODEL.md`](STUDY-LLM_BEYOND_THE_MODEL.md) |
 | MCP — Model Context Protocol | ✅ Cerrado / congelado · v1.2 | [`mcp/README.md`](mcp/README.md) |
 | RAG — Retrieval-Augmented Generation | ✅ RAG/EAM/MCP verificado · Pasos 01–12 cerrados | [`rag/README.md`](rag/README.md) |
-| Agentes | ⏳ Futuro | Se creará cuando comience el estudio real. |
+| Agentes | ⏸️ Bajo demanda | Solo se abrirá si una necesidad concreta de AI-EAM-MAXIMO justifica un estudio o Mini-LAB. |
 
 > No se crean carpetas ni documentación de un tema hasta que realmente se empiece a trabajar en él.
 
@@ -110,6 +111,8 @@ No almacenar secretos, tokens, PATs, credenciales, endpoints privados, datos de 
 Los ejemplos que requieran configuración sensible deben utilizar variables de entorno o archivos sanitizados.
 
 ## 🚀 Estado actual
+
+> 🧊 **LEARNING LAB CONGELADO / BAJO DEMANDA.** No existe un siguiente laboratorio automático. El repositorio se reabre únicamente cuando AI-EAM-MAXIMO plantee una necesidad concreta que requiera aprendizaje o experimentación adicional.
 
 El laboratorio **MCP** está cerrado y congelado para el alcance actual.
 
