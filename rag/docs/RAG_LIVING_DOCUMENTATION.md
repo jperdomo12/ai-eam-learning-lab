@@ -4,12 +4,13 @@
 >
 > 📍 **Estado:** ✅ **RAG básico verificado** · ✅ **Aplicación EAM verificada hasta Paso 12**
 >
-> 🗓️ **Actualizado:** 2026-09-17
+> 🗓️ **Actualizado:** 2026-09-18
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría de continuidad: se confirma que Pasos 01–12, datos, scripts y documentación permiten reconstruir el estado desde GitHub; se actualizan Fast Reading y HandOff, y se registra que la transferencia de aprendizajes al producto ya está en revisión. |
 | 2026-09-17 | ✅ Se verifica el **Paso 12** completo: Cline valida individualmente la Tool transaccional y la Tool RAG, y después selecciona e invoca ambas para una sola pregunta integrada. Se confirma el salto desde orquestación fija a composición dinámica de Tools mediante MCP. |
 | 2026-09-17 | Se resuelve la incidencia de carga de MiniLM del Paso 12 usando caché local (`local_files_only=True`), manteniendo publicación inmediata de las Tools MCP. |
 | 2026-09-16 | Se consolida la documentación viva hasta el **Paso 12**: Pasos 09–11 verificados y Paso 12 preparado para exponer capacidades EAM/RAG como Tools MCP en Cline. |
@@ -438,14 +439,39 @@ Los resultados del Learning Lab son aprendizaje y evidencia. Cualquier traslado 
 
 ---
 
-## 11. Siguiente decisión
+## 11. Continuidad actual
 
-No se continúa automáticamente por numeración. Los candidatos naturales son:
+No se continúa automáticamente por numeración.
+
+Después de cerrar el Paso 12 se eligió la opción:
 
 ```text
-A. composición MCP más realista / contraste con IBM Maximo MCP oficial
-B. introducir conceptos mínimos de agente sobre capacidades ya comprendidas
-C. cerrar este bloque y revisar qué aprendizajes pasan como 🟨 CANDIDATO A INCORPORAR a AI-EAM-MAXIMO
+C. revisar qué aprendizajes pasan como
+🟨 CANDIDATO A INCORPORAR a AI-EAM-MAXIMO
 ```
 
-La elección debe priorizar valor de aprendizaje y valor para AI-Driven EAM, evitando complejidad innecesaria.
+La consolidación se inició en el repositorio de producto:
+
+```text
+jperdomo12/ai-driven-eam-copilot
+branch: docs/learning-lab-transfer-assessment
+```
+
+con dos documentos candidatos:
+
+```text
+docs/project/LEARNING_LAB_TRANSFER_FAST_READING.md
+docs/project/LEARNING_LAB_TRANSFER_ASSESSMENT.md
+```
+
+Esto **no significa incorporación aprobada**. El Learning Lab conserva evidencia y aprendizaje; el producto decide explícitamente qué adoptar.
+
+Después de esa revisión, los siguientes bloques posibles siguen siendo:
+
+```text
+A. contraste con IBM Maximo MCP Server oficial
+B. conceptos mínimos de agentes sobre capacidades ya comprendidas
+C. otra necesidad EAM concreta
+```
+
+La prioridad es mantener los Labs simples: **entender lo esencial → probar lo necesario → documentar lo justo → continuar**.
