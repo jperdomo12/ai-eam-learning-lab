@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Se enriquecen los fundamentos con una ruta pedagógica completa de una frase por un LLM, ejemplos de tokenización, Token IDs, embeddings, posición, Attention y generación; se añade la distinción explícita entre IA Generativa y LLM con ejemplos generales y EAM. |
 | 2026-09-18 | Se añade referencia al estudio transversal `STUDY-LLM_BEYOND_THE_MODEL.md`, que profundiza de forma práctica en Connectors/Apps, Tool Calling, MCP, RAG y acceso de los LLM a sistemas externos. |
 | 2026-09-14 | Se amplía la explicación de Tools con la analogía `MCP Server ≈ package/service` y `Tool ≈ función/procedimiento público invocable`, incluyendo el contrato que permite al LLM descubrir y llamar cada Tool. |
 | 2026-09-14 | Se mueve la nota a la raíz del repositorio y se amplía la historia de IA, el puente con IA simbólica/Turbo Prolog, el nacimiento progresivo de los LLM, el origen de MCP, entrenamiento/inferencia, cuantización, Fine-tuning vs. RAG y la definición de agente. |
@@ -378,6 +379,83 @@ Para estudiar basta con recordar:
 
 Un LLM **no funciona como una base de datos exacta de frases** ni como un disco duro que recupera registros literales. Su conocimiento queda distribuido en millones o miles de millones de **pesos** aprendidos durante el entrenamiento.
 
+### 3.1 Ruta de una frase por un LLM
+
+Para visualizar el proceso sin entrar todavía en las matemáticas internas, usemos una frase sencilla:
+
+> **La flor era grande y de color morado.**
+
+El recorrido conceptual es:
+
+```text
+TEXTO
+"La flor era grande y de color morado."
+        ↓
+TOKENIZACIÓN
+el texto se divide en tokens
+        ↓
+TOKEN IDs
+cada token se representa mediante un identificador numérico
+        ↓
+EMBEDDINGS
+cada token pasa a una representación vectorial aprendida
+        ↓
+INFORMACIÓN DE POSICIÓN
+el modelo conserva información sobre el orden de los tokens
+        ↓
+ATTENTION
+calcula qué partes del contexto se relacionan entre sí
+        ↓
+CAPAS TRANSFORMER
+refinan progresivamente las representaciones contextuales
+        ↓
+PROBABILIDADES
+el modelo calcula qué token podría venir después
+        ↓
+GENERACIÓN ITERATIVA
+elige/genera un token y repite el proceso
+```
+
+Ejemplo de relaciones que **Attention** podría reforzar:
+
+```text
+flor   ↔ grande
+color  ↔ morado
+```
+
+Si el texto fuese:
+
+```text
+La flor era grande y de color...
+```
+
+el modelo no busca una frase exacta en una base de datos. Calcula probabilidades para posibles continuaciones:
+
+```text
+morado  → posible / alta según el contexto
+rojo    → posible
+azul    → posible
+...
+```
+
+El valor real de cada probabilidad depende del modelo, del contexto y de sus pesos entrenados.
+
+### Ejemplo EAM equivalente
+
+```text
+La bomba P-102 presenta alta temperatura en el rodamiento.
+```
+
+Conceptualmente el modelo puede construir relaciones contextuales como:
+
+```text
+P-102        ↔ bomba
+temperatura  ↔ alta
+temperatura  ↔ rodamiento
+```
+
+Esto no significa que el modelo haya consultado Maximo. Solo muestra cómo puede relacionar elementos que ya están dentro de su contexto.
+
 ---
 
 ## 4. Tokenización
@@ -392,13 +470,47 @@ Primero convierten el texto en **tokens**, que pueden ser:
 - números;
 - espacios o combinaciones frecuentes de caracteres, según el tokenizer.
 
-Por ejemplo:
+Por ejemplo, con nuestra frase:
+
+```text
+La flor era grande y de color morado.
+```
+
+una división **ilustrativa** podría parecerse a:
+
+```text
+["La", " flor", " era", " grande", " y", " de", " color", " morado", "."]
+```
+
+Pero esta división **no pretende representar un tokenizer real concreto**. Dependiendo del modelo, una palabra como `morado` podría ser un token completo o dividirse en varias partes.
+
+Después cada token se representa mediante un identificador numérico:
+
+```text
+token
+→ Token ID
+→ número que identifica ese token dentro del vocabulario del modelo
+```
+
+Ejemplo puramente conceptual:
+
+```text
+"La"      → 123
+" flor"   → 8451
+" morado" → 21987
+```
+
+Los números anteriores son solo ilustrativos. Los Token IDs reales dependen del tokenizer y vocabulario de cada modelo.
+
+El modelo no trabaja con la palabra escrita directamente; trabaja con estas representaciones numéricas y sus transformaciones posteriores.
+
+Otro ejemplo técnico del Lab:
 
 ```text
 Ajustar ZERO si el error supera 0,02 bar
 ```
 
-se transforma internamente en una secuencia de tokens que el modelo procesa matemáticamente.
+también se convierte en tokens y Token IDs antes de entrar en las capas del modelo.
 
 Consecuencia práctica:
 
@@ -412,28 +524,121 @@ Más chunks en un RAG implican normalmente más tokens dentro del contexto del L
 
 ---
 
-## 5. Transformer y Attention
+## 5. Embeddings, posición, Transformer y Attention
 
-### Transformer
+### 5.1 Embeddings dentro del LLM
+
+Un **Token ID** identifica un token, pero ese número por sí solo no expresa su significado.
+
+El modelo transforma cada token en un **embedding**: un vector numérico aprendido que permite trabajar matemáticamente con características y relaciones del lenguaje.
+
+Modelo mental:
+
+```text
+token
+→ Token ID
+→ embedding (vector)
+→ procesamiento contextual
+```
+
+Con nuestra frase:
+
+```text
+"La flor era grande y de color morado."
+```
+
+el modelo no manipula literalmente las palabras. Manipula vectores asociados a esos tokens y los va ajustando contextualmente a través de sus capas.
+
+> **Importante:** los embeddings internos de un LLM y los embeddings que usamos en RAG comparten la idea de representar información como vectores, pero no son necesariamente el mismo modelo, vector ni propósito.
+
+En RAG:
+
+```text
+embedding
+→ ayuda a encontrar contenido semánticamente parecido
+```
+
+Dentro del LLM:
+
+```text
+embedding
+→ es parte de la representación numérica que el modelo procesa
+```
+
+### 5.2 Posición
+
+El orden importa:
+
+```text
+El técnico revisó la bomba.
+≠
+La bomba revisó al técnico.
+```
+
+Aunque aparezcan palabras parecidas, su posición cambia el significado.
+
+Por ello Transformer incorpora información que permite distinguir dónde aparece cada token dentro de la secuencia.
+
+Modelo mental:
+
+```text
+embedding del token
++
+información de posición
+→ representación que entra al Transformer
+```
+
+No hace falta memorizar ahora las distintas técnicas de codificación posicional; basta con entender que **el modelo necesita conocer contenido y orden**.
+
+### 5.3 Transformer
 
 La arquitectura Transformer sustituyó gran parte del procesamiento secuencial tradicional por mecanismos de atención que permiten modelar relaciones entre elementos de una secuencia de forma mucho más paralelizable.
 
-### Attention
+Una forma simplificada de verlo es:
+
+```text
+tokens representados numéricamente
+        ↓
+múltiples capas Transformer
+        ↓
+cada capa refina relaciones y contexto
+        ↓
+representaciones cada vez más contextuales
+```
+
+Transformer no es una única operación de Attention. Está formado por múltiples componentes y capas; para este nivel de estudio basta con recordar que **Attention es uno de sus mecanismos centrales**.
+
+### 5.4 Attention
 
 **Attention** permite que el modelo calcule qué elementos del contexto son relevantes entre sí durante el procesamiento.
 
-Ejemplo simplificado:
+Ejemplo con nuestra frase:
+
+```text
+"La flor era grande y de color morado."
+```
+
+durante el procesamiento, determinados tokens pueden prestar mayor atención a otros tokens relevantes:
+
+```text
+flor  ↔ grande
+color ↔ morado
+```
+
+Otro ejemplo:
 
 ```text
 "si el error supera 0,02 bar, ajustar ZERO"
 ```
 
-puede relacionar:
+puede reforzar relaciones como:
 
 ```text
-error ↔ 0,02 bar
+error   ↔ 0,02 bar
 ajustar ↔ ZERO
 ```
+
+No significa que exista una regla fija escrita manualmente. Son relaciones calculadas numéricamente por el modelo según el contexto.
 
 En una pregunta RAG puede relacionar:
 
@@ -460,6 +665,33 @@ Por tanto:
 ```text
 retrieval ≠ attention
 ```
+
+### 5.5 De Attention a generación
+
+Después de atravesar las capas Transformer, el modelo obtiene una representación contextual del texto y calcula probabilidades para el siguiente token.
+
+Ejemplo:
+
+```text
+"La flor era grande y de color"
+                ↓
+Transformer + contexto
+                ↓
+probabilidades del siguiente token
+                ↓
+"morado" / "rojo" / "azul" / ...
+```
+
+Una vez generado un token, éste se incorpora al contexto y el proceso continúa:
+
+```text
+generar token
+→ añadirlo al contexto
+→ calcular siguiente token
+→ repetir
+```
+
+Así se construye una respuesta token a token.
 
 ---
 
@@ -633,9 +865,9 @@ La cuantización **no convierte un modelo en RAG ni modifica sus documentos**. S
 
 ---
 
-## 9. Qué es IA Generativa
+## 9. Qué es IA Generativa y cómo se relaciona con un LLM
 
-La **IA generativa** produce contenido nuevo a partir de patrones aprendidos.
+La **IA generativa** es una categoría amplia de sistemas capaces de producir contenido nuevo a partir de patrones aprendidos.
 
 Puede generar:
 
@@ -645,6 +877,96 @@ código
 imagen
 audio
 video
+```
+
+Un **LLM** es un tipo de modelo especializado principalmente en lenguaje: comprenderlo, transformarlo y generarlo.
+
+La relación sencilla es:
+
+```text
+INTELIGENCIA ARTIFICIAL
+        ↓
+Machine Learning
+        ↓
+Deep Learning
+        ↓
+IA GENERATIVA
+        ↓
+   ┌────┴─────────────┐
+   ↓                  ↓
+  LLM             otros modelos
+lenguaje          generativos
+                  imagen/audio/video...
+```
+
+Por tanto:
+
+> **Un LLM moderno normalmente forma parte de la IA generativa, pero no toda IA generativa es un LLM.**
+
+### Similitudes
+
+Ambos conceptos se relacionan porque:
+
+- aprenden patrones a partir de datos;
+- pueden generar contenido nuevo;
+- durante inferencia producen una salida a partir de una entrada/contexto;
+- los sistemas modernos pueden combinar varias modalidades.
+
+### Diferencias
+
+```text
+IA GENERATIVA
+→ categoría amplia
+→ texto, imagen, audio, video, código...
+
+LLM
+→ tipo de modelo
+→ centrado históricamente en lenguaje
+→ puede formar parte de sistemas multimodales modernos
+```
+
+Ejemplos:
+
+```text
+ChatGPT generando una explicación
+→ IA Generativa
+→ usa un modelo de lenguaje
+
+modelo generando una imagen
+→ IA Generativa
+→ no necesariamente es un LLM
+
+modelo generando música
+→ IA Generativa
+→ no necesariamente es un LLM
+```
+
+La frontera es menos rígida hoy porque algunos modelos modernos son **multimodales**: pueden trabajar con texto, imágenes, audio u otras modalidades dentro del mismo sistema.
+
+### IA predictiva vs. IA generativa
+
+También conviene distinguir:
+
+```text
+IA / ML PREDICTIVO
+→ clasifica / estima / detecta / predice
+
+IA GENERATIVA
+→ crea una salida nueva
+```
+
+Ejemplo EAM:
+
+```text
+Predecir probabilidad de fallo de la bomba P-102
+→ Machine Learning predictivo
+→ no necesariamente IA Generativa
+
+Explicar en lenguaje natural por qué P-102 podría estar fallando
+→ LLM / IA Generativa
+
+Redactar una recomendación de mantenimiento basada en evidencia
+→ LLM / IA Generativa
 ```
 
 En lenguaje, un LLM genera una respuesta token a token condicionada por:
