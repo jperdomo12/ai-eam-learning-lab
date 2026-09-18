@@ -1,10 +1,10 @@
 # ⚡ RAG LAB — Fast Reading
 
-> 🎯 **Objetivo:** recuperar en pocos minutos qué se aprendió, qué se probó y cómo quedó cerrado el laboratorio básico de RAG aplicado a EAM / IBM Maximo.
+> 🎯 **Objetivo:** recuperar en pocos minutos qué se aprendió, qué se probó y cómo quedó cerrado el bloque RAG + EAM + MCP.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO / VERIFICADO** para el nivel actual de aprendizaje.
+> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO** · ✅ **APLICACIÓN EAM VERIFICADA HASTA PASO 12**
 >
-> 🗓️ **Actualizado:** 2026-09-14
+> 🗓️ **Actualizado:** 2026-09-18
 >
 > 📘 **Documento canónico:** [`RAG_LIVING_DOCUMENTATION.md`](RAG_LIVING_DOCUMENTATION.md)
 
@@ -12,122 +12,93 @@
 
 | Fecha | Cambio |
 |---|---|
-| 2026-09-14 | Se incorpora la distinción práctica entre RAG documental y acceso a datos estructurados/transaccionales mediante SQL, API o MCP, incluyendo el matiz de bases de datos con soporte vectorial. |
+| 2026-09-18 | Se actualiza el Fast Reading hasta Paso 12 y se alinea con la regla de continuidad sin depender de chats antiguos. |
+| 2026-09-14 | Se incorpora la distinción práctica entre RAG documental y acceso a datos estructurados/transaccionales mediante SQL, API o MCP. |
 | 2026-09-14 | Creación del resumen de recuperación rápida al cierre de los Pasos 01–08 del RAG Learning Lab. |
+
+---
 
 ## 1. En una frase
 
-Se verificó un flujo RAG básico completo que toma documentos técnicos locales, los fragmenta e indexa, recupera los fragmentos relevantes para una pregunta y entrega al LLM el **texto original recuperado** para generar una respuesta fundamentada.
-
-Pregunta guía:
+Se verificó, de forma progresiva y práctica, que:
 
 ```text
-¿Cómo calibro este equipo según su manual?
+Maximo / EAM
+→ aporta contexto y datos operativos
+
+RAG
+→ recupera conocimiento documental
+
+MCP
+→ expone capacidades como Tools
+
+LLM / Host
+→ selecciona, interpreta y combina la evidencia
 ```
 
 ---
 
-## 2. Arquitectura mental
+## 2. Mapa completo de Pasos 01–12
+
+```text
+01  descubrir documentos                              ✅
+02  leer y hacer chunking visible                     ✅
+03  retrieval léxico                                  ✅
+04  retrieval semántico                               ✅
+04b excluir estructura/metadata                       ✅
+05  persistir y consultar índice vectorial            ✅
+06  construir contexto fundamentado                   ✅
+07  evaluar retrieval y sensibilidad Top-k            ✅
+08  generar, evaluar, abstenerse y controlar prompt   ✅
+09  Maximo simulado + Doclinks                        ✅
+10  contexto EAM → Doclinks → RAG → LLM               ✅
+11  datos transaccionales + RAG                       ✅
+12  Tools/MCP + EAM + RAG                             ✅
+```
+
+No hay un Paso 13 aprobado automáticamente.
+
+---
+
+## 3. Arquitectura mental RAG
 
 ```text
 DOCUMENTOS
    ↓
-lectura / normalización
+chunking
    ↓
-CHUNKING
+embeddings / índice
    ↓
-EMBEDDINGS / ÍNDICE
-
-PREGUNTA
+pregunta
    ↓
-embedding de la consulta
+retrieval
    ↓
-RETRIEVAL
-   ↓
-TOP-K
+Top-k
    ↓
 TEXTO ORIGINAL + PROCEDENCIA
    ↓
-PROMPT FUNDAMENTADO
+LLM
    ↓
-MODELO (LLM)
-   ↓
-RESPUESTA
+respuesta
 ```
 
 Idea clave:
 
-> **Los vectores ayudan a localizar evidencia; el LLM recibe el texto original recuperado.**
+> **Los embeddings ayudan a localizar evidencia; el LLM recibe el texto original recuperado.**
+
+RAG no reentrena al LLM.
 
 ---
 
-## 3. Indexación y consulta
-
-No son lo mismo.
-
-```text
-INDEXACIÓN / INGESTIÓN
- documentos → chunks → embeddings → índice persistente
-
-CONSULTA
- pregunta → embedding → búsqueda/ranking → Top-k
-         → texto original → contexto → LLM → respuesta
-```
-
-La indexación se repite cuando cambian los documentos; la consulta ocurre para cada pregunta.
-
----
-
-## 4. Componentes usados
-
-| Componente | Papel |
-|---|---|
-| Python | scripts del pipeline |
-| `sentence-transformers` | embeddings |
-| `paraphrase-multilingual-MiniLM-L12-v2` | modelo de embeddings |
-| NumPy + JSON | índice vectorial persistente mínimo |
-| Ollama 0.34.0 | runtime local de generación |
-| Llama 3 8B Q4_0 | Modelo (LLM) local |
-
-Se intentó también OpenAI Responses API, pero la generación no llegó a ejecutarse por falta de crédito independiente; no se adoptó esa ruta para el LAB.
-
-No se utilizaron LangChain, LlamaIndex ni una base vectorial dedicada.
-
----
-
-## 5. Pasos verificados
-
-```text
-01 → descubrir documentos                         ✅
-02 → leer y fragmentar / chunking                 ✅
-03 → retrieval léxico                             ✅
-04 → retrieval semántico                          ✅
-05 → índice vectorial persistente                 ✅
-06 → contexto fundamentado                        ✅
-07 → evaluación retrieval / sensibilidad Top-k    ✅
-08 → generación y evaluación fundamentada         ✅
-```
-
-Los documentos de prueba son sintéticos y están bajo `rag/data/source_documents/`.
-
----
-
-## 6. Qué aprendimos del retrieval
-
-El retrieval léxico mostró que coincidir palabras no basta:
-
-```text
-ajustar ≈ calibrar
-```
-
-El retrieval semántico mejoró la búsqueda por significado, pero dejó una lección crítica:
+## 4. Qué aprendimos del retrieval
 
 ```text
 similarity alta ≠ confianza
 similarity alta ≠ evidencia suficiente
+Top-k encontrado ≠ respuesta encontrada
 ```
 
-Otra regla esencial:
+Y:
 
 ```text
 BUEN LLM + BUEN DOCUMENTO + MAL RETRIEVAL
@@ -135,277 +106,331 @@ BUEN LLM + BUEN DOCUMENTO + MAL RETRIEVAL
 MALA RESPUESTA RAG
 ```
 
----
-
-## 7. Qué es Top-k
-
-Después de ordenar los chunks por relevancia, `Top-k` indica cuántos de los primeros se conservan para construir el contexto.
-
-```text
-Top-k = 4
-→ usar los 4 chunks mejor clasificados
-```
-
-Pero:
-
-```text
-Top-k encontrado ≠ respuesta encontrada
-```
-
-Si el dato solicitado no existe en ningún documento, el retriever igualmente devuelve los mejores candidatos disponibles.
-
-En este LAB `k=4` quedó como **baseline pedagógica**, no como recomendación productiva.
+El Caso D preguntó deliberadamente por un dato inexistente —el par de apriete de bornes del PT-201— y la respuesta correcta fue abstenerse.
 
 ---
 
-## 8. Retrieval correcto no garantiza respuesta completa
+## 5. Retrieval correcto tampoco garantiza buena generación
 
-En el Caso C se recuperó evidencia suficiente, pero la primera respuesta de Llama 3 omitió parte del procedimiento.
-
-Lección:
+En el Paso 08 se observó:
 
 ```text
-RETRIEVAL COMPLETO + CONTEXTO SUFICIENTE
+retrieval completo
++ contexto suficiente
 ≠
-RESPUESTA NECESARIAMENTE COMPLETA
+respuesta necesariamente completa
 ```
 
-La generación debe evaluarse como una capa propia.
+Con el mismo retrieval y LLM, un prompt orientado a revisar todas las partes de la pregunta mejoró la cobertura.
+
+El control 08C fijó:
+
+```text
+temperature = 0
+seed = 42
+```
+
+para comparar prompts de forma reproducible.
+
+No se decidió seguir optimizando prompts/modelos porque ya se había alcanzado el objetivo de aprendizaje.
 
 ---
 
-## 9. Papel del prompt
+## 6. Datos estructurados ≠ RAG documental
 
-El prompt base exigía:
-
-```text
-usar solo el contexto recuperado
-no inventar
-informar si falta evidencia
-citar fuentes
-```
-
-Una segunda variante añadió cobertura explícita de todas las partes de la pregunta. Manteniendo fijo retrieval, contexto, LLM y parámetros, esa variante produjo una respuesta sustancialmente más completa.
+Regla práctica consolidada:
 
 ```text
-retrieval determina QUÉ evidencia llega
-prompt influye en CÓMO el LLM utiliza esa evidencia
-```
-
----
-
-## 10. Abstención
-
-Se preguntó deliberadamente por un dato inexistente en los documentos: el par de apriete de los bornes del PT-201.
-
-El sistema indicó correctamente que la evidencia disponible no contenía ese dato.
-
-```text
-sin evidencia suficiente
-→ no inventar
-→ abstenerse / informar la ausencia
-```
-
----
-
-## 11. Embeddings y LLM son capas distintas
-
-```text
-MiniLM
-→ embeddings / retrieval
-
-Llama 3
-→ generación
-```
-
-El modelo de embeddings localiza evidencia. El LLM interpreta el texto recuperado y redacta la respuesta.
-
-RAG no exige que ambos sean el mismo modelo.
-
----
-
-## 12. Tokenización, Attention y RAG
-
-```text
-RAG RETRIEVAL
-→ decide qué chunks externos ENTRAN en el contexto
-
-ATTENTION
-→ relaciona tokens que YA están dentro del contexto
-```
-
-Por tanto:
-
-```text
-retrieval ≠ attention
-```
-
-MiniLM y Llama 3 son modelos Transformer y realizan internamente tokenización y mecanismos de atención.
-
----
-
-## 13. RAG no es Fine-tuning
-
-```text
-RAG
-→ recupera conocimiento externo en tiempo de consulta
-→ no modifica los pesos del LLM
-
-Fine-tuning
-→ entrenamiento adicional
-→ modifica pesos
-```
-
-RAG conserva especial valor para información exacta, actualizable, privada, citable y trazable por documento/revisión.
-
----
-
-## 14. Relación con MCP, bases de datos y EAM
-
-### 14.1 Regla mental práctica
-
-Para el alcance de este Learning Lab, la forma más útil de pensar en **RAG clásico** es:
-
-```text
-RAG "clásico"
-→ recuperar conocimiento no estructurado o semiestructurado
-→ documentos, PDFs, manuales, procedimientos
-→ embeddings / búsqueda semántica
-→ chunks
-→ LLM
-```
-
-Y para una arquitectura AI-Driven EAM:
-
-```text
-DOCUMENTOS / CONOCIMIENTO
-→ RAG
-
 DATOS ESTRUCTURADOS / TRANSACCIONALES
 → SQL / API / MCP
 
-LLM / agente
+DOCUMENTOS / CONOCIMIENTO
+→ RAG
+
+LLM / Host
 → combina ambos cuando hace falta
 ```
 
-Ejemplos de datos estructurados/transaccionales en un EAM:
+Ejemplo:
 
 ```text
-OTs
-activos
-estados
-prioridades
-inventario
-costes
-fechas
+¿Cuántas OTs abiertas tiene el activo?
+→ Maximo / API / MCP
+
+¿Qué indica su manual?
+→ RAG
 ```
 
-Una pregunta como:
+Una base de datos puede participar en RAG si almacena/busca embeddings, pero consultar una base de datos no convierte automáticamente la consulta en RAG.
+
+---
+
+## 7. Maximo + Doclinks — Paso 09
+
+Se simuló:
 
 ```text
-¿Cuántas OTs de prioridad 1 están abiertas?
+ASSET
+→ DOCLINKS
+→ DOCINFO
+→ archivo asociado
 ```
 
-se resuelve de forma natural consultando Maximo mediante API/MCP, no buscando chunks documentales.
-
-En cambio:
+Baseline:
 
 ```text
-¿Qué indica el manual de la bomba B-201 sobre vibración?
+PT-201 / PLANTA1
+ASSETUID = 1001
+ASSETID  = 2001
+2 documentos asociados
 ```
 
-encaja directamente en RAG documental.
-
-### 14.2 Una base de datos también puede participar en RAG
-
-Una base de datos puede almacenar y buscar vectores. Por ejemplo:
+En el LAB:
 
 ```text
-PostgreSQL + pgvector
-→ texto del chunk
-→ embedding
-→ metadata
-→ búsqueda vectorial
+DOCLINKS.OWNERID → ASSET.ASSETUID
 ```
 
-En ese caso la base de datos participa en el **retrieval semántico** y funciona también como vector store.
+como variante site-specific deliberada.
 
-Pero:
+**No es una regla universal de Maximo.** `ASSETID` también puede intervenir según comportamiento/configuración.
 
-> **Que una aplicación consulte una base de datos no convierte automáticamente esa consulta en RAG.**
+Aprendizaje:
 
-La misma plataforma PostgreSQL podría utilizarse simultáneamente para:
+> **Doclinks resuelve qué documentación aplica; RAG busca después dentro de esa documentación.**
+
+---
+
+## 8. Contexto EAM → RAG — Paso 10
+
+Se verificó:
 
 ```text
-SQL tradicional
-→ datos estructurados exactos
-
-pgvector
-→ retrieval semántico sobre chunks / embeddings
+PT-201 / PLANTA1
+→ ASSET
+→ DOCLINKS / DOCINFO
+→ 2 documentos asociados
+→ RAG solo sobre esos documentos
+→ Llama 3
+→ respuesta
 ```
 
-### 14.3 Ejemplo combinado EAM
+Regla:
 
 ```text
-“La bomba B-201 presenta alta temperatura.
-¿Tiene OTs abiertas y qué indica su manual?”
+MAXIMO / EAM
+→ determina QUÉ documentos aplican
 
-Maximo MCP → OTs / contexto operativo
-RAG        → manual / procedimiento
-LLM        → respuesta integrada
+RAG
+→ determina QUÉ evidencia es relevante
+
+LLM
+→ interpreta y redacta
+```
+
+Se observó además una omisión puntual del LLM pese a que la evidencia sí estaba recuperada. Se documentó y no se abrió más tuning.
+
+---
+
+## 9. Datos transaccionales + RAG — Paso 11
+
+Se añadió `WORKORDER` simulado:
+
+```text
+OT-PT201-01 | APPR  | PM | prioridad 2 | abierta
+OT-PT201-02 | INPRG | CM | prioridad 1 | abierta
+OT-PT201-03 | COMP  | PM | prioridad 3 | excluida
+```
+
+Una sola pregunta utilizó dos rutas:
+
+```text
+WORKORDER
+→ consulta estructurada exacta
+              \
+               → LLM
+              /
+DOCLINKS / DOCINFO
+→ RAG documental
+```
+
+La orquestación todavía estaba escrita explícitamente en Python.
+
+---
+
+## 10. Tools/MCP — Paso 12
+
+Se creó:
+
+```text
+rag/src/step12_eam_rag_mcp_server.py
+```
+
+con dos Tools:
+
+```text
+consultar_ots_abiertas_activo(...)
+→ datos WORKORDER
+→ [MAXIMO]
+
+buscar_documentacion_activo(...)
+→ Doclinks + RAG
+→ [FUENTE 1..N]
+```
+
+La Tool RAG **no llama a otro LLM**. Devuelve evidencia; Cline/Host LLM sintetiza.
+
+Validación final:
+
+```text
+Cline
+→ reconoció 2 Tools
+→ verificó ambas individualmente
+→ ante una pregunta integrada seleccionó ambas
+→ combinó [MAXIMO] + [DOCUMENTACIÓN]
+```
+
+Diferencia clave:
+
+```text
+Paso 11 → script decide el flujo
+Paso 12 → Host/LLM decide qué Tools necesita
+```
+
+Eso es **tool calling y composición dinámica**, no autonomía completa de un agente.
+
+---
+
+## 11. Incidencia técnica útil del Paso 12
+
+La primera Tool RAG agotó timeouts.
+
+Diagnóstico:
+
+```text
+carga normal MiniLM       ~46,7 s
+local_files_only=True     ~20,8 s
+```
+
+Solución final:
+
+```text
+servidor publica Tools inmediatamente
+→ primera llamada RAG carga MiniLM lazy desde caché local
+→ siguientes llamadas reutilizan la instancia
+```
+
+La configuración sanitizada está en:
+
+```text
+rag/config/cline_step12_mcp_settings.example.json
 ```
 
 ---
 
-## 15. Qué NO quedó decidido para producción
-
-El LAB no determina que AI-EAM-MAXIMO deba usar MiniLM, NumPy, `Top-k=4`, Llama 3, Ollama o los prompts exactos probados.
-
-Fueron elecciones pedagógicas para entender el mecanismo con la mínima complejidad necesaria.
-
----
-
-## 16. Qué no profundizamos ahora
-
-No se continuará ahora con reranking, retrieval híbrido, thresholds, RAGAS, LLM-as-judge, auto-evaluadores avanzados, bases vectoriales productivas ni tuning adicional, salvo que una necesidad EAM concreta lo justifique.
-
----
-
-## 17. Documentación del RAG LAB
+## 12. Baseline pedagógica usada
 
 ```text
-rag/docs/
-├── RAG_LAB_FAST_READING.md
-├── RAG_LIVING_DOCUMENTATION.md
-├── RAG_LAB_HANDOFF.md
-├── LAB-STEP08_GENERATION_EVALUATION.md
-└── study/
-    ├── STUDY-RAG_CORE_CONCEPTS.md
-    └── STUDY-LLM_VS_RAG_TECHNICAL_RELATIONSHIP.md
+Embeddings → MiniLM multilingual
+Índice     → NumPy + JSON
+Top-k      → 4 como baseline pedagógica
+Runtime    → Ollama en Pasos 08–11
+LLM        → Llama 3 local en Pasos 08–11
+MCP        → FastMCP en Paso 12
+Host       → Cline en Paso 12
 ```
 
-Orden recomendado para recuperar el tema:
+Nada de esto queda automáticamente aprobado para AI-EAM-MAXIMO.
+
+---
+
+## 13. Qué NO transferir como decisión de producto
+
+No convertir automáticamente en arquitectura:
+
+```text
+MiniLM
+384 dimensiones
+NumPy + JSON
+Top-k = 4
+Ollama
+Llama 3
+FastMCP
+local_files_only=True
+timeout = 180
+prompts exactos
+```
+
+Siguen abiertos para el producto:
+
+```text
+embedding model
+vector DB
+LLM provider
+agent framework
+chunking definitivo
+Top-k / thresholds
+runtime local vs cloud
+```
+
+---
+
+## 14. Qué NO profundizar ahora
+
+No continuar por defecto con:
+
+```text
+reranking
+retrieval híbrido
+threshold tuning
+RAGAS
+LLM-as-judge
+auto-evaluadores avanzados
+comparación de modelos
+prompt tuning adicional
+```
+
+Solo hacerlo si una necesidad EAM concreta lo exige.
+
+---
+
+## 15. Relación con AI-EAM-MAXIMO
+
+Después de cerrar Paso 12 se eligió revisar qué aprendizajes merecen pasar al producto como candidatos.
+
+En el repositorio de producto existe actualmente la rama:
+
+```text
+docs/learning-lab-transfer-assessment
+```
+
+con:
+
+```text
+docs/project/LEARNING_LAB_TRANSFER_FAST_READING.md
+docs/project/LEARNING_LAB_TRANSFER_ASSESSMENT.md
+```
+
+Eso es un **assessment candidato**, no una incorporación aprobada.
+
+---
+
+## 16. Qué leer para retomar
+
+Mantenerlo simple:
 
 ```text
 1. RAG_LAB_FAST_READING.md
+   → recordar el tema
+
 2. RAG_LIVING_DOCUMENTATION.md
+   → estado consolidado
+
 3. RAG_LAB_HANDOFF.md
-4. documentos study / evaluación específica cuando hagan falta
+   → continuidad operativa
+
+4. LAB-STEP*.md / código
+   → solo si necesitas detalle
 ```
 
----
-
-## 18. Próximo bloque
-
-RAG básico queda cerrado. El siguiente bloque es **aplicación EAM**:
-
-```text
-IBM Maximo simulado
-→ activo / site
-→ Doclinks / metadata
-→ localizar documentación asociada
-→ aplicar el RAG ya aprendido
-→ respuesta fundamentada
-```
-
-> **Maximo identifica qué documentación corresponde al contexto EAM; RAG recupera el conocimiento dentro de esa documentación.**
+Con esos documentos y el código de GitHub no debe ser necesario reconstruir chats antiguos.
