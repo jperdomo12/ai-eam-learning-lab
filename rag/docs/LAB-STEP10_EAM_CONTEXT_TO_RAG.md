@@ -10,8 +10,26 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido y el antiguo siguiente paso se marca como continuidad histórica ya completada en el Paso 11. |
 | 2026-09-16 | ✅ Ejecución local verificada del flujo completo `PT-201 / PLANTA1 → ASSET → DOCLINKS → DOCINFO → documentos asociados → retrieval semántico → Llama 3`. Se documenta una inconsistencia puntual de la respuesta generada: el LLM afirmó que no había evidencia sobre `as-found` y observaciones aunque la FUENTE 2 sí las contiene. |
 | 2026-09-16 | Creación inicial del Paso 10, conectando la resolución `ASSET → DOCLINKS → DOCINFO` del Paso 09 con retrieval semántico y generación local. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Cambio respecto al Paso 09** | Introduce RAG después de resolver qué documentos corresponden al activo. |
+| **2. Script** | Identifica la implementación utilizada para el flujo EAM → documentos → RAG → LLM. |
+| **3. Reutilización** | Muestra qué componentes RAG previos se reutilizan sin rehacer el laboratorio. |
+| **4. Simplificación** | Explica las decisiones pedagógicas que mantienen visible el mecanismo. |
+| **5. Ejecución** | Registra la prueba local completa con PT-201 y su documentación asociada. |
+| **6. Generación** | Documenta la respuesta y una limitación puntual observada en el LLM. |
+| **7. Verificado** | Consolida la separación Maximo/EAM → documentos, RAG → evidencia, LLM → redacción. |
+| **8. Límites** | Enumera lo que todavía no valida el experimento. |
+| **9. Cierre** | Confirma el flujo completo para el objetivo del Paso 10. |
+| **10. Continuidad posterior** | Registra que la incorporación de datos transaccionales se completó en el Paso 11. |
 
 ---
 
@@ -286,24 +304,15 @@ La inconsistencia puntual de generación queda documentada, pero no invalida la 
 
 ---
 
-## 10. Siguiente paso previsto
+## 10. Continuidad posterior
 
-El siguiente bloque natural es incorporar además datos estructurados/transaccionales simulados de Maximo, por ejemplo OTs abiertas del activo:
+El siguiente bloque previsto —incorporar datos estructurados/transaccionales de Maximo junto con RAG— **ya fue ejecutado y verificado en el Paso 11**.
 
-```text
-Maximo / MCP
-→ datos operativos
-
-RAG
-→ conocimiento documental
-
-LLM
-→ combina ambos
-```
-
-Ejemplo objetivo futuro:
+La evolución posterior fue:
 
 ```text
-“La bomba B-201 presenta alta temperatura.
-¿Tiene OTs abiertas y qué indica su manual?”
+Paso 10 → contexto EAM + RAG
+Paso 11 → WORKORDER estructurado + RAG documental
 ```
+
+Por tanto, este documento no mantiene trabajo pendiente. El Paso 10 permanece cerrado.
