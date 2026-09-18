@@ -8,12 +8,29 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido y se registra que la continuidad EAM prevista fue completada posteriormente en los Pasos 09–12; el Paso 08 permanece cerrado. |
 | 2026-09-14 | ✅ Se completa el **Paso 08C** con generación reproducible mediante API local de Ollama (`temperature=0`, `seed=42`, dos repeticiones por prompt). Ambos prompts producen salidas idénticas entre repeticiones. Bajo las mismas condiciones, el **Prompt A baseline** sigue siendo parcialmente incompleto, mientras el **Prompt B orientado a completeness** cubre inspección, seguridad, procedimiento completo de calibración, criterios de aceptación y acción ante tolerancia excedida. Se confirma que, en este experimento, la mejora procede del prompt y no del retrieval. |
 | 2026-09-14 | ✅ Se cierra el **Paso 08** para el nivel de aprendizaje buscado. `Groundedness` y `abstention` quedan satisfactoriamente demostrados; `completeness` mejora de forma clara con el prompt 08B bajo condiciones reproducibles. El formato exacto de citas `[FUENTE n]` no se fuerza más: el modelo referencia correctamente las fuentes, aunque use formas como `(FUENTE 2)`. No se continuarán optimizaciones de prompt, modelo, sampling ni evaluación automática en esta etapa. |
 | 2026-09-14 | 🧪 Se ejecuta el **Paso 08B — Caso D** con el mismo prompt orientado a completeness. La abstención se conserva: el modelo declara que el contexto no contiene el par de apriete y no inventa ningún valor. La respuesta sigue sin respetar exactamente el formato solicitado `[FUENTE n]`, usando una referencia textual global a las fuentes. |
 | 2026-09-14 | ⚙️ Se identifica una limitación metodológica importante de las comparaciones 08/08B: la generación se ejecutó mediante `ollama run` sin fijar explícitamente parámetros de muestreo. Por tanto, aunque retrieval/modelo/pregunta se mantuvieron, una sola ejecución por prompt no permite atribuir toda diferencia únicamente al prompt. Se prepara el **Paso 08C** con API local de Ollama, `temperature=0`, `seed=42` y dos repeticiones por prompt para crear una comparación reproducible. |
 | 2026-09-14 | 🧪 Se ejecuta el **Paso 08B — Caso C** variando las instrucciones del prompt. La respuesta mejora claramente respecto a la baseline: cubre inspección, seguridad y menciona el procedimiento de calibración. Sin embargo, sigue siendo **parcialmente incompleta**: resume el procedimiento en lugar de desarrollar sus pasos respaldados y omite los criterios de aceptación de `[FUENTE 3]`. Además, las referencias aparecen como `FUENTE 1`/`FUENTE 4` en lugar del formato solicitado `[FUENTE n]`. |
 | 2026-09-14 | Se documenta la baseline end-to-end del Paso 08 con Ollama + `llama3:latest`: Caso C fundamentado pero incompleto y Caso D con abstención correcta. Se prepara el Paso 08B para variar únicamente las instrucciones del prompt y estudiar `completeness` sin cambiar retrieval, `Top-k` ni modelo. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Objetivo** | Define qué se quería comprobar sobre generación fundamentada, completeness y abstención. |
+| **2. Baseline local** | Registra Llama 3/Ollama y parámetros usados para el experimento. |
+| **3–4. Casos C y D** | Evalúan respuesta fundamentada y abstención frente a evidencia suficiente/insuficiente. |
+| **5. Prompt 08B** | Prueba un prompt orientado a cubrir todas las partes de la pregunta. |
+| **6. Control 08C** | Compara prompts con parámetros controlados para mejorar reproducibilidad. |
+| **7. Resultado final** | Consolida groundedness, completeness, abstention, citas y reproducibilidad. |
+| **8. Decisión de cierre** | Detiene tuning adicional y devuelve el aprendizaje al objetivo EAM. |
+| **9. Límites** | Aclara qué modelos, parámetros y arquitectura no quedan aprobados para producto. |
+| **10. Continuidad posterior** | Registra que la aplicación EAM prevista se completó después en Pasos 09–12. |
 
 ---
 
@@ -376,3 +393,19 @@ Este LAB no demuestra que:
 - Ollama sea la arquitectura recomendada para AI-EAM-MAXIMO.
 
 Todos esos elementos siguen siendo **baselines pedagógicas del LAB**, no decisiones productivas.
+
+
+---
+
+## 10. Continuidad posterior
+
+La continuidad EAM indicada al cerrar este Paso 08 **ya fue ejecutada posteriormente**:
+
+```text
+Paso 09 → Maximo simulado + Doclinks
+Paso 10 → contexto EAM → RAG
+Paso 11 → datos transaccionales + RAG
+Paso 12 → Tools/MCP + EAM + RAG
+```
+
+Por tanto, este apartado histórico no representa trabajo pendiente. El Paso 08 permanece **cerrado** y no se reabre salvo nueva necesidad concreta.
