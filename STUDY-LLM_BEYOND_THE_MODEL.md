@@ -2,7 +2,7 @@
 ## Cómo accede a datos, herramientas y conocimiento externo
 
 > **Tipo:** STUDY  
-> **Estado:** 📘 ENTENDIDO — nota transversal del Learning Lab  
+> **Estado:** 📘 CONSOLIDADO — referencia transversal; Learning Lab congelado  
 > **Actualizado:** 2026-09-18  
 >
 > **Propósito:** explicar, con nivel técnico suficiente pero sin detalle innecesario, cómo un LLM amplía sus capacidades mediante Connectors/Apps, Tool Calling, MCP, RAG y acceso a sistemas empresariales como IBM Maximo.
@@ -11,6 +11,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final del Learning Lab: el estudio queda **consolidado como referencia transversal** y se mantiene para consulta durante el estado congelado del repositorio. |
 | 2026-09-18 | Se añade un **Resumen de contenido** inmediatamente después del Historial para facilitar la recuperación rápida de los 14 bloques del estudio. |
 | 2026-09-18 | Creación inicial a partir de las aclaraciones posteriores a los Labs MCP y RAG. |
 
