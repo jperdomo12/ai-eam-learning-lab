@@ -4,12 +4,13 @@
 >
 > 📍 **Estado:** ✅ **RAG BÁSICO VERIFICADO / CERRADO** · ✅ **Aplicación EAM verificada hasta Paso 12**
 >
-> 🗓️ **Actualizado:** 2026-09-17
+> 🗓️ **Actualizado:** 2026-09-18
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría de continuidad: Fast Reading, Living Documentation y HandOff quedan alineados con Pasos 01–12 para poder retomar desde GitHub sin reconstruir chats anteriores. |
 | 2026-09-17 | ✅ Se verifica el **Paso 12**: Cline reconoce `eam-rag-lab` con 2 Tools, valida individualmente la Tool transaccional y la Tool RAG, y finalmente selecciona e invoca ambas para una pregunta integrada. |
 | 2026-09-17 | Se resuelve la incidencia de carga de embeddings del Paso 12 usando MiniLM desde caché local (`local_files_only=True`); se evita seguir aumentando timeouts y se mantiene publicación inmediata de Tools. |
 | 2026-09-16 | Se prepara el **Paso 12**: las capacidades transaccional y documental/RAG pasan a exponerse como dos Tools en un MCP Server independiente (`eam-rag-lab`) para validación con Cline. El MCP Lab histórico permanece cerrado/congelado. |
@@ -25,7 +26,7 @@
 
 1. [`docs/RAG_LAB_FAST_READING.md`](docs/RAG_LAB_FAST_READING.md) — resumen final de lectura rápida.
 2. [`docs/RAG_LIVING_DOCUMENTATION.md`](docs/RAG_LIVING_DOCUMENTATION.md) — documentación canónica y evolutiva.
-3. [`docs/RAG_LAB_HANDOFF.md`](docs/RAG_LAB_HANDOFF.md) — cierre y continuidad desde el RAG básico.
+3. [`docs/RAG_LAB_HANDOFF.md`](docs/RAG_LAB_HANDOFF.md) — continuidad operativa vigente hasta el cierre del Paso 12.
 4. [`docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md`](docs/study/STUDY-MAXIMO_DOCLINKS_DATA_MODEL.md) — base conceptual de Maximo Doclinks.
 5. [`docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md`](docs/LAB-STEP09_MAXIMO_DOCLINKS_SIMULATION.md) — resolver documentos desde contexto EAM simulado.
 6. [`docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md`](docs/LAB-STEP10_EAM_CONTEXT_TO_RAG.md) — limitar RAG a documentos resueltos por contexto EAM.
