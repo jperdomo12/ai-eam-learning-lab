@@ -12,6 +12,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Se añaden aclaraciones conceptuales sobre vector search, RAG como capability, MCP y múltiples fuentes documentales; se alinea el estado con la transferencia ya cerrada hacia AI-EAM-MAXIMO. |
 | 2026-09-18 | Se actualiza el Fast Reading hasta Paso 12 y se alinea con la regla de continuidad sin depender de chats antiguos. |
 | 2026-09-14 | Se incorpora la distinción práctica entre RAG documental y acceso a datos estructurados/transaccionales mediante SQL, API o MCP. |
 | 2026-09-14 | Creación del resumen de recuperación rápida al cierre de los Pasos 01–08 del RAG Learning Lab. |
@@ -162,6 +163,16 @@ Ejemplo:
 ```
 
 Una base de datos puede participar en RAG si almacena/busca embeddings, pero consultar una base de datos no convierte automáticamente la consulta en RAG.
+
+Aclaración útil:
+
+```text
+tabla estructurada
+├─ campos normales → SQL / filtros
+└─ campo vector    → búsqueda semántica/vectorial
+```
+
+La tabla sigue siendo estructurada; la búsqueda sobre el vector es semántica.
 
 ---
 
@@ -394,28 +405,44 @@ Solo hacerlo si una necesidad EAM concreta lo exige.
 
 ---
 
-## 15. Relación con AI-EAM-MAXIMO
-
-Después de cerrar Paso 12 se eligió revisar qué aprendizajes merecen pasar al producto como candidatos.
-
-En el repositorio de producto existe actualmente la rama:
+## 15. Aclaraciones conceptuales posteriores
 
 ```text
-docs/learning-lab-transfer-assessment
+MCP
+→ una forma estándar de exponer capacidades/Tools al LLM
+
+RAG
+→ una capacidad de recuperación de conocimiento; no es MCP
+
+RAG vía MCP
+→ posible: se expone RAG como una Tool, como hicimos en el Paso 12
 ```
 
-con:
+El LLM usa una capacidad porque el sistema se la presenta con nombre, descripción y parámetros. MCP es una forma de hacerlo; también existen tool/function calling interno, orquestadores o workflows.
+
+Una misma capacidad RAG puede consultar varias fuentes autorizadas:
 
 ```text
-docs/project/LEARNING_LAB_TRANSFER_FAST_READING.md
-docs/project/LEARNING_LAB_TRANSFER_ASSESSMENT.md
+Maximo Doclinks
+Documentum / otro repositorio documental
+→ documentos aplicables
+→ RAG
+→ evidencia
 ```
 
-Eso es un **assessment candidato**, no una incorporación aprobada.
+Conviene mantener separadas internamente las capacidades EAM y Knowledge/RAG, aunque ambas puedan exponerse desde un mismo servidor MCP.
 
 ---
 
-## 16. Qué leer para retomar
+## 16. Relación con AI-EAM-MAXIMO
+
+Después de cerrar Paso 12 se revisaron los aprendizajes transferibles al producto.
+
+El assessment fue aprobado e integrado en `jperdomo12/ai-driven-eam-copilot` mediante PR #7. El LAB queda cerrado para este bloque y solo debe reabrirse ante una necesidad EAM concreta con valor educativo/práctico.
+
+---
+
+## 17. Qué leer para retomar
 
 Mantenerlo simple:
 
