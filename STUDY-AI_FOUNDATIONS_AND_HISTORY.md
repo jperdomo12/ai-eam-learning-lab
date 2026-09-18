@@ -1,7 +1,7 @@
 # 📘 Fundamentos de IA e historia mínima para AI-Driven EAM
 
 > **Tipo:** STUDY  
-> **Estado:** 📘 ENTENDIDO — nota transversal del Learning Lab  
+> **Estado:** 📘 CONSOLIDADO — referencia transversal; Learning Lab congelado  
 > **Actualizado:** 2026-09-18  
 >
 > **Propósito:** consolidar los conceptos básicos de IA que sirven de base para entender LLM, RAG, MCP y agentes, conectándolos con EAM / IBM Maximo sin convertir esta nota en un tratado académico.
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final del Learning Lab: el estudio queda **consolidado como referencia transversal** y se mantiene para consulta durante el estado congelado del repositorio. |
 | 2026-09-18 | Se añade un **Resumen de contenido** inmediatamente después del Historial para facilitar la recuperación rápida de los 19 bloques del estudio. |
 | 2026-09-18 | Se enriquecen los fundamentos con una ruta pedagógica completa de una frase por un LLM, ejemplos de tokenización, Token IDs, embeddings, posición, Attention y generación; se añade la distinción explícita entre IA Generativa y LLM con ejemplos generales y EAM. |
 | 2026-09-18 | Se añade referencia al estudio transversal `STUDY-LLM_BEYOND_THE_MODEL.md`, que profundiza de forma práctica en Connectors/Apps, Tool Calling, MCP, RAG y acceso de los LLM a sistemas externos. |
