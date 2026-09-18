@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** permitir retomar el frente RAG/EAM sin reconstruir chats anteriores y sin duplicar la documentación canónica.
 >
-> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO** · ✅ **APLICACIÓN EAM VERIFICADA HASTA PASO 12**
+> 📍 **Estado:** ✅ **RAG BÁSICO CERRADO** · ✅ **APLICACIÓN EAM VERIFICADA HASTA PASO 12** · 🧊 **LAB CONGELADO / BAJO DEMANDA**
 >
 > 🗓️ **Actualizado:** 2026-09-18
 >
@@ -12,6 +12,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | HandOff final de congelación: la transferencia al producto queda completada/integrada; no existe trabajo abierto ni Paso 13 automático y el Lab se reabre solo por necesidad concreta de AI-EAM-MAXIMO. |
 | 2026-09-18 | Auditoría de continuidad: se actualiza el HandOff desde Paso 08 hasta Paso 12, se registran artefactos, resultados y siguiente estado para que GitHub permita continuar sin chats antiguos. |
 | 2026-09-14 | Creación del HandOff al cierre de los Pasos 01–08 y transición hacia aplicación EAM / Maximo simulado / Doclinks. |
 
@@ -338,21 +339,9 @@ Learning Lab
 → 🟩 incorporación si se aprueba
 ```
 
-Después de cerrar el Paso 12 se eligió iniciar una **consolidación de aprendizajes candidatos** en el repositorio de producto:
+Después del Paso 12 se realizó la consolidación de aprendizajes en `jperdomo12/ai-driven-eam-copilot`.
 
-```text
-jperdomo12/ai-driven-eam-copilot
-branch: docs/learning-lab-transfer-assessment
-```
-
-Documentos candidatos creados allí:
-
-```text
-docs/project/LEARNING_LAB_TRANSFER_FAST_READING.md
-docs/project/LEARNING_LAB_TRANSFER_ASSESSMENT.md
-```
-
-Su existencia no significa que los candidatos hayan sido aprobados o incorporados todavía.
+El assessment fue **aprobado e integrado** mediante PR #7. La clasificación resultante quedó documentada en el repositorio de producto; este Lab conserva la evidencia experimental y no duplica esas decisiones.
 
 ---
 
@@ -378,18 +367,24 @@ No reconstruir conversaciones anteriores.
 
 ---
 
-## 12. Siguiente estado de trabajo
+## 12. Estado congelado / reapertura
 
-Los Pasos 01–12 están cerrados.
-
-La continuación inmediata **no es crear automáticamente un Paso 13**. El trabajo abierto está en revisar la transferencia de aprendizajes al producto, manteniendo los Labs simples.
-
-Después de esa revisión, los siguientes bloques de aprendizaje posibles se decidirán por valor real:
+Los Pasos 01–12 están cerrados y la transferencia al producto está completada.
 
 ```text
-- contraste con IBM Maximo MCP Server oficial;
-- conceptos mínimos de agentes;
-- otra necesidad EAM concreta.
+trabajo técnico pendiente en el Lab → ninguno
+Paso 13 automático                 → no
+estado                              → 🧊 congelado / bajo demanda
+```
+
+Reabrir únicamente si AI-EAM-MAXIMO requiere aprendizaje o experimentación concreta.
+
+Ejemplos posibles —no compromisos ni roadmap—:
+
+```text
+contraste específico con IBM Maximo real / MCP oficial
+Mini-LAB de agentes ante un caso real del producto
+otra necesidad EAM concreta
 ```
 
 No reabrir pasos ya verificados salvo nueva evidencia o una necesidad específica.
