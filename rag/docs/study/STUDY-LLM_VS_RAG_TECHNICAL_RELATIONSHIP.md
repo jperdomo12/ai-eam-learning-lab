@@ -3,15 +3,34 @@
 > **Subtítulo:** Conceptos compartidos, diferencias fundamentales y flujo de trabajo.
 >
 > **Tipo:** Nota de estudio del AI-EAM Learning Lab  
-> **Estado:** 📘 ENTENDIDO — documento vivo de apoyo al aprendizaje  
+> **Estado:** 📘 CONSOLIDADO — referencia de apoyo; Learning Lab congelado  
 > **Fecha:** 2026-09-13
 
 ## 🕘 Historial
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido, se actualiza la secuencia del Lab hasta Paso 12 y el estudio queda consolidado como referencia durante el estado congelado. |
 | 2026-09-13 | Se reorganiza la nota dentro de `rag/docs/study/` para separar claramente el material pedagógico de la documentación canónica del laboratorio. |
 | 2026-09-13 | Creación inicial. Se comparan entrenamiento e inferencia de LLM con adquisición, chunking, retrieval y generación en RAG; se identifican los conceptos técnicos compartidos y las diferencias fundamentales. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Comparación** | Define qué es LLM y qué es RAG antes de relacionarlos. |
+| **2. Modelo de LLM** | Resume entrenamiento e inferencia del modelo de lenguaje. |
+| **3. Modelo de RAG** | Separa preparación del conocimiento y consulta en tiempo de ejecución. |
+| **4. Conceptos compartidos** | Compara tokens, vectores, embeddings y representaciones sin confundir sus usos. |
+| **5. Diferencias** | Contrasta pesos aprendidos, conocimiento externo, actualización y trazabilidad. |
+| **6. Texto → vectores** | Explica el puente técnico común de las representaciones numéricas. |
+| **7. Attention vs. similitud vectorial** | Aclara que relacionar tokens dentro del contexto no es retrieval. |
+| **8. Ejemplo EAM** | Aplica LLM + RAG + capacidades externas a IBM Maximo. |
+| **9. Relación con el Lab** | Sitúa el estudio dentro de la secuencia completa de Pasos 01–12. |
+| **10. Resumen** | Condensa el papel de LLM y RAG para recordar. |
+| **11. No confundir** | Enumera errores conceptuales frecuentes. |
 
 ---
 
@@ -324,26 +343,26 @@ Esto muestra por qué LLM, RAG y MCP son complementarios, no sustitutos.
 
 ## 9. Relación con nuestro RAG Learning Lab
 
-La secuencia práctica que estamos siguiendo permite ver estas piezas una por una:
+La secuencia completa finalmente verificada fue:
 
 ```text
-Paso 01
-fuente local → descubrir documentos
-
-Paso 02
-documentos → chunks visibles
-
-Paso 03
-pregunta → retrieval léxico
-
-Paso siguiente
-pregunta/chunks → embeddings → retrieval semántico
-
-Más adelante
-chunks recuperados + pregunta → LLM → respuesta fundamentada
+01 descubrir documentos
+02 leer / chunking
+03 retrieval léxico
+04 retrieval semántico
+05 índice vectorial
+06 contexto fundamentado
+07 evaluación de retrieval
+08 generación / abstención / prompts
+09 Maximo simulado + Doclinks
+10 contexto EAM → RAG
+11 datos transaccionales + RAG
+12 Tools/MCP + EAM + RAG
 ```
 
-La intención es comprender primero cada componente antes de introducir frameworks que oculten el mecanismo.
+La intención pedagógica se mantuvo constante: comprender cada mecanismo antes de introducir capas que lo oculten.
+
+Los Pasos 01–12 están cerrados y este estudio no representa trabajo pendiente.
 
 ---
 
