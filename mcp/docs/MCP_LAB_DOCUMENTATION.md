@@ -20,6 +20,33 @@
 
 ---
 
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **0. Recuperación rápida** | Resume objetivo, construcción, evidencias, límites y artefactos vigentes del MCP Lab. |
+| **1. Evolución del laboratorio** | Recorre Gemini, Claude Desktop, VS Code + Cline y la consolidación final en GitHub. |
+| **2. Conceptos MCP** | Explica Host, Client, Server, Tools, Resources, Prompts, transporte y relación con OSLC/REST. |
+| **3. Productos utilizados** | Identifica Cline, modelos, runtimes y componentes empleados durante las pruebas. |
+| **4. Instalación** | Documenta el entorno mínimo y las incidencias relevantes de instalación/revalidación. |
+| **5. Claude Desktop** | Conserva la configuración y comportamiento observado en la primera PoC MCP local. |
+| **6. VS Code + Cline** | Registra la configuración efectiva recuperada y el uso verificado de servidores MCP. |
+| **7. Maximo MCP** | Describe el servidor simulado y el catálogo de 14 Tools preservado en el Lab. |
+| **8. Selección de Tools** | Resume qué señales ayudan al LLM y los aciertos/errores observados en tool calling. |
+| **9. Pruebas finales en Cline** | Documenta Maximo, Filesystem, sandbox, cambios de configuración y composición multi-MCP. |
+| **10. Claude Desktop** | Resume la prueba equivalente realizada con el Host inicial. |
+| **11. Comparación de Hosts** | Contrasta la experiencia práctica Claude Desktop vs. VS Code + Cline. |
+| **12. GitHub MCP** | Registra el uso histórico, deprecación encontrada y decisión de no reabrirlo sin necesidad. |
+| **13. Working Set / HITL** | Conserva aprendizajes sobre alcance de contexto y control humano. |
+| **14. Seguridad** | Enumera límites de la PoC y precauciones antes de cualquier uso productivo. |
+| **15. Fuentes históricas** | Explica cómo se reconciliaron evidencias previas sin convertirlas en verdad vigente automática. |
+| **16. Qué conservar** | Condensa los aprendizajes esenciales del MCP Lab. |
+| **17. Estado final** | Distingue lo cerrado, lo no validado y la continuidad posterior ya completada. |
+| **18. Relación con AI-EAM-MAXIMO** | Mantiene la separación entre aprendizaje experimental y decisiones del producto. |
+| **19. Regla de mantenimiento** | Define cómo reabrir y actualizar el frente MCP si una necesidad futura lo exige. |
+
+---
+
 # 0. Recuperación rápida
 
 ## 0.1 Qué queríamos aprender
@@ -875,19 +902,24 @@ Queda cerrado para este alcance:
 - hardening productivo;
 - servidor MCP remoto;
 - GitHub MCP oficial actual instalado;
-- RAG.
+- RAG **dentro de este MCP Lab**; se estudió posteriormente bajo `rag/` y se combinó con MCP en el Paso 12.
 
-## Próximo paso
+## Continuidad posterior
 
-➡️ **RAG — nuevo laboratorio independiente dentro de `ai-eam-learning-lab`.**
+El RAG Learning Lab que figuraba como siguiente frente **se ejecutó posteriormente y quedó cerrado hasta el Paso 12**.
 
-Una pregunta guía para ese frente será:
+La evolución posterior fue:
 
 ```text
-¿Cómo calibro este equipo según su manual?
+MCP Lab cerrado
+→ RAG básico
+→ Maximo simulado + Doclinks
+→ datos transaccionales + RAG
+→ Tools MCP + EAM + RAG
+→ transferencia controlada a AI-EAM-MAXIMO
 ```
 
-MCP seguirá representando acceso a capacidades/sistemas; RAG se estudiará como recuperación de conocimiento desde documentos.
+Por tanto, no queda un siguiente paso MCP pendiente. El frente se reabre únicamente si AI-EAM-MAXIMO requiere una validación MCP concreta.
 
 ---
 
@@ -921,7 +953,7 @@ Nada de este laboratorio convierte automáticamente en arquitectura de producto:
 
 # 19. Regla de mantenimiento
 
-Si MCP se reabre en el futuro:
+Si MCP se reabre en el futuro por una necesidad concreta de AI-EAM-MAXIMO:
 
 1. actualizar primero esta documentación canónica;
 2. actualizar `MCP_LAB_FAST_READING.md`;
