@@ -10,9 +10,24 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido y se actualiza el antiguo “siguiente paso” como continuidad histórica ya completada en el Paso 10. |
 | 2026-09-15 | ✅ Ejecución local verificada: `PT-201 / PLANTA1` resuelve `ASSETUID=1001`, `ASSETID=2001`, dos `DOCLINKS`, dos `DOCINFO` y ambos archivos asociados existen. |
 | 2026-09-15 | Se explicita la coexistencia de `ASSETUID` y `ASSETID`; el LAB conserva ambos y usa `ASSETUID` como baseline site-specific para resolver `DOCLINKS.OWNERID`. |
 | 2026-09-15 | Se crea el Paso 09 con datos Maximo simulados y un script de resolución `ASSET → DOCLINKS → DOCINFO → archivo`. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Objetivo** | Comprender cómo Maximo asocia un activo con sus documentos antes de introducir RAG. |
+| **2. Datos simulados** | Define ASSET, DOCLINKS y DOCINFO usados en la prueba. |
+| **3. Script** | Identifica el programa que resuelve la cadena documental simulada. |
+| **4. Prueba principal** | Verifica PT-201/PLANTA1 → ASSET → DOCLINKS → DOCINFO → archivos. |
+| **5. Simplificaciones** | Enumera aspectos reales de Maximo deliberadamente fuera del mock. |
+| **6. Cierre** | Confirma que Doclinks limita qué documentación corresponde al contexto EAM. |
+| **7. Continuidad posterior** | Registra que el paso RAG previsto se ejecutó posteriormente en el Paso 10. |
 
 ---
 
@@ -252,27 +267,17 @@ Aprendizaje consolidado:
 
 ---
 
-## 7. Siguiente paso previsto
+## 7. Continuidad posterior
 
-Con la resolución documental ya verificada:
+El flujo que figuraba como siguiente paso:
 
 ```text
 ASSET + DOCLINKS + DOCINFO
-        ↓
-lista de documentos permitidos por contexto EAM
-        ↓
-RAG sobre esos documentos
-        ↓
-LLM
-        ↓
-respuesta fundamentada
+→ documentos permitidos por contexto EAM
+→ RAG
+→ LLM
 ```
 
-Eso permitirá formular una pregunta como:
+**ya fue ejecutado y verificado posteriormente en el Paso 10**.
 
-```text
-Estoy trabajando sobre el activo PT-201 en PLANTA1.
-¿Cómo debo calibrarlo según la documentación asociada al activo?
-```
-
-sin entregar al RAG indiscriminadamente toda la documentación disponible.
+Por tanto, no existe un pendiente asociado a este documento. El Paso 09 permanece cerrado como evidencia de la resolución documental previa al RAG.
