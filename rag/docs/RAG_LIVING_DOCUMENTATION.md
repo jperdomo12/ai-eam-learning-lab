@@ -2,7 +2,7 @@
 
 > 🎯 **Propósito:** conservar el conocimiento vigente, decisiones de laboratorio, resultados y aprendizajes del frente **RAG aplicado a EAM / IBM Maximo**.
 >
-> 📍 **Estado:** ✅ **RAG básico verificado** · ✅ **Aplicación EAM verificada hasta Paso 12**
+> 📍 **Estado:** ✅ **RAG básico verificado** · ✅ **Aplicación EAM verificada hasta Paso 12** · 🧊 **LAB CONGELADO / BAJO DEMANDA**
 >
 > 🗓️ **Actualizado:** 2026-09-18
 
@@ -10,6 +10,7 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido, se actualiza la transferencia como completada/integrada y se congela el bloque RAG/EAM/MCP para reapertura solo bajo demanda del producto. |
 | 2026-09-18 | Auditoría de continuidad: se confirma que Pasos 01–12, datos, scripts y documentación permiten reconstruir el estado desde GitHub; se actualizan Fast Reading y HandOff, y se registra que la transferencia de aprendizajes al producto ya está en revisión. |
 | 2026-09-17 | ✅ Se verifica el **Paso 12** completo: Cline valida individualmente la Tool transaccional y la Tool RAG, y después selecciona e invoca ambas para una sola pregunta integrada. Se confirma el salto desde orquestación fija a composición dinámica de Tools mediante MCP. |
 | 2026-09-17 | Se resuelve la incidencia de carga de MiniLM del Paso 12 usando caché local (`local_files_only=True`), manteniendo publicación inmediata de las Tools MCP. |
@@ -18,6 +19,24 @@
 | 2026-09-14 | ✅ Se cierra el **Paso 08 — generación fundamentada** y con ello la fase de RAG básico. |
 | 2026-09-13 | ✅ Se verifican evaluación de retrieval, índice persistente y contexto fundamentado. |
 | 2026-09-12 | ✅ Inicio y primeras validaciones del RAG Learning Lab. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Modelo mental vigente** | Resume la relación entre contexto EAM, datos, documentos, RAG, MCP y LLM. |
+| **2. RAG vs. datos estructurados** | Distingue consulta transaccional/estructurada de recuperación documental. |
+| **3. Pasos 01–08** | Consolida el aprendizaje de discovery, chunking, retrieval, embeddings, contexto, evaluación y generación. |
+| **4. Paso 09** | Documenta la simulación Maximo ASSET → DOCLINKS → DOCINFO → archivo. |
+| **5. Paso 10** | Verifica que el contexto EAM puede limitar los documentos antes del retrieval RAG. |
+| **6. Paso 11** | Combina datos WORKORDER estructurados y conocimiento documental con orquestación explícita. |
+| **7. Paso 12** | Expone capacidades EAM y RAG como Tools MCP y valida selección/composición desde el Host LLM. |
+| **8. Arquitectura aprendida** | Resume la separación entre EAM, Knowledge/RAG, MCP y LLM/Host. |
+| **9. No validado** | Enumera límites del Lab: Maximo real, seguridad productiva, escrituras y agentes autónomos. |
+| **10. Decisiones no tomadas** | Evita convertir modelos, frameworks o parámetros pedagógicos en decisiones de producto. |
+| **11. Continuidad** | Registra transferencia completada y estado congelado/bajo demanda del Lab. |
 
 ---
 
@@ -443,35 +462,23 @@ Los resultados del Learning Lab son aprendizaje y evidencia. Cualquier traslado 
 
 No se continúa automáticamente por numeración.
 
-Después de cerrar el Paso 12 se eligió la opción:
+Después del Paso 12 se eligió cerrar el bloque y evaluar qué aprendizajes podían transferirse a AI-EAM-MAXIMO. Esa revisión **ya fue completada** en `jperdomo12/ai-driven-eam-copilot` y los elementos aprobados fueron integrados de forma controlada.
+
+La situación actual es:
 
 ```text
-C. revisar qué aprendizajes pasan como
-🟨 CANDIDATO A INCORPORAR a AI-EAM-MAXIMO
+RAG básico                  → ✅ cerrado
+Maximo simulado + Doclinks  → ✅ cerrado
+datos transaccionales + RAG → ✅ cerrado
+Tools/MCP + EAM + RAG       → ✅ cerrado
+transferencia al producto   → ✅ completada
+Learning Lab                → 🧊 congelado / bajo demanda
 ```
 
-La consolidación se inició en el repositorio de producto:
+No existe un Paso 13 automático.
 
-```text
-jperdomo12/ai-driven-eam-copilot
-branch: docs/learning-lab-transfer-assessment
-```
+Solo se reabre este repositorio cuando AI-EAM-MAXIMO plantee una necesidad concreta de aprendizaje/validación, por ejemplo un contraste específico con Maximo real, un Mini-LAB agentic o una nueva necesidad documental.
 
-con dos documentos candidatos:
+La prioridad sigue siendo:
 
-```text
-docs/project/LEARNING_LAB_TRANSFER_FAST_READING.md
-docs/project/LEARNING_LAB_TRANSFER_ASSESSMENT.md
-```
-
-Esto **no significa incorporación aprobada**. El Learning Lab conserva evidencia y aprendizaje; el producto decide explícitamente qué adoptar.
-
-Después de esa revisión, los siguientes bloques posibles siguen siendo:
-
-```text
-A. contraste con IBM Maximo MCP Server oficial
-B. conceptos mínimos de agentes sobre capacidades ya comprendidas
-C. otra necesidad EAM concreta
-```
-
-La prioridad es mantener los Labs simples: **entender lo esencial → probar lo necesario → documentar lo justo → continuar**.
+> **entender lo esencial → probar lo necesario → documentar lo justo → cerrar y volver al producto.**
