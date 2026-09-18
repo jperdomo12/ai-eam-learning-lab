@@ -1,7 +1,7 @@
 # 📘 IBM Maximo Doclinks — modelo de datos para el Learning Lab
 
 > **Tipo:** STUDY  
-> **Estado:** 📘 ENTENDIDO — base conceptual para el bloque Maximo simulado + Doclinks + RAG  
+> **Estado:** 📘 CONSOLIDADO — base conceptual verificada en Pasos 09–10; Learning Lab congelado  
 > **Actualizado:** 2026-09-15  
 >
 > **Propósito:** entender cómo IBM Maximo Manage representa los documentos adjuntos y sus vínculos con objetos de negocio para construir una simulación fiel, pero simple, antes de conectarla con el RAG ya validado.
@@ -10,8 +10,27 @@
 
 | Fecha | Cambio |
 |---|---|
+| 2026-09-18 | Auditoría final: se añade Resumen de contenido, se registra que la simulación y conexión con RAG fueron ejecutadas en Pasos 09–10 y el estudio queda consolidado. |
 | 2026-09-15 | Se corrige y amplía la explicación de `DOCLINKS.OWNERID` para `ASSET`: se documentan `ASSETUID` y `ASSETID` y se fija `ASSETUID` como baseline site-specific del LAB, sin asumir que sea la única variante válida en Maximo. |
 | 2026-09-14 | Creación inicial a partir de documentación oficial IBM sobre attachments/doclinks, API REST y almacenamiento de documentos. |
+
+---
+
+## 🧭 Resumen de contenido
+
+| Punto | Contenido |
+|---|---|
+| **1. Idea principal** | Explica la separación Maximo identifica documentos / RAG busca dentro de ellos. |
+| **2. DOCLINKS** | Describe el vínculo con el objeto de negocio y el matiz OWNERID vs. identificadores de Asset. |
+| **3. DOCINFO** | Explica la metadata del documento asociada al vínculo. |
+| **4. FILE / almacenamiento** | Aclara que la referencia del documento no implica filesystem local. |
+| **5. API REST** | Relaciona el modelo conceptual con mecanismos oficiales de attachments. |
+| **6. Múltiples vínculos** | Explica que un mismo documento puede asociarse a más de un contexto. |
+| **7. Modelo mínimo** | Define la baseline simulada usada por el Lab. |
+| **8. Entrada de RAG** | Sitúa RAG después de resolver documentos aplicables. |
+| **9. Fuera de simulación** | Enumera seguridad, storage, herencia y otros detalles reales no modelados. |
+| **10. Fuentes IBM** | Conserva referencias utilizadas para validar el modelo conceptual. |
+| **11. Continuidad posterior** | Registra que la simulación y el flujo hacia RAG ya fueron completados. |
 
 ---
 
@@ -389,22 +408,16 @@ Fuentes principales utilizadas para esta nota:
 
 ---
 
-## 11. Próximo paso
+## 11. Continuidad posterior
 
-Ejecutar y verificar la simulación mínima de:
-
-```text
-ASSET
-+
-DOCLINKS
-+
-DOCINFO
-```
-
-con la baseline explícita:
+La simulación prevista en esta nota **ya fue ejecutada y verificada en el Paso 09** con la baseline:
 
 ```text
 DOCLINKS.OWNERID ↔ ASSET.ASSETUID
 ```
 
-y después conectar esa resolución documental con el pipeline RAG ya existente.
+y su conexión con el pipeline RAG fue verificada posteriormente en el **Paso 10**.
+
+La baseline fue deliberadamente site-specific y **no constituye una regla universal de Maximo**. Para una instancia real deberá validarse el comportamiento/configuración aplicable, incluido el posible papel de `ASSETID`.
+
+No existe trabajo pendiente en este estudio dentro del Lab congelado.
